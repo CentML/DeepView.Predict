@@ -170,7 +170,8 @@ void ProfilingSession::stopProfiling() {
 std::vector<habitat::cuda::KernelMetric> ProfilingSession::getMeasuredMetrics() {
   std::vector<NV::Metric::Eval::MetricNameValue> metric_name_value_map;
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
-      metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
+      // metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
+      chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
   if (!succeeded) {
     return {};
   }
@@ -247,7 +248,8 @@ class NewCuptiProfiler::State {
     }
 
     auto inserted = config_images_.emplace(std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
-    if (!NV::Metric::Config::GetConfigImage(metrics_context_, chip_name_, {metric}, inserted.first->second)) {
+    // if (!NV::Metric::Config::GetConfigImage(metrics_context_, chip_name_, {metric}, inserted.first->second)) {
+    if (!NV::Metric::Config::GetConfigImage(chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
     return inserted.first->second;
@@ -262,7 +264,8 @@ class NewCuptiProfiler::State {
     auto inserted = image_prefixes_.emplace(
         std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
     if (!NV::Metric::Config::GetCounterDataPrefixImage(
-          metrics_context_, chip_name_, {metric}, inserted.first->second)) {
+          // metrics_context_, chip_name_, {metric}, inserted.first->second)) {
+          chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");
     }
     return inserted.first->second;

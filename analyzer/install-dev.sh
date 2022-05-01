@@ -1,6 +1,7 @@
 #! /bin/bash
 
-SO_NAME="habitat_cuda.cpython-36m-x86_64-linux-gnu.so"
+# SO_NAME="habitat_cuda.cpython-36m-x86_64-linux-gnu.so"
+SO_NAME="habitat_cuda.cpython-39-x86_64-linux-gnu.so"
 PACKAGE_NAME="habitat-predict"
 
 # Operate out of the script directory
