@@ -15,4 +15,8 @@ jobs:
           id
 
       - name: Build
-        run: cd habitat-cu116/analysis && ./install-dev.sh
+        run: |
+          virtualenv venv
+          source venv/bin/activate
+          python -V
+          cd analysis && ./install-dev.sh
