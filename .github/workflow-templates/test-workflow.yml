@@ -1,0 +1,11 @@
+name: Test Workflow
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Display host information
+        run: uname -a
+        run: hostname
+        run: pwd
+        run: id
