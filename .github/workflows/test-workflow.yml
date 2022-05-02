@@ -13,3 +13,6 @@ jobs:
           hostname
           pwd
           id
+
+      - name: Build
+        run: cd habitat-cu116/analysis && ./install-dev.sh
