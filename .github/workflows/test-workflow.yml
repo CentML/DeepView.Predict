@@ -13,6 +13,7 @@ jobs:
           hostname
           pwd
           id
+          ls -la
 
       - name: Build
         run: |
