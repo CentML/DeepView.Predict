@@ -29,7 +29,11 @@ jobs:
           cd analyzer && ./install-dev.sh
 
       - name: Test import
-        run: source venv/bin/activate && python -c "import habitat"
+        run: |
+          cd analyzer && \
+            wget https://zenodo.org/record/4876277/files/habitat-models.tar.gz?download=1 -O habitat-models.tar.gz && \
+            ./extract-models.sh habitat-models.tar.gz && \
+            source venv/bin/activate && python -c "import habitat"
 
       - name: Generate wheel
         run: |
