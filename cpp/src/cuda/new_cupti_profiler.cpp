@@ -169,10 +169,10 @@ void ProfilingSession::stopProfiling() {
 
 std::vector<habitat::cuda::KernelMetric> ProfilingSession::getMeasuredMetrics() {
   std::vector<NV::Metric::Eval::MetricNameValue> metric_name_value_map;
-#if (CUDA_VERSION == 10020)
+#if (CUDA_VERSION == 10010)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
-#elif (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11060)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
 #endif
@@ -252,11 +252,11 @@ class NewCuptiProfiler::State {
     }
 
     auto inserted = config_images_.emplace(std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
-#if (CUDA_VERSION == 10020)
+#if (CUDA_VERSION == 10010)
     if (!NV::Metric::Config::GetConfigImage(metrics_context_, chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
-#elif (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11060)
     if (!NV::Metric::Config::GetConfigImage(chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
@@ -272,12 +272,12 @@ class NewCuptiProfiler::State {
 
     auto inserted = image_prefixes_.emplace(
         std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
-#if (CUDA_VERSION == 10020)
+#if (CUDA_VERSION == 10010)
     if (!NV::Metric::Config::GetCounterDataPrefixImage(
           metrics_context_, chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");
     }
-#elif (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11060)
     if (!NV::Metric::Config::GetCounterDataPrefixImage(
           chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");
