@@ -39,4 +39,5 @@ jobs:
         run: |
           source venv/bin/activate
           python -m pip install -U wheel setuptools
+          cd analyzer
           python setup.py sdist bdist_wheel
