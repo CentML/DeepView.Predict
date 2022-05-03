@@ -3,6 +3,8 @@
 # SO_NAME="habitat_cuda.cpython-36m-x86_64-linux-gnu.so"
 SO_NAME="habitat_cuda.cpython-39-x86_64-linux-gnu.so"
 PACKAGE_NAME="habitat-predict"
+CUPTI_PATH="/usr/local/cuda/extras/CUPTI"
+# CUPTI_PATH="/opt/cuda/extras/CUPTI"
 
 # Operate out of the script directory
 SCRIPT_PATH=$(cd $(dirname $0) && pwd -P)
@@ -71,10 +73,17 @@ function check_prereqs() {
   fi
 }
 
+function install_cupti_sample() {
+  echo "Copying CUPTI examples from" $CUPTI_PATH
+  cp -r ${CUPTI_PATH}/samples/extensions/src ../cpp/external/cupti_profilerhost_util/
+  cp -r ${CUPTI_PATH}/samples/extensions/include ../cpp/external/cupti_profilerhost_util/
+}
+
 function main() {
   if [ "$1" = "--uninstall" ]; then
     uninstall_habitat
   else
+	install_cupti_sample
     check_prereqs
     compile_habitat_cuda
     symlink_habitat_cuda
