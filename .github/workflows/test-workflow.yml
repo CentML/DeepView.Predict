@@ -27,6 +27,6 @@ jobs:
           source venv/bin/activate
           python -V
           ls -la
-          cd analysis && ./install-dev.sh
+          cd analyzer && ./install-dev.sh
 
 
