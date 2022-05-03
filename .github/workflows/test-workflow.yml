@@ -28,7 +28,7 @@ jobs:
           python -V
           cd analyzer && ./install-dev.sh
 
-      - name: Test: Import
+      - name: Test import
         run: python -c "import habitat"
 
       - name: Generate wheel
