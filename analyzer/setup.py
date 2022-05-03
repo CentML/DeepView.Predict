@@ -31,8 +31,8 @@ PACKAGE_DATA = {
 }
 
 INSTALL_REQUIRES = [
-#    "pyyaml",
-#    "torch>=1.4.0",
+    "pyyaml",
+    "torch>=1.4.0",
     "pandas>=1.1.2",
     "tqdm>=4.49.0"
 ]
