@@ -23,10 +23,9 @@ jobs:
 
       - name: Build
         run: |
-          virtualenv venv
+          python3.9 -m virtualenv venv -p python3.9
           source venv/bin/activate
           python -V
-          ls -la
           cd analyzer && ./install-dev.sh
 
 
