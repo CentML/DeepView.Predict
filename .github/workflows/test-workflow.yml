@@ -89,7 +89,7 @@ jobs:
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v3
         with:
-          name: wheel-cu116
+          name: wheel-cu113
           path: analyzer/dist/*.whl
 
   whl-build-cu111:
@@ -133,7 +133,7 @@ jobs:
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v3
         with:
-          name: wheel-cu116
+          name: wheel-cu111
           path: analyzer/dist/*.whl
 
   whl-build-cu102:
