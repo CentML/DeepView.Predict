@@ -26,6 +26,7 @@ jobs:
           virtualenv venv
           source venv/bin/activate
           python -V
+          ls -la
           cd analysis && ./install-dev.sh
 
 
