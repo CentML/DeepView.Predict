@@ -38,7 +38,8 @@ class CallableTracker(TrackerBase):
             self._hook_creator,
         )
         self._hook_manager.attach_hooks_on_module_using(
-            torch.nn._VF,
+            # torch.nn._VF,
+            torch._VF,
             torch._C._VariableFunctions,
             _is_callable_and_public,
             self._hook_creator,

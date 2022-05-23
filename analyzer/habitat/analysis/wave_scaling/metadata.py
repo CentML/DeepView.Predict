@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class MetadataManager:
     def __init__(self, path_to_lut):
-        self._connection = sqlite3.connect(path_to_lut)
+        self._connection = sqlite3.connect(path_to_lut, check_same_thread=False)
 
 
     def kernel_registers_for(self, kernel, device):
