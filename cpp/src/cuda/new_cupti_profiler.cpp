@@ -172,7 +172,7 @@ std::vector<habitat::cuda::KernelMetric> ProfilingSession::getMeasuredMetrics() 
 #if (CUDA_VERSION == 10010)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
-#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11010) || (CUDA_VERSION == 11030) || (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11010) || (CUDA_VERSION == 11030) || (CUDA_VERSION >= 11060)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
 #endif
@@ -256,7 +256,7 @@ class NewCuptiProfiler::State {
     if (!NV::Metric::Config::GetConfigImage(metrics_context_, chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
-#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11010) || (CUDA_VERSION == 11030) || (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION >= 10020) 
     if (!NV::Metric::Config::GetConfigImage(chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
@@ -277,7 +277,7 @@ class NewCuptiProfiler::State {
           metrics_context_, chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");
     }
-#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11010) || (CUDA_VERSION == 11030) || (CUDA_VERSION == 11060)
+#elif (CUDA_VERSION >= 10020)
     if (!NV::Metric::Config::GetCounterDataPrefixImage(
           chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");

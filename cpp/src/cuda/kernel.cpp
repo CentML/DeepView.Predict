@@ -1,4 +1,6 @@
 #include "kernel.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace {
 
@@ -49,9 +51,15 @@ uint32_t KernelMetadata::threadBlockOccupancy(
         &device_state,
         block_size_,
         dynamic_shared_memory_)) != CUDA_OCC_SUCCESS) {
+    fprintf(stderr, "for kernel: %s\n", this->name().c_str());
+    fprintf(stderr, "KernelMetadata::threadBlockOccupancy: cudaOccMaxActiveBlocksPerMultiprocessor failed and returned %d.\n", res);
     return 0;
   }
 
+  if (result.activeBlocksPerMultiprocessor == 0) {
+      fprintf(stderr, "for kernel: %s\n", this->name().c_str());
+      fprintf(stderr, "KernelMetadata::threadBlockOccupancy: succeeded, returning %d.\n", result.activeBlocksPerMultiprocessor);
+  }
   return result.activeBlocksPerMultiprocessor;
 }
 

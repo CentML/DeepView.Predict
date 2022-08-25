@@ -37,6 +37,7 @@ class Trace:
 
     def to_device(self, dest_device, predictor=None):
         """Get a predicted trace for the specified device."""
+        print(f"Cross-device prediction: {self.device.name} -> {dest_device.name}")
         if dest_device.name == self.device.name:
             return self
 

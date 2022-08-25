@@ -128,3 +128,37 @@ P100:
   mem_bandwidth_gb: 501
   base_clock_mhz: 1126
   peak_gflops_per_second: 9504
+
+A100:
+  compute_major: 8
+  compute_minor: 0
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 2048
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 163840
+  num_sms: 108
+  shared_mem_per_block_optin: 0
+  mem_bandwidth_gb: 1555
+  base_clock_mhz: 1410
+  peak_gflops_per_second: 8341
+
+RTX3090:
+  compute_major: 8
+  compute_minor: 6
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 1536
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 102400
+  num_sms: 82
+  shared_mem_per_block_optin: 101376
+  mem_bandwidth_gb: 776
+  base_clock_mhz: 1395
+  peak_gflops_per_second: 19346
+
+

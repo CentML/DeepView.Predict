@@ -30,6 +30,7 @@ class Generation(enum.Enum):
     Pascal = 0
     Volta = 1
     Turing = 2
+    Ampere = 3
 
 
 DEVICE_GENERATION = {
@@ -39,6 +40,7 @@ DEVICE_GENERATION = {
     'V100': Generation.Volta,
     'P100': Generation.Pascal,
     'P4000': Generation.Pascal,
+    'A100': Generation.Ampere,
 }
 
 

@@ -210,7 +210,8 @@ class RuntimePredictor:
         def MAPELoss(output, target):
             return torch.mean(torch.abs((target - output) / target))
 
-        self.criterion = MAPELoss
+        # self.criterion = MAPELoss
+        self.criterion = nn.MSELoss()
         self.optim = torch.optim.Adam(self.model.parameters(), lr=5e-4, weight_decay=1e-4)
 
         # set up tensorboard logging

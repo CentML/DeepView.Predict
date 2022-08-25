@@ -24,6 +24,7 @@ def get_dataset(path, features, device_features=None):
     devices = dict()
     for f in files:
         device_name = f.split("/")[-1].split("-")[1]
+        if "." in device_name: device_name = device_name[:device_name.index(".")]
 
         conn = sqlite3.connect(f)
         query = SELECT_QUERY.format(features=",".join(features))

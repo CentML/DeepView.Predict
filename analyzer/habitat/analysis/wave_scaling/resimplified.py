@@ -18,6 +18,7 @@ def resimplified_wave_scaling(
             metadata_manager,
         )
     )
+    # print(f"{origin_wave_size}, {dest_wave_size}, {origin_occupancy}, {dest_occupancy}")
 
     # Check if the kernel is too "small" - if it doesn't fill a single wave
     # on the current device AND if it doesn't fill a single wave on the

@@ -4,6 +4,8 @@
 SO_NAME="habitat_cuda.cpython-39-x86_64-linux-gnu.so"
 PACKAGE_NAME="habitat-predict"
 CUPTI_PATH="/usr/local/cuda/extras/CUPTI"
+export CUPTI_INCLUDE_DIR="/usr/local/cuda/extras/CUPTI/include"
+# export CUPTI_LIBRARY="/usr/local/cuda/extras/CUPTI/include"
 # CUPTI_PATH="/opt/cuda/extras/CUPTI"
 
 # Operate out of the script directory
@@ -28,7 +30,7 @@ function compile_habitat_cuda() {
   pushd build
 
   cmake -DCMAKE_BUILD_TYPE=Release ..
-  make -j 8 habitat_cuda
+  make -j habitat_cuda
 
   if [ ! -f $SO_NAME ]; then
     echo "ERROR: Could not find $SO_NAME after compilation. Please double "

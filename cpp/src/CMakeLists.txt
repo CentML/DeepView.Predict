@@ -1,2 +1,6 @@
 add_subdirectory(cuda)
 add_subdirectory(frontend)
+if(NOT DEFINED ${CMAKE_CUDA_ARCHITECTURES})
+    set(CMAKE_CUDA_ARCHITECTURES 75 80)
+endif()
+message(STATUS "CUDA architectures set to ${CMAKE_CUDA_ARCHITECTURES}")

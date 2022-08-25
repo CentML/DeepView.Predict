@@ -1,46 +1,62 @@
-# Habitat
+# Habitat: A Runtime-Based Computational Performance Predictor for Deep Neural Network Training
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4885489.svg)](https://doi.org/10.5281/zenodo.4885489)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4876277.svg)](https://doi.org/10.5281/zenodo.4876277)
+
 Habitat is a tool that predicts a deep neural network's training iteration
 execution time on a given GPU. It currently supports PyTorch. To learn more
 about how Habitat works, please see our [research
 paper](https://arxiv.org/abs/2102.00527).
-## Installation
-You can install Habitat using the prebuilt wheel files. To install, download the whl files from the [releases page](https://github.com/CentML/habitat/releases) then run:
-```sh
-pip install habitat*.whl
-```
 
-## Usage example
-You can verify your Habitat installation by running the simple usage example. This example measures a single inference iteration of Resnet50 on the RTX2080Ti and extrapolates the runtime to the V100. 
-```py
-import habitat
-import torch
-import torchvision.models as models
 
-# Define model and sample inputs
-model = models.resnet50().cuda()
-image = torch.rand(8, 3, 224, 224).cuda()
+## Running From Source
 
-# Measure a single inference
-tracker = habitat.OperationTracker(device=habitat.Device.RTX2080Ti)
-with tracker.track():
-    out = model(image)
+Currently, the only way to run Habitat is to build it from source. You should
+use the Docker image provided in this repository to make sure that you can
+compile the code.
 
-trace = tracker.get_tracked_trace()
-print("Run time on source:", trace.run_time_ms)
+1. Download the [Habitat pre-trained
+   models](https://doi.org/10.5281/zenodo.4876277).
+2. Run `extract-models.sh` under `analyzer` to extract and install the
+   pre-trained models.
+3. Run `setup.sh` under `docker/` to build the Habitat container image.
+4. Run `start.sh` to start a new container. By default, your home directory
+   will be mounted inside the container under `~/home`.
+5. Once inside the container, run `install-dev.sh` under `analyzer/` to build
+   and install the Habitat package.
+6. In your scripts, `import habitat` to get access to Habitat. See
+   `experiments/run_experiment.py` for an example showing how to use Habitat.
 
-# Perform prediction to a single target device
-pred = trace.to_device(habitat.Device.V100)
-print("Predicted time on V100:", pred.run_time_ms)
-```
-## Development Environment Setup
-Habitat requires both the native component and the Python binding to function. For detailed installation instructions, see [INSTALL.md](INSTALL.md).
+**Note:** Habitat needs access to your GPU's performance counters, which
+requires special permissions if you are running with a recent driver (418.43 or
+later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when
+running Habitat, please follow the instructions
+[here](https://developer.nvidia.com/ERR_NVGPUCTRPERM)
+and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
 
-## Release process
-Run the `Build Habitat` GitHub action. This will build the wheel files for each platform.
 
-## Release history
-See [Releases](https://github.com/CentML/habitat/releases).
-## Meta
+## License
+
+The code in this repository is licensed under the Apache 2.0 license (see
+`LICENSE` and `NOTICE`), with the exception of the files mentioned below.
+
+This software contains source code provided by NVIDIA Corporation. These files
+are:
+
+- The code under `cpp/external/cupti_profilerhost_util/` (CUPTI sample code)
+- `cpp/src/cuda/cuda_occupancy.h`
+
+The code mentioned above is licensed under the [NVIDIA Software Development
+Kit End User License Agreement](https://docs.nvidia.com/cuda/eula/index.html).
+
+We include the implementations of several deep neural networks under
+`experiments/` for our evaluation. These implementations are copyrighted by
+their original authors and carry their original licenses. Please see the
+corresponding `README` files and license files inside the subdirectories for
+more information.
+
+
+## Research Paper
 
 Habitat began as a research project in the [EcoSystem
 Group](https://www.cs.toronto.edu/ecosystem) at the [University of
@@ -63,5 +79,3 @@ If you use Habitat in your research, please consider citing our paper:
   year = {2021},
 }
 ```
-## Contributing
- - Guidelines on how to contribute to the project
