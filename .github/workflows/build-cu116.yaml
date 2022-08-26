@@ -20,19 +20,19 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          ./build_habitat python3.7 py37
+          /home/builduser/build_habitat.sh python3.7 py37
 
       - name: Build Python3.8 wheel
         run: |
-          ./build_habitat python3.8 py38
+          /home/builduser/build_habitat.sh python3.8 py38
 
       - name: Build Python3.9 wheel
         run: |
-          ./build_habitat python3.9 py39
+          /home/builduser/build_habitat.sh python3.9 py39
 
       - name: Build Python3.10 wheel
         run: |
-          ./build_habitat python3.10 py310
+          /home/builduser/build_habitat.sh python3.10 py310
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v3
