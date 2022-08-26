@@ -28,7 +28,7 @@ function compile_habitat_cuda() {
   mkdir -p build
   pushd build
 
-  cmake -DCMAKE_BUILD_TYPE=Release ..
+  cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=$(which python) ..
   make -j habitat_cuda
 
   if [ ! -f $SO_NAME ]; then
