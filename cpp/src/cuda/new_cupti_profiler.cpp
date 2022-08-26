@@ -172,7 +172,7 @@ std::vector<habitat::cuda::KernelMetric> ProfilingSession::getMeasuredMetrics() 
 #if (CUDA_VERSION == 10010)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
-#elif (CUDA_VERSION == 10020) || (CUDA_VERSION == 11010) || (CUDA_VERSION == 11030) || (CUDA_VERSION >= 11060)
+#elif (CUDA_VERSION >= 10020)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
 #endif

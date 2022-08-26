@@ -179,11 +179,7 @@ class Predictor:
         pred_dest = self.conv2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv2d_pred.predict(arguments, operation.device.name)
 
-        p, a = pred_orig, operation.run_time_ms
-        print(f"actual: {a:.3f}, pred: {p:.3f}, err: {(p-a)/a:.3f}")
-
         return operation.run_time_ms * pred_dest / pred_orig
-        # return operation.run_time_ms
 
     def _linear_scale(self, operation, dest_device):
         merged = name_all_arguments(
@@ -220,7 +216,6 @@ class Predictor:
         pred_orig = self.linear_pred.predict(arguments, operation.device.name)
 
         return operation.run_time_ms * pred_dest / pred_orig
-        # return operation.run_time_ms
 
     def _bmm_scale(self, operation, dest_device):
         merged = name_all_arguments(
@@ -241,7 +236,6 @@ class Predictor:
         pred_orig = self.bmm_pred.predict(arguments, operation.device.name)
 
         return operation.run_time_ms * pred_dest / pred_orig
-        # return operation.run_time_ms
 
     def _lstm_scale(self, operation, dest_device):
         # This is hacky, but unfortunately the only way to differentiate these
@@ -287,4 +281,3 @@ class Predictor:
         pred_orig = self.lstm_pred.predict(arguments, operation.device.name)
 
         return operation.run_time_ms * pred_dest / pred_orig
-        # return operation.run_time_ms

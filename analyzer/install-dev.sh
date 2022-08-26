@@ -1,12 +1,11 @@
 #! /bin/bash
 
-# SO_NAME="habitat_cuda.cpython-36m-x86_64-linux-gnu.so"
-SO_NAME="habitat_cuda.cpython-39-x86_64-linux-gnu.so"
+MODULE_NAME=habitat_cuda
+SO_NAME=${MODULE_NAME}$(python3-config --extension-suffix)
 PACKAGE_NAME="habitat-predict"
 CUPTI_PATH="/usr/local/cuda/extras/CUPTI"
+
 export CUPTI_INCLUDE_DIR="/usr/local/cuda/extras/CUPTI/include"
-# export CUPTI_LIBRARY="/usr/local/cuda/extras/CUPTI/include"
-# CUPTI_PATH="/opt/cuda/extras/CUPTI"
 
 # Operate out of the script directory
 SCRIPT_PATH=$(cd $(dirname $0) && pwd -P)
