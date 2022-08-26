@@ -20,6 +20,7 @@ PYTHON_REQUIRES = ">=3.6"
 PACKAGE_DATA = {
     "habitat": [
         "data/hints.yml",
+        "data/devices.yml",
         "data/bmm/model.pth",
         "data/conv2d/model.pth",
         "data/kernels.sqlite",
