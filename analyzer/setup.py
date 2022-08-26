@@ -19,6 +19,7 @@ PYTHON_REQUIRES = ">=3.6"
 
 PACKAGE_DATA = {
     "habitat": [
+        "analysis/mlp/devices.csv",
         "data/hints.yml",
         "data/devices.yml",
         "data/bmm/model.pth",
