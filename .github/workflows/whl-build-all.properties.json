@@ -1,0 +1,4 @@
+{
+    "name": "whl-build-all",
+    "description": "Build all wheels"
+}
