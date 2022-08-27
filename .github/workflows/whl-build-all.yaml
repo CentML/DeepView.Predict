@@ -78,7 +78,7 @@ jobs:
           path: analyzer/dist/*.whl
 
   whl-build-cu113:
-    runs-on: [self-hosted, cu116]
+    runs-on: [self-hosted, cu113]
     steps:
       - name: Display host information
         run: |
