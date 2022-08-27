@@ -63,14 +63,14 @@ curl -O https://zenodo.org/record/4876277/files/habitat-models.tar.gz\?download\
 ./extract-models.sh
 ```
 
+**Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
+
 ### Building with Docker
 
 1. Run `setup.sh` under `docker/` to build the Habitat container image.
 1. Run `start.sh` to start a new container. By default, your home directory will be mounted inside the container under `~/home`.
 1. Once inside the container, run `install-dev.sh` under `analyzer/` to build and install the Habitat package.
 1. In your scripts, `import habitat` to get access to Habitat. See `experiments/run_experiment.py` for an example showing how to use Habitat.
-
-**Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
 
 ### Building without Docker
 
