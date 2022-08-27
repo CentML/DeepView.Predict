@@ -1,4 +1,0 @@
-{
-    "name": "build-cu116",
-    "description": "Build wheels for Habitat with CUDA 1.16"
-}
