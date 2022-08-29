@@ -67,50 +67,49 @@ curl -O https://zenodo.org/record/4876277/files/habitat-models.tar.gz\?download\
 
 ### Building with Docker
 
-1. Run `setup.sh` under `docker/` to build the Habitat container image.
-1. Run `start.sh` to start a new container. By default, your home directory will be mounted inside the container under `~/home`.
-1. Once inside the container, run `install-dev.sh` under `analyzer/` to build and install the Habitat package.
-1. In your scripts, `import habitat` to get access to Habitat. See `experiments/run_experiment.py` for an example showing how to use Habitat.
+Habitat has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch). 
+
+1. To build Habitat with Docker, first run the NGC container.
+```bash
+docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:22.08-py3
+```
+2. Inside the container, clone the repository then build and install the Habitat Python package:
+```bash
+git clone -r https://github.com/centml/habitat
+./habitat/analyzer/install-dev.sh
+```
+3. Download and extract the pretrained models by following the steps in the previous section. 
 
 ### Building without Docker
 
-```zsh
-# Sanity check, following command should return without errors
-nvidia-smi
+1. Install CUPTI
 
-# Install CUPTI
-# Find approriate installer for your version of CUDA from:
-# https://developer.nvidia.com/cuda-toolkit-archive
-# For example, the install binary for CUPTI for 11.7.1
-wget https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run
+CUPTI is a profiling interface required by Habitat. Select the correct version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and following the instructions to add NVIDIA's repository. Then, install CUPTI with:
+```bash
+sudo apt-get install cuda-cupti-11-x
+```  
+where `11-x` represents the version of CUDA you have installed.
 
-chmod +x cuda_11.7.1_515.65.01_linux.run
+2. Install `CMake` 3.17+. 
 
-# Make sure to only install the toolkit
-./cuda_11.7.1_515.65.01_linux.run
-
-# Sanity check after installation. Verify following directory exists:
-# On Ubuntu
-ls -la /usr/local/cuda/extras/CUPTI/samples
-
-# On other distributions
-ls -la /opt/cuda/extras/CUPTI/samples
-
-# Install cmake
+Follow these steps to download and install a precompiled version of CMake:
+```bash
 wget https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.sh
 chmod +x cmake-3.24.0-linux-x86_64.sh
 mkdir /opt/cmake
 sh cmake-3.24.0-linux-x86_64.sh --prefix=/opt/cmake --skip-license
 ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
-cmake --version
-
-# Build Habitat
-# In habitat/analyzer run
-./install-dev.sh
-
-# Verify successful build
-python3 -c "import habitat"
 ```
+You can verify the version of CMake you installed with the following:
+```bash
+cmake --version
+```
+3. Build and install the Habitat Python package:
+```bash
+git clone https://github.com/centml/habitat
+./habitat/analyzer/install-dev.sh
+```
+4. Download and extract the pretrained models by following the steps in the previous section. 
 
 <h2 id="getting-started">Usage example</h2>
 
