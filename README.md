@@ -75,7 +75,7 @@ docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:22.08-py3
 ```
 2. Inside the container, clone the repository then build and install the Habitat Python package:
 ```bash
-git clone -r https://github.com/centml/habitat
+git clone --recursive https://github.com/centml/habitat
 ./habitat/analyzer/install-dev.sh
 ```
 3. Download and extract the pretrained models by following the steps in the previous section. 
