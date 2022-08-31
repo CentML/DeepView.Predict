@@ -32,6 +32,24 @@ uint32_t KernelMetadata::threadBlockOccupancy(const DeviceProperties& device) co
   return threadBlockOccupancy(device, registers_per_thread_);
 }
 
+uint32_t guess_shared_memory_size(size_t mem_used) {
+  if (mem_used <= 48*1024) return 48*1024;
+  fprintf(stderr, "Guessing larger shared memory size. Used: %ld\n", mem_used);
+  if (mem_used <= 64*1024) return 64*1024;
+  if (mem_used <= 100*1024) return 100*1024;
+  return 0;
+}
+
+uint32_t guess_shared_memory_carveout_perc(size_t mem_used) {
+  if (mem_used <= 48*1024) return SHAREDMEM_CARVEOUT_DEFAULT;
+  if (mem_used <= 64*1024) return 64;
+  if (mem_used <= 96*1024) return 96;
+  if (mem_used <= 100*1024) return 100;
+
+  // otherwise we return invalid output
+  return 101;
+}
+
 uint32_t KernelMetadata::threadBlockOccupancy(
     const DeviceProperties& device, uint16_t registers_per_thread) const {
   cudaOccDeviceProp device_properties(occDeviceProps(device));
@@ -42,6 +60,22 @@ uint32_t KernelMetadata::threadBlockOccupancy(
   attributes.numRegs = registers_per_thread;
   attributes.sharedSizeBytes = static_shared_memory_;
 
+  size_t shmem_used = dynamic_shared_memory_ + static_shared_memory_, shmem_alloc = shmem_used;
+  size_t shared_memory_max = dynamic_shared_memory_;
+
+  // If we're using more than the default slice for shared memory, then
+  // update the carveoutConfig so that cudaOccMaxActiveBlocksPerMultiprocessor 
+  // return 0.
+  if (shmem_used > 48*1024) {
+      cudaOccAlignUpShmemSizeVoltaPlus(&shmem_alloc, &device_properties);
+      if (shmem_alloc > device_properties.sharedMemPerMultiprocessor) {
+        shared_memory_max = device_properties.sharedMemPerMultiprocessor;
+        shmem_alloc = device_properties.sharedMemPerMultiprocessor;
+      }
+      device_state.carveoutConfig = shmem_alloc * 100 / device_properties.sharedMemPerMultiprocessor;
+      device_properties.sharedMemPerBlock = std::max(device_properties.sharedMemPerBlock, shmem_alloc);
+  }
+
   int res;
   cudaOccResult result;
   if ((res = cudaOccMaxActiveBlocksPerMultiprocessor(
@@ -50,15 +84,17 @@ uint32_t KernelMetadata::threadBlockOccupancy(
         &attributes,
         &device_state,
         block_size_,
-        dynamic_shared_memory_)) != CUDA_OCC_SUCCESS) {
+        shared_memory_max)) != CUDA_OCC_SUCCESS) {
     fprintf(stderr, "for kernel: %s\n", this->name().c_str());
     fprintf(stderr, "KernelMetadata::threadBlockOccupancy: cudaOccMaxActiveBlocksPerMultiprocessor failed and returned %d.\n", res);
+
     return 0;
   }
 
   if (result.activeBlocksPerMultiprocessor == 0) {
       fprintf(stderr, "for kernel: %s\n", this->name().c_str());
       fprintf(stderr, "KernelMetadata::threadBlockOccupancy: succeeded, returning %d.\n", result.activeBlocksPerMultiprocessor);
+      fprintf(stderr, "static_shmem: %d, dynamic_shmem: %d\n", static_shared_memory_, dynamic_shared_memory_);
   }
   return result.activeBlocksPerMultiprocessor;
 }
