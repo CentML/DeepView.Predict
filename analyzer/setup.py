@@ -27,7 +27,7 @@ PACKAGE_DATA = {
         "data/kernels.sqlite",
         "data/linear/model.pth",
         "data/lstm/model.pth",
-        "*.so",
+        "habitat_cuda.cpython*.so",
     ],
 }
 
