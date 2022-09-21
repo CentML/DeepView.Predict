@@ -49,25 +49,18 @@ Prerequsites:
 - A system equiped with an Nvidia GPU with properly configured CUDA
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit-archive)
 - [cmake v3.17+](https://github.com/Kitware/CMake/releases)
-- [Habitat pre-trained models](https://zenodo.org/record/4876277)
+- [Git Large File Storage](https://git-lfs.github.com/) - which contains pre-trained habitat models
 
 ```zsh
 git clone https://github.com/CentML/habitat.git && cd habitat
 git submodule init && git submodule update
-
-# Download the pre-trained models
-cd analyzer
-curl -O https://zenodo.org/record/4876277/files/habitat-models.tar.gz\?download\=1
-
-# Install the models
-./extract-models.sh
 ```
 
 **Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
 
 ### Building with Docker
 
-Habitat has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch). 
+Habitat has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch).
 
 1. To build Habitat with Docker, first run the NGC container.
 ```bash
@@ -78,7 +71,6 @@ docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:22.08-py3
 git clone --recursive https://github.com/centml/habitat
 ./habitat/analyzer/install-dev.sh
 ```
-3. Download and extract the pretrained models by following the steps in the previous section. 
 
 ### Building without Docker
 
@@ -87,10 +79,10 @@ git clone --recursive https://github.com/centml/habitat
 CUPTI is a profiling interface required by Habitat. Select the correct version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and following the instructions to add NVIDIA's repository. Then, install CUPTI with:
 ```bash
 sudo apt-get install cuda-cupti-11-x
-```  
+```
 where `11-x` represents the version of CUDA you have installed.
 
-2. Install `CMake` 3.17+. 
+2. Install `CMake` 3.17+.
 
 Follow these steps to download and install a precompiled version of CMake:
 ```bash
@@ -109,7 +101,6 @@ cmake --version
 git clone https://github.com/centml/habitat
 ./habitat/analyzer/install-dev.sh
 ```
-4. Download and extract the pretrained models by following the steps in the previous section. 
 
 <h2 id="getting-started">Usage example</h2>
 
