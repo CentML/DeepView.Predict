@@ -49,7 +49,7 @@ Prerequsites:
 - A system equiped with an Nvidia GPU with properly configured CUDA
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit-archive)
 - [cmake v3.17+](https://github.com/Kitware/CMake/releases)
-  - Note that Habitat does not build properly with cmake v3.24.0 and v3.24.1 due to a bug in cmake
+  - Note that Habitat does not build properly with cmake v3.24.0 and v3.24.1 due to a bug in cmake. This bug is fixed by [this change](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs) which has been merged in v3.24.2
 - [Git Large File Storage](https://git-lfs.github.com/) - which contains pre-trained habitat models
 
 ```zsh
