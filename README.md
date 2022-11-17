@@ -49,6 +49,7 @@ Prerequsites:
 - A system equiped with an Nvidia GPU with properly configured CUDA
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit-archive)
 - [cmake v3.17+](https://github.com/Kitware/CMake/releases)
+  - Note that Habitat does not build properly with cmake v3.24.0 and v3.24.1 due to a bug in cmake
 - [Git Large File Storage](https://git-lfs.github.com/) - which contains pre-trained habitat models
 
 ```zsh
@@ -86,10 +87,10 @@ where `11-x` represents the version of CUDA you have installed.
 
 Follow these steps to download and install a precompiled version of CMake:
 ```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.sh
-chmod +x cmake-3.24.0-linux-x86_64.sh
+wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2-linux-x86_64.sh
+chmod +x cmake-3.24.2-linux-x86_64.sh
 mkdir /opt/cmake
-sh cmake-3.24.0-linux-x86_64.sh --prefix=/opt/cmake --skip-license
+sh cmake-3.24.2-linux-x86_64.sh --prefix=/opt/cmake --skip-license
 ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 ```
 You can verify the version of CMake you installed with the following:
