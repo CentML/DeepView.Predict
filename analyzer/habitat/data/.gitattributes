@@ -1,1 +1,2 @@
 **/*.pth filter=lfs diff=lfs merge=lfs -text
+**/kernels.sqlite filter=lfs diff=lfs merge=lfs -text
