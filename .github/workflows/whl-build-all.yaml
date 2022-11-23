@@ -49,7 +49,7 @@ jobs:
         
       - name: Upload to S3
         run: |
-          aws s3 cp analyzer/dist/*.whl s3://centml-habitat/wheels-cu102
+          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu102 --recursive --exclude "*" --include "*.whl"
 
   whl-build-cu111:
     runs-on: [self-hosted, cu111]
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp analyzer/dist/*.whl s3://centml-habitat/wheels-cu111
+          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu111 --recursive --exclude "*" --include "*.whl"
 
   whl-build-cu113:
     runs-on: [self-hosted, cu113]
@@ -143,7 +143,7 @@ jobs:
       
       - name: Upload to S3
         run: |
-          aws s3 cp analyzer/dist/*.whl s3://centml-habitat/wheels-cu113
+          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu113 --recursive --exclude "*" --include "*.whl"
 
   whl-build-cu116:
     runs-on: [self-hosted, cu116]
@@ -190,7 +190,7 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp analyzer/dist/*.whl s3://centml-habitat/wheels-cu116
+          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu116 --recursive --exclude "*" --include "*.whl"
 
   whl-build-cu117:
     runs-on: [self-hosted, cu117]
@@ -237,4 +237,4 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp analyzer/dist/*.whl s3://centml-habitat/wheels-cu117
+          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu117 --recursive --exclude "*" --include "*.whl"
