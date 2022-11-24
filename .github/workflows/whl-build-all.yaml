@@ -21,7 +21,7 @@ jobs:
 
       - name: Create index.html
         run: |
-          python /home/builduser/ create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
+          python /home/builduser/create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
 
       - name: Upload to S3
         run: |
@@ -76,7 +76,7 @@ jobs:
       
       - name: Create index.html
         run: |
-          file_list=(*.whl) && python3 create_index.py habitat_cu102 -f ${file_list[@]}
+          file_list=(*.whl) && python3 /home/builduser/create_index.py habitat_cu102 -f ${file_list[@]}
 
       - name: Upload index.html to S3
         run: |
@@ -131,7 +131,7 @@ jobs:
       
       - name: Create index.html
         run: |
-          file_list=(*.whl) && python3 create_index.py habitat_cu111 -f ${file_list[@]}
+          file_list=(*.whl) && python3 /home/builduser/create_index.py habitat_cu111 -f ${file_list[@]}
 
       - name: Upload index.html to S3
         run: |
@@ -186,7 +186,7 @@ jobs:
       
       - name: Create index.html
         run: |
-          file_list=(*.whl) && python3 create_index.py habitat_cu113 -f ${file_list[@]}
+          file_list=(*.whl) && python3 /home/builduser/create_index.py habitat_cu113 -f ${file_list[@]}
 
       - name: Upload index.html to S3
         run: |
@@ -241,7 +241,7 @@ jobs:
       
       - name: Create index.html
         run: |
-          file_list=(*.whl) && python3 create_index.py habitat_cu116 -f ${file_list[@]}
+          file_list=(*.whl) && python3 /home/builduser/create_index.py habitat_cu116 -f ${file_list[@]}
 
       - name: Upload index.html to S3
         run: |
@@ -296,7 +296,7 @@ jobs:
       
       - name: Create index.html
         run: |
-          file_list=(*.whl) && python3 create_index.py habitat_cu117 -f ${file_list[@]}
+          file_list=(*.whl) && python3 /home/builduser/create_index.py habitat_cu117 -f ${file_list[@]}
 
       - name: Upload index.html to S3
         run: |
