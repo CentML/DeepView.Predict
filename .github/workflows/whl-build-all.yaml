@@ -15,10 +15,6 @@ jobs:
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Create temporary directory
-        run: |
-          mkdir /home/index_dir && cd /home/index_dir
-
       - name: Create index.html
         run: |
           python /home/builduser/create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
@@ -63,12 +59,6 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels-cu102
-          path: analyzer/dist/*.whl
         
       - name: Upload wheels to S3
         run: |
@@ -119,12 +109,6 @@ jobs:
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
 
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels-cu111
-          path: analyzer/dist/*.whl
-
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu111/ --recursive --exclude "*" --include "*.whl"
@@ -173,13 +157,7 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels-cu113
-          path: analyzer/dist/*.whl
-      
+   
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu113/ --recursive --exclude "*" --include "*.whl"
@@ -283,12 +261,6 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels-cu117
-          path: analyzer/dist/*.whl
 
       - name: Upload wheels to S3
         run: |
