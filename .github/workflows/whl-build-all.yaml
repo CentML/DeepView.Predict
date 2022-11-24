@@ -17,7 +17,7 @@ jobs:
 
       - name: Create index.html
         run: |
-          python /home/builduser/create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
+          python3 /home/builduser/create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
 
       - name: Upload to S3
         run: |
