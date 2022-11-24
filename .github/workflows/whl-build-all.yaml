@@ -4,6 +4,29 @@ on:
   workflow_dispatch:
 
 jobs:
+  create-habitat-index-html:
+    needs: [whl-build-cu102, whl-build-cu111, whl-build-cu113, whl-build-cu116, whl-build-cu117]
+    runs-on: [self-hosted]
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Create temporary directory
+        run |
+          mkdir /home/index_dir && cd /home/index_dir
+
+      - name: Create index.html
+        run: |
+          python /home/builduser/ create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/
+
   whl-build-cu102:
     runs-on: [self-hosted, cu102]
     steps:
@@ -47,9 +70,17 @@ jobs:
           name: wheels-cu102
           path: analyzer/dist/*.whl
         
-      - name: Upload to S3
+      - name: Upload wheels to S3
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu102 --recursive --exclude "*" --include "*.whl"
+          aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu102 --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(*.whl) && python3 create_index.py habitat_cu102 -f ${file_list[@]}
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/wheels-cu102
 
   whl-build-cu111:
     runs-on: [self-hosted, cu111]
@@ -94,9 +125,17 @@ jobs:
           name: wheels-cu111
           path: analyzer/dist/*.whl
 
-      - name: Upload to S3
+      - name: Upload wheels to S3
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu111 --recursive --exclude "*" --include "*.whl"
+          aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu111 --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(*.whl) && python3 create_index.py habitat_cu111 -f ${file_list[@]}
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/wheels-cu111
 
   whl-build-cu113:
     runs-on: [self-hosted, cu113]
@@ -141,9 +180,17 @@ jobs:
           name: wheels-cu113
           path: analyzer/dist/*.whl
       
-      - name: Upload to S3
+      - name: Upload wheels to S3
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu113 --recursive --exclude "*" --include "*.whl"
+          aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu113 --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(*.whl) && python3 create_index.py habitat_cu113 -f ${file_list[@]}
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/wheels-cu113
 
   whl-build-cu116:
     runs-on: [self-hosted, cu116]
@@ -188,9 +235,17 @@ jobs:
           name: wheels-cu116
           path: analyzer/dist/*.whl
 
-      - name: Upload to S3
+      - name: Upload wheels to S3
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu116 --recursive --exclude "*" --include "*.whl"
+          aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu116 --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(*.whl) && python3 create_index.py habitat_cu116 -f ${file_list[@]}
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/wheels-cu116
 
   whl-build-cu117:
     runs-on: [self-hosted, cu117]
@@ -235,6 +290,14 @@ jobs:
           name: wheels-cu117
           path: analyzer/dist/*.whl
 
-      - name: Upload to S3
+      - name: Upload wheels to S3
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-habitat/wheels-cu117 --recursive --exclude "*" --include "*.whl"
+          aws s3 cp analyzer/dist/ s3://centml-habitat/habitat/wheels-cu117 --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(*.whl) && python3 create_index.py habitat_cu117 -f ${file_list[@]}
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-habitat/habitat/wheels-cu117
