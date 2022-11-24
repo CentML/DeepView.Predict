@@ -16,7 +16,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
       - name: Create temporary directory
-        run |
+        run: |
           mkdir /home/index_dir && cd /home/index_dir
 
       - name: Create index.html
