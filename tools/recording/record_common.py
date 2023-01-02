@@ -1,10 +1,15 @@
 import logging
+import gc
 import random
 import signal
+
+import torch
 
 import habitat
 from habitat.profiling.operation import OperationProfiler
 from database import Recorder
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +116,9 @@ class Measurer:
             args.rank + 1,
             args.world_size,
         )
+
+        last_count = self._recorder.get_num_recordings()
+
         try:
             for idx, config_id in enumerate(to_record):
                 if idx < num_configs_measured:
@@ -126,6 +134,9 @@ class Measurer:
 
                 if idx % 100 == 0:
                     self._recorder.commit()
+                    cur_count = self._recorder.get_num_recordings()
+                    logger.info(f"commit. num_recordings: {cur_count}, new: {cur_count-last_count}")
+                    last_count = cur_count
 
                 if self._shutdown_early:
                     break
@@ -144,10 +155,18 @@ class Measurer:
 
         except RuntimeError as e:
             msg = str(e)
+
+            if "out of memory" in msg:
+                allocated = torch.cuda.memory_allocated()
+                torch.cuda.empty_cache()
+                gc.collect()
+                logger.info(f"Cleared memory: {allocated} -> {torch.cuda.memory_allocated()}")
+
             if ("out of memory" not in msg and
                     "cuDNN error" not in msg and
                     "Calculated padded" not in msg):
                 logger.exception('Unexpected error during measurement.')
+                # logger.info("error: " + msg)
             return None, None
 
     def _record(self, config, forward_result, backward_result):
