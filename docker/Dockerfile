@@ -26,9 +26,9 @@ RUN pip3 install pillow>=7.2.0 pandas>=1.1.2 tqdm>=4.49.0
 #  make install
 
 #iInstall latest cmake
-ADD https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.sh /cmake-3.24.0-linux-x86_64.sh
+ADD https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2-linux-x86_64.sh /cmake-3.24.2-linux-x86_64.sh
 RUN mkdir /opt/cmake
-RUN sh /cmake-3.24.0-linux-x86_64.sh --prefix=/opt/cmake --skip-license
+RUN sh /cmake-3.24.2-linux-x86_64.sh --prefix=/opt/cmake --skip-license
 RUN ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 RUN cmake --version
 

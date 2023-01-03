@@ -23,7 +23,7 @@ Habitat is a tool that predicts a deep neural network's training iteration execu
 To run Habitat, you need:
 - [Python 3.6+](https://www.python.org/)
 - [Pytorch 1.1.0+](https://pytorch.org/)
-- A system equiped with an Nvidia GPU.
+- A system equiped with an Nvidia GPU with properly configured CUDA
 
 Currently, we have predictors for the following Nvidia GPUs:
 
@@ -37,34 +37,91 @@ Currently, we have predictors for the following Nvidia GPUs:
 | T4         | Turing      | 16 GB  | GDDR6     | 40  |
 | 3090       | Ampere      | 24 GB  | GDDR6X    | 82  |
 
-**NOTE:** Not implmented yet
-```zsh
-python3 -m pip install habitat
-python3 -c "import habitat"
+<h2 id="building-locally">Building locally</h2>
+
+### 1. Install CUPTI
+
+- CUPTI is a profiling interface required by Habitat. Select your version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and following the instructions to add NVIDIA's repository. Then, install CUPTI with:
+    
+    ```bash
+    sudo apt-get install cuda-cupti-xx-x
+    ```
+    
+    where `xx-x` represents the version of CUDA you have installed.
+
+### 2. Install Habitat
+
+You can install via pip if you have the following versions of CUDA and Python
+
+- CUDA: 10.2, 11.1, 11.3, 11.6, 11.7
+- Python: 3.7 - 3.10
+
+### Installing from pip
+
+Install via pip with the following command
+
+```bash
+pip install https://centml.ai/habitat/wheels/habitat_predict-1.0.0-20221123+cuYYY-pyZZ-none-any.whl
 ```
 
-<h2 id="build">Building from source</h2>
+where YYY is your CUDA version and ZZ is your Python version. 
 
-Prerequsites:
-- A system equiped with an Nvidia GPU with properly configured CUDA
-- [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit-archive)
-- [cmake v3.17+](https://github.com/Kitware/CMake/releases)
-- [Git Large File Storage](https://git-lfs.github.com/) - which contains pre-trained habitat models
+For example, if you are using CUDA 10.2 and Python 3.7): 
 
-```zsh
-git clone https://github.com/CentML/habitat.git && cd habitat
-git submodule init && git submodule update
+```bash
+pip install https://centml.ai/habitat/wheels/habitat_predict-1.0.0-20221123+cu102-py37-none-any.whl
 ```
 
-**Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
+If you do not find matching version of CUDA and Python above, you need to build Habitat from source with the following instructions
 
-### Building with Docker
+### Installing from source
+
+1. Install CMake 3.17+.
+    - Note that CMake 3.24.0 and 3.24.1 has a bug that breaks Habitat as it is not able to find the CUPTI directory and you should not use those versions
+        - [https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs)
+    - Run the following commands to download and install a precompiled version of CMake 3.24.2
+        
+        ```bash
+        wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2-linux-x86_64.sh
+        chmod +x cmake-3.24.2-linux-x86_64.sh
+        mkdir /opt/cmake
+        sh cmake-3.24.2-linux-x86_64.sh --prefix=/opt/cmake --skip-license
+        ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+        ```
+        
+    - You can verify the version of CMake you installed with the following command
+        
+        ```bash
+        cmake --version
+        ```
+        
+2. Install [Git Large File Storage](https://git-lfs.github.com/)
+3. Clone the Habitat package
+    
+    ```bash
+    git clone https://github.com/centml/habitat
+    ```
+    
+4. Get the pre-trained models used by Habitat
+    
+    ```bash
+    git submodule init && git submodule update
+    git lfs pull
+    ```
+    
+5. Finally build habitat with the following command
+    
+    ```bash
+    ./analyzer/install-dev.sh
+    ```
+
+<h2 id="building-with-docker">Building with Docker</h2>
 
 Habitat has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch).
 
-1. To build Habitat with Docker, first run the NGC container.
+1. To build Habitat with Docker, first run the NGC container where
 ```bash
-docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:22.08-py3
+docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:XX.XX-py3
 ```
 2. Inside the container, clone the repository then build and install the Habitat Python package:
 ```bash
@@ -72,37 +129,9 @@ git clone --recursive https://github.com/centml/habitat
 ./habitat/analyzer/install-dev.sh
 ```
 
-### Building without Docker
+**Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
 
-1. Install CUPTI
-
-CUPTI is a profiling interface required by Habitat. Select the correct version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and following the instructions to add NVIDIA's repository. Then, install CUPTI with:
-```bash
-sudo apt-get install cuda-cupti-11-x
-```
-where `11-x` represents the version of CUDA you have installed.
-
-2. Install `CMake` 3.17+.
-
-Follow these steps to download and install a precompiled version of CMake:
-```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.sh
-chmod +x cmake-3.24.0-linux-x86_64.sh
-mkdir /opt/cmake
-sh cmake-3.24.0-linux-x86_64.sh --prefix=/opt/cmake --skip-license
-ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
-```
-You can verify the version of CMake you installed with the following:
-```bash
-cmake --version
-```
-3. Build and install the Habitat Python package:
-```bash
-git clone https://github.com/centml/habitat
-./habitat/analyzer/install-dev.sh
-```
-
-<h2 id="getting-started">Usage example</h2>
+<h2 id="usage-example">Usage example</h2>
 
 You can verify your Habitat installation by running the simple usage example:
 ```python
@@ -128,15 +157,11 @@ pred = trace.to_device(habitat.Device.V100)
 print("Predicted time on V100:", pred.run_time_ms)
 ```
 
-```zsh
+```bash
 python3 example.py
 ```
 
 See [experiments/run_experiment.py](https://github.com/CentML/habitat/tree/main/experiments) for other examples of Habitat usage.
-
-<h2 id="dev-setup">Development Environment Setup</h2>
-
-<h2 id="release-process">Release Process</h2>
 
 <h2 id="release-history">Release History</h2>
 
