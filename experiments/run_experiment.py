@@ -15,14 +15,16 @@ from habitat.profiling.run_time import RunTimeProfiler
 # Experiment configuration
 
 DEVICES = [
-    habitat.Device.P4000,
-    habitat.Device.P100,
-    habitat.Device.V100,
-    habitat.Device.A100,
-    habitat.Device.T4,
-    habitat.Device.RTX2070,
-    habitat.Device.RTX2080Ti,
+    # habitat.Device.P4000,
+    # habitat.Device.P100,
+    # habitat.Device.V100,
+    # habitat.Device.A100,
+    # habitat.Device.T4,
+    # habitat.Device.RTX2070,
+    # habitat.Device.RTX2080Ti,
 
+    habitat.Device.RTX2080Ti,
+    habitat.Device.RTX3090,
     habitat.Device.A40,
     habitat.Device.A4000,
     habitat.Device.RTX4000,
@@ -241,10 +243,10 @@ def main():
     )
 
     run_dcgan_experiments(context)
-    # run_inception_experiments(context)
-    # run_resnet50_experiments(context)
-    # run_gnmt_experiments(context)
-    # run_transformer_experiments(context)
+    run_inception_experiments(context)
+    run_resnet50_experiments(context)
+    run_gnmt_experiments(context)
+    run_transformer_experiments(context)
 
 
 if __name__ == '__main__':
