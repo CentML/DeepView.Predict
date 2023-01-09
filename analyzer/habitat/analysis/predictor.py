@@ -83,7 +83,7 @@ class Predictor:
             "bmm", 8, 1024,
             path_to_data("bmm/model.pth"),
         )
-        self.convtranspose_pred = RuntimePredictor(
+        self.conv_transpose2d_pred = RuntimePredictor(
             "conv_transpose2d", 8, 1024,
             path_to_data("convtranspose2d/model.pth"),
         )
@@ -108,7 +108,7 @@ class Predictor:
         elif operation.name == 'bmm':
             return self._special_scale(operation, dest_device, self._bmm_scale)
         elif operation.name == 'conv_transpose2d':
-            return self._special_scale(operation, dest_device, self._convtranspose2d_scale)
+            return self._special_scale(operation, dest_device, self._conv_transpose2d_scale)
 
         logger.warn('Unhandled special operation: %s', operation.name)
         return PredictedOperation(
@@ -191,7 +191,7 @@ class Predictor:
 
         return operation.run_time_ms * pred_dest / pred_orig
 
-    def _convtranspose2d_scale(self, operation, dest_device):
+    def _conv_transpose2d_scale(self, operation, dest_device):
         # 1. Merge arguments (give them all names)
         merged = name_all_arguments(
             CONVTRANSPOSE2D_PARAMS,
@@ -218,10 +218,10 @@ class Predictor:
         )
 
         # 3. Call model to make prediction
-        arguments = [arguments[x] for x in self.convtranspose2d_pred.model.features]
+        arguments = [arguments[x] for x in self.conv_transpose2d_pred.model.features]
 
-        pred_dest = self.convtranspose2d_pred.predict(arguments, dest_device.name)
-        pred_orig = self.convtranspose2d_pred.predict(arguments, operation.device.name)
+        pred_dest = self.conv_transpose2d_pred.predict(arguments, dest_device.name)
+        pred_orig = self.conv_transpose2d_pred.predict(arguments, operation.device.name)
 
         return operation.run_time_ms * pred_dest / pred_orig
 
