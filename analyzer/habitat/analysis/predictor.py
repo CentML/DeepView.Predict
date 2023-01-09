@@ -84,7 +84,7 @@ class Predictor:
             path_to_data("bmm/model.pth"),
         )
         self.convtranspose_pred = RuntimePredictor(
-            "convtranspose2d", 8, 1024,
+            "conv_transpose2d", 8, 1024,
             path_to_data("convtranspose2d/model.pth"),
         )
 
@@ -107,7 +107,7 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._linear_scale)
         elif operation.name == 'bmm':
             return self._special_scale(operation, dest_device, self._bmm_scale)
-        elif operation.name == 'convtranspose2d':
+        elif operation.name == 'conv_transpose2d':
             return self._special_scale(operation, dest_device, self._convtranspose2d_scale)
 
         logger.warn('Unhandled special operation: %s', operation.name)
