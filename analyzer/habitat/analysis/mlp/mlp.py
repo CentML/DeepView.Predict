@@ -138,7 +138,7 @@ class RuntimePredictor:
             "linear": LinearMLP,
             "lstm": LSTMMLP,
             "conv2d": Conv2DMLP,
-            "convtranspose2d": ConvTranspose2DMLP,
+            "conv_transpose2d": ConvTranspose2DMLP,
             "bmm": BMMMLP,
         }[self.model_name](layers, layer_size)
 
