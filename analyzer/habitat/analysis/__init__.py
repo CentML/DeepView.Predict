@@ -5,6 +5,7 @@ Device = _Device()
 SPECIAL_OPERATIONS = {
     # Convolution
     'conv2d',
+    'conv_transpose2d',
 
     # Matrix multiply operations
     'linear',
