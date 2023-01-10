@@ -25,6 +25,7 @@ DEVICES = [
 
     habitat.Device.RTX2080Ti,
     habitat.Device.RTX3090,
+    habitat.Device.A100,
     habitat.Device.A40,
     habitat.Device.A4000,
     habitat.Device.RTX4000,
@@ -246,7 +247,7 @@ def main():
     run_inception_experiments(context)
     run_resnet50_experiments(context)
     run_gnmt_experiments(context)
-    run_transformer_experiments(context)
+    # run_transformer_experiments(context)
 
 
 if __name__ == '__main__':
