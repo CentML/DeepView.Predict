@@ -85,7 +85,7 @@ class Predictor:
         )
         self.conv_transpose2d_pred = RuntimePredictor(
             "conv_transpose2d", 8, 1024,
-            path_to_data("convtranspose2d/model.pth"),
+            path_to_data("conv_transpose2d/model.pth"),
         )
 
 
