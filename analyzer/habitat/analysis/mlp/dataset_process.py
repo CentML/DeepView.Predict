@@ -35,20 +35,14 @@ def get_dataset(path, features, device_features=None):
         print("Loaded file %s (%d entries)" % (f, len(df.index)))
 
         if device_name not in devices:
-            devices[device_name] = df
-        else:
-            devices[device_name] = devices[device_name].append(df)
+            devices[device_name] = []
+        devices[device_name].append(df)
 
     for device in devices.keys():
+        devices[device] = pd.concat(devices[device])
         print("Device %s contains %d entries" % (device, len(devices[device].index)))
 
     print()
-
-    print("Merging")
-    df_merged = functools.reduce(
-        lambda df1, df2: pd.merge(df1, df2, on=features),
-        devices.values()
-    )
 
     print("Generating dataset")
     # generate vectorized dataset (one entry for each device with device params)
@@ -56,8 +50,8 @@ def get_dataset(path, features, device_features=None):
 
     x, y = [], []
     for device in devices.keys():
-        df_merged_device = df_merged[features + [device, ]]
-        for row in tqdm(df_merged_device.iterrows(), leave=False, desc=device, total=len(df_merged_device.index)):
+        df_device = devices[device]
+        for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
             row = row[1]
 
             x.append(list(row[:-1]) + device_params[device])

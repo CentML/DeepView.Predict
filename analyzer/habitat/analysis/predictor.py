@@ -19,6 +19,10 @@ CONV2D_PARAMS = [
     'input', 'weight', 'bias', 'stride', 'padding', 'dilation', 'groups',
 ]
 
+CONVTRANSPOSE2D_PARAMS = [
+    'input', 'weight', 'bias', 'stride', 'padding', 'dilation', 'groups',
+]
+
 LINEAR_PARAMS = ['input', 'weight', 'bias']
 
 BMM_PARAMS = ['input', 'mat2', 'out']
@@ -79,6 +83,10 @@ class Predictor:
             "bmm", 8, 1024,
             path_to_data("bmm/model.pth"),
         )
+        self.conv_transpose2d_pred = RuntimePredictor(
+            "conv_transpose2d", 8, 1024,
+            path_to_data("conv_transpose2d/model.pth"),
+        )
 
 
     def predict_operation(self, operation, dest_device):
@@ -99,6 +107,8 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._linear_scale)
         elif operation.name == 'bmm':
             return self._special_scale(operation, dest_device, self._bmm_scale)
+        elif operation.name == 'conv_transpose2d':
+            return self._special_scale(operation, dest_device, self._conv_transpose2d_scale)
 
         logger.warn('Unhandled special operation: %s', operation.name)
         return PredictedOperation(
@@ -178,6 +188,40 @@ class Predictor:
 
         pred_dest = self.conv2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv2d_pred.predict(arguments, operation.device.name)
+
+        return operation.run_time_ms * pred_dest / pred_orig
+
+    def _conv_transpose2d_scale(self, operation, dest_device):
+        # 1. Merge arguments (give them all names)
+        merged = name_all_arguments(
+            CONVTRANSPOSE2D_PARAMS,
+            operation.arguments.args,
+            operation.arguments.kwargs,
+        )
+
+        # 2. Construct arguments that the predictor expects
+        arguments = dict(
+            batch=merged['input'][0],
+            image_size=merged['input'][2],
+            in_channels=merged['input'][1],
+            out_channels=merged['weight'][0],
+            kernel_size=merged['weight'][2],
+            stride=(
+                merged['stride'][0]
+                if isinstance(merged['stride'], tuple) else merged['stride']
+            ),
+            padding=(
+                merged['padding'][0]
+                if isinstance(merged['padding'], tuple) else merged['padding']
+            ),
+            bias=(1 if merged['bias'] is not None else 0),
+        )
+
+        # 3. Call model to make prediction
+        arguments = [arguments[x] for x in self.conv_transpose2d_pred.model.features]
+
+        pred_dest = self.conv_transpose2d_pred.predict(arguments, dest_device.name)
+        pred_orig = self.conv_transpose2d_pred.predict(arguments, operation.device.name)
 
         return operation.run_time_ms * pred_dest / pred_orig
 

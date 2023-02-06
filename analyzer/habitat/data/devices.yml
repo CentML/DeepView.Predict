@@ -161,4 +161,51 @@ RTX3090:
   base_clock_mhz: 1395
   peak_gflops_per_second: 19346
 
+A40:
+  compute_major: 8
+  compute_minor: 6
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 1536
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 102400
+  num_sms: 84
+  shared_mem_per_block_optin: 101376
+  mem_bandwidth_gb: 614
+  base_clock_mhz: 1305
+  peak_gflops_per_second: 18680
+
+A4000:
+  compute_major: 8
+  compute_minor: 6
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 1536
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 102400
+  num_sms: 48
+  shared_mem_per_block_optin: 101376
+  mem_bandwidth_gb: 378
+  base_clock_mhz: 735
+  peak_gflops_per_second: 10499
+
+RTX4000:
+  compute_major: 7
+  compute_minor: 5
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 1024
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 65536
+  num_sms: 36
+  shared_mem_per_block_optin: 65536
+  mem_bandwidth_gb: 364
+  base_clock_mhz: 1005
+  peak_gflops_per_second: 4245
 

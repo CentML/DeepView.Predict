@@ -89,6 +89,25 @@ class Conv2DMLP(nn.Module):
 
         return x
 
+class ConvTranspose2DMLP(nn.Module):
+    def __init__(self, layers, layer_size):
+        super().__init__()
+
+        self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
+                         'padding']
+
+        # properly manage device parameters
+        self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
+        self.mlp = MLPBase(layers, layer_size)
+        self.fc2 = nn.Linear(layer_size, 1)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.mlp(x)
+        x = self.fc2(x)
+
+        return x
 
 class BMMMLP(nn.Module):
     def __init__(self, layers, layer_size):
@@ -119,6 +138,7 @@ class RuntimePredictor:
             "linear": LinearMLP,
             "lstm": LSTMMLP,
             "conv2d": Conv2DMLP,
+            "conv_transpose2d": ConvTranspose2DMLP,
             "bmm": BMMMLP,
         }[self.model_name](layers, layer_size)
 
