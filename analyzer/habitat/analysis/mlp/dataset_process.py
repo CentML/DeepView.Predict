@@ -50,7 +50,6 @@ def get_dataset(path, features, device_features=None):
 
     x, y = [], []
     for device in devices.keys():
-        # df_merged_device = df_merged[features + [device, ]]
         df_device = devices[device]
         for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
             row = row[1]
