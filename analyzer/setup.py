@@ -23,6 +23,7 @@ PACKAGE_DATA = {
         "data/hints.yml",
         "data/devices.yml",
         "data/bmm/model.pth",
+        "data/conv_transpose2d/model.pth",
         "data/conv2d/model.pth",
         "data/kernels.sqlite",
         "data/linear/model.pth",
