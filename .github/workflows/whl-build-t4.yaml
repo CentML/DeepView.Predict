@@ -34,7 +34,7 @@ jobs:
           v100: true
   t4-build:
     name: Run the job on NVIDIA T4
-    runs-on: [self-hosted, centml-t4, centml-a10g, centml-v100]
+    runs-on: [centml-t4]
     needs: start-runner
     steps:
       - name: Configure AWS Credentials
