@@ -30,8 +30,8 @@ jobs:
           mode: start
           github-token: ${{ secrets.CENTML_PAT }}
           t4: true
-          a10g: true
-          v100: true
+          a10g: false
+          v100: false
   t4-build:
     name: Run the job on NVIDIA T4
     runs-on: [centml-t4]
@@ -107,5 +107,5 @@ jobs:
           mode: stop
           github-token: ${{ secrets.CENTML_PAT }}
           t4: true # required to match the list above - otherwise the runners will not stop
-          a10g: true # required to match the list above - otherwise the runners will not stop
-          v100: true
+          a10g: false # required to match the list above - otherwise the runners will not stop
+          v100: false
