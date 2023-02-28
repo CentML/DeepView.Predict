@@ -30,11 +30,11 @@ jobs:
           mode: start
           github-token: ${{ secrets.CENTML_PAT }}
           t4: true
-          a10g: false
-          v100: false
+          a10g: true
+          v100: true
   t4-build:
     name: Run the job on NVIDIA T4
-    runs-on: [centml-t4]
+    runs-on: [self-hosted, centml-t4, centml-a10g, centml-v100]
     needs: start-runner
     steps:
       - name: Configure AWS Credentials
@@ -107,5 +107,5 @@ jobs:
           mode: stop
           github-token: ${{ secrets.CENTML_PAT }}
           t4: true # required to match the list above - otherwise the runners will not stop
-          a10g: false # required to match the list above - otherwise the runners will not stop
-          v100: false
+          a10g: true # required to match the list above - otherwise the runners will not stop
+          v100: true
