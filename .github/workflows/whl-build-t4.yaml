@@ -35,7 +35,7 @@ jobs:
   t4-build:
     name: Run the job on NVIDIA T4
     runs-on:
-      group: CentML/t4
+      group: organization/t4
       labels: [self-hosted]
     needs: start-runner
     steps:
