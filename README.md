@@ -1,7 +1,8 @@
 # Habitat
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-green?style=flat)](https://github.com/CentML/habitat/blob/main/LICENSE)
-
+[![Maintainability](https://api.codeclimate.com/v1/badges/fbb68badd0c0599f1843/maintainability)](https://codeclimate.com/github/CentML/DeepView.Predict/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/fbb68badd0c0599f1843/test_coverage)](https://codeclimate.com/github/CentML/DeepView.Predict/test_coverage)
 
 
 A Runtime-Based Computational Performance Predictor for Deep Neural Network Training
