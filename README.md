@@ -1,4 +1,4 @@
-# Habitat
+# DeepView.Predict
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-green?style=flat)](https://github.com/CentML/habitat/blob/main/LICENSE)
 [![Maintainability](https://api.codeclimate.com/v1/badges/fbb68badd0c0599f1843/maintainability)](https://codeclimate.com/github/CentML/DeepView.Predict/maintainability)
@@ -17,11 +17,11 @@ A Runtime-Based Computational Performance Predictor for Deep Neural Network Trai
 - [Research paper](#paper)
 - [Contributing](#contributing)
 
-Habitat is a tool that predicts a deep neural network's training iteration execution time on a given GPU. It currently supports PyTorch. To learn more about how Habitat works, please see our [research paper](https://arxiv.org/abs/2102.00527).
+DeepView.Predict is a tool that predicts a deep neural network's training iteration execution time on a given GPU. It currently supports PyTorch. To learn more about how DeepView.Predict works, please see our [research paper](https://arxiv.org/abs/2102.00527).
 
 <h2 id="installation">Installation</h2>
 
-To run Habitat, you need:
+To run DeepView.Predict, you need:
 - [Python 3.6+](https://www.python.org/)
 - [Pytorch 1.1.0+](https://pytorch.org/)
 - A system equiped with an Nvidia GPU with properly configured CUDA
@@ -37,12 +37,17 @@ Currently, we have predictors for the following Nvidia GPUs:
 | 2080Ti     | Turing      | 11 GB  | GDDR6     | 68  |
 | T4         | Turing      | 16 GB  | GDDR6     | 40  |
 | 3090       | Ampere      | 24 GB  | GDDR6X    | 82  |
+| A100       | Ampere      | 40 GB  | HBM2      | 108 |
+| A40        | Ampere      | 48 GB  | GDDR6     | 84  |
+| A4000      | Ampere      | 16 GB  | GDDR6     | 48  |
+| 4000       | Turing      | 8 GB   | GDDR6     | 36  |
+
 
 <h2 id="building-locally">Building locally</h2>
 
 ### 1. Install CUPTI
 
-CUPTI is a profiling interface required by Habitat. Select your version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and follow the instructions to add NVIDIA's repository. Then, install CUPTI with:
+CUPTI is a profiling interface required by DeepView.Predict. Select your version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and follow the instructions to add NVIDIA's repository. Then, install CUPTI with:
   ```bash
   sudo apt-get install cuda-cupti-xx-x
   ```
@@ -54,7 +59,7 @@ Alternatively, if you do not have root access on your machine, you can use `cond
   ```
 After installing CUPTI, add `$CONDA_HOME/extras/CUPTI/lib64/` to `LD_LIBRARY_PATH` to ensure the library is linked.
 
-### 2. Install Habitat
+### 2. Install DeepView.Predict
 
 You can install via pip if you have the following versions of CUDA and Python
 
@@ -77,12 +82,12 @@ For example, if you are using CUDA 10.2 and Python 3.7):
 pip install http://centml-releases.s3-website.us-east-2.amazonaws.com/habitat/wheels/habitat_predict-1.0.0-20221123+cu102-py37-none-any.whl
 ```
 
-If you do not find matching version of CUDA and Python above, you need to build Habitat from source with the following instructions
+If you do not find matching version of CUDA and Python above, you need to build DeepView.Predict from source with the following instructions
 
 ### Installing from source
 
 1. Install CMake 3.17+.
-    - Note that CMake 3.24.0 and 3.24.1 has a bug that breaks Habitat as it is not able to find the CUPTI directory and you should not use those versions
+    - Note that CMake 3.24.0 and 3.24.1 has a bug that breaks DeepView.Predict as it is not able to find the CUPTI directory and you should not use those versions
         - [https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs)
     - Run the following commands to download and install a precompiled version of CMake 3.24.2
         
@@ -101,20 +106,20 @@ If you do not find matching version of CUDA and Python above, you need to build 
         ```
         
 2. Install [Git Large File Storage](https://git-lfs.github.com/)
-3. Clone the Habitat package
+3. Clone the DeepView.Predict package
     
     ```bash
-    git clone https://github.com/centml/habitat
+    git clone https://github.com/CentML/DeepView.Predict
     ```
     
-4. Get the pre-trained models used by Habitat
+4. Get the pre-trained models used by DeepView.Predict
     
     ```bash
     git submodule init && git submodule update
     git lfs pull
     ```
     
-5. Finally build habitat with the following command
+5. Finally build DeepView.Predict with the following command
     
     ```bash
     ./analyzer/install-dev.sh
@@ -122,23 +127,23 @@ If you do not find matching version of CUDA and Python above, you need to build 
 
 <h2 id="building-with-docker">Building with Docker</h2>
 
-Habitat has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch).
+DeepView.Predict has been tested to work on the latest version of [NVIDIA NGC PyTorch containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch).
 
-1. To build Habitat with Docker, first run the NGC container where
+1. To build DeepView.Predict with Docker, first run the NGC container where
 ```bash
 docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:XX.XX-py3
 ```
-2. Inside the container, clone the repository then build and install the Habitat Python package:
+2. Inside the container, clone the repository then build and install DeepView.Predict Python package:
 ```bash
-git clone --recursive https://github.com/centml/habitat
+git clone --recursive https://github.com/CentML/DeepView.Predict
 ./habitat/analyzer/install-dev.sh
 ```
 
-**Note:** Habitat needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running Habitat, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
+**Note:** DeepView.Predict needs access to your GPU's performance counters, which requires special permissions if you are running with a recent driver (418.43 or later). If you encounter a `CUPTI_ERROR_INSUFFICIENT_PRIVILEGES` error when running DeepView.Predict, please follow the instructions [here](https://developer.nvidia.com/ERR_NVGPUCTRPERM) and in [issue #5](https://github.com/geoffxy/habitat/issues/5).
 
 <h2 id="usage-example">Usage example</h2>
 
-You can verify your Habitat installation by running the simple usage example:
+You can verify your DeepView.Predict installation by running the simple usage example:
 ```python
 # example.py
 import habitat
@@ -166,7 +171,7 @@ print("Predicted time on V100:", pred.run_time_ms)
 python3 example.py
 ```
 
-See [experiments/run_experiment.py](https://github.com/CentML/habitat/tree/main/experiments) for other examples of Habitat usage.
+See [experiments/run_experiment.py](https://github.com/CentML/DeepView.Predict/tree/main/experiments) for other examples of Habitat usage.
 
 <h2 id="release-history">Release History</h2>
 
@@ -195,11 +200,11 @@ more information.
 
 <h2 id="paper">Research Paper</h2>
 
-Habitat began as a research project in the [EcoSystem Group](https://www.cs.toronto.edu/ecosystem) at the [University of Toronto](https://cs.toronto.edu). The accompanying research paper appeared in the proceedings of [USENIX
+DeepView.Profile began as a research project in the [EcoSystem Group](https://www.cs.toronto.edu/ecosystem) at the [University of Toronto](https://cs.toronto.edu). The accompanying research paper appeared in the proceedings of [USENIX
 ATC'21](https://www.usenix.org/conference/atc21/presentation/yu). If you are
 interested, you can read a preprint of the paper [here](https://arxiv.org/abs/2102.00527).
 
-If you use Habitat in your research, please consider citing our paper:
+If you use DeepView.Profile in your research, please consider citing our paper:
 
 ```bibtex
 @inproceedings{habitat-yu21,
