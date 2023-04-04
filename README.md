@@ -171,7 +171,7 @@ print("Predicted time on V100:", pred.run_time_ms)
 python3 example.py
 ```
 
-See [experiments/run_experiment.py](https://github.com/CentML/DeepView.Predict/tree/main/experiments) for other examples of Habitat usage.
+See [experiments/run_experiment.py](https://github.com/CentML/DeepView.Predict/tree/main/experiments) for other examples of DeepView.Predict usage.
 
 <h2 id="release-history">Release History</h2>
 
@@ -200,11 +200,11 @@ more information.
 
 <h2 id="paper">Research Paper</h2>
 
-DeepView.Profile began as a research project in the [EcoSystem Group](https://www.cs.toronto.edu/ecosystem) at the [University of Toronto](https://cs.toronto.edu). The accompanying research paper appeared in the proceedings of [USENIX
+DeepView.Predict began as a research project in the [EcoSystem Group](https://www.cs.toronto.edu/ecosystem) at the [University of Toronto](https://cs.toronto.edu). The accompanying research paper appeared in the proceedings of [USENIX
 ATC'21](https://www.usenix.org/conference/atc21/presentation/yu). If you are
 interested, you can read a preprint of the paper [here](https://arxiv.org/abs/2102.00527).
 
-If you use DeepView.Profile in your research, please consider citing our paper:
+If you use DeepView.Predict in your research, please consider citing our paper:
 
 ```bibtex
 @inproceedings{habitat-yu21,

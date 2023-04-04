@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 
 ###################################################################
 
-NAME = "habitat-predict"
+NAME = "deepview-predict"
 PACKAGES = find_packages()
 META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "README.md"
