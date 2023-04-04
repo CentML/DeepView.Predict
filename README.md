@@ -110,6 +110,7 @@ If you do not find matching version of CUDA and Python above, you need to build 
     
     ```bash
     git clone https://github.com/CentML/DeepView.Predict
+    cd DeepView.Predict
     ```
     
 4. Get the pre-trained models used by DeepView.Predict
