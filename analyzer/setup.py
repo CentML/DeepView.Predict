@@ -2,8 +2,10 @@ import codecs
 import os
 import re
 import sys
+import subprocess
 
 from setuptools import setup, find_packages
+from setuptools.command.build import build
 
 # Acknowledgement: This setup.py was adapted from Hynek Schlawack's Python
 #                  Packaging Guide
@@ -17,6 +19,10 @@ META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "README.md"
 PYTHON_REQUIRES = ">=3.6"
 
+SETUP_REQUIRES = [
+    "patchelf"
+]
+
 PACKAGE_DATA = {
     "habitat": [
         "analysis/mlp/devices.csv",
@@ -28,7 +34,7 @@ PACKAGE_DATA = {
         "data/kernels.sqlite",
         "data/linear/model.pth",
         "data/lstm/model.pth",
-        "habitat_cuda.cpython*.so",
+        "habitat_cuda.cpython-{}{}*.so".format(sys.version_info[0], sys.version_info[1]),
     ],
 }
 
@@ -54,6 +60,44 @@ CLASSIFIERS = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3 :: Only",
 ]
+
+class CustomBuildCommand(build):
+    def run(self):
+        # Need to update the rpath of the habitat_cuda.cpython library
+        # Ensures that it links to the libraries included in the wheel
+
+        habitat_dir = os.listdir("habitat")
+        curr_python_ver = "{}{}".format(sys.version_info[0], sys.version_info[1])
+        library_name = ""
+        for fname in habitat_dir:
+            print(fname)
+            if fname.startswith("habitat_cuda.cpython-"+curr_python_ver) and fname.endswith(".so"):
+                library_name = fname
+                break
+        
+        habitat_library = "habitat/"+library_name
+        # Set rpath to the SO files found in the pip package
+        cmd = ['patchelf', '--print-rpath', habitat_library]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        original_rpath = proc.stdout.read().strip()
+        package_rpath = "$ORIGIN/../nvidia/cuda_runtime/lib:$ORIGIN/../nvidia/cuda_cupti/lib"
+        cmd = ['patchelf', '--set-rpath', package_rpath, habitat_library]
+        subprocess.check_call(cmd)
+
+        build.run(self)
+
+        cmd = ['patchelf', '--set-rpath', original_rpath, habitat_library]
+        subprocess.check_call(cmd)
+
+def get_extra_requires(cuda_version):
+    if cuda_version == "cuda117":
+        return ["nvidia-cuda-cupti-cu11==11.7.101", "nvidia-cuda-runtime-cu11==11.7.99"]
+    elif cuda_version == "cuda116":
+        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu116", "nvidia-cuda-runtime-cu116"]
+    elif cuda_version == "cuda113":
+        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu113", "nvidia-cuda-runtime-cu113"]
+    elif cuda_version == "cuda111":
+        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu111", "nvidia-cuda-runtime-cu111"]
 
 ###################################################################
 
@@ -97,10 +141,20 @@ if __name__ == "__main__":
         maintainer_email=find_meta("email"),
         long_description=read(README_PATH),
         long_description_content_type="text/markdown",
+        cmdclass= {
+            "build": CustomBuildCommand
+        },
         packages=PACKAGES,
         package_data=PACKAGE_DATA,
         python_requires=PYTHON_REQUIRES,
+        setup_requires=SETUP_REQUIRES,
         install_requires=INSTALL_REQUIRES,
         classifiers=CLASSIFIERS,
         keywords=KEYWORDS,
+        extras_require={
+            "cuda117": get_extra_requires("cuda117"),
+            "cuda116": get_extra_requires("cuda116"),
+            "cuda113": get_extra_requires("cuda113"),
+            "cuda111": get_extra_requires("cuda111")
+        }
     )
