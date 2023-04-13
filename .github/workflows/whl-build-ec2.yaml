@@ -55,9 +55,9 @@ jobs:
 
       - name: Add distutils for Python3.7
         run: |
-          sudo add-apt-repository -y ppa:deadsnakes/ppa
-          sudo apt-get update
-          sudo apt install -y python3.7-distutils
+          add-apt-repository -y ppa:deadsnakes/ppa
+          apt-get update
+          apt install -y python3.7-distutils
 
       - name: Build Python3.7 wheel
         run: |
