@@ -1,5 +1,6 @@
 import codecs
 import os
+import pkg_resources
 import re
 import sys
 import sysconfig
@@ -74,28 +75,27 @@ class CustomBuildCommand(build):
     def run(self):
         # Need to update the rpath of the habitat_cuda.cpython library
         # Ensures that it links to the libraries included in the wheel
-
+        patchelf_bin_path = pkg_resources.get_distribution("patchelf").location + "/EGG-INFO/scripts/patchelf"
         habitat_dir = os.listdir("habitat")
         curr_python_ver = "{}".format(PYTHON_TAG)
         library_name = ""
         for fname in habitat_dir:
-            print(fname)
             if fname.startswith("habitat_cuda.cpython-"+curr_python_ver) and fname.endswith(".so"):
                 library_name = fname
                 break
         
         habitat_library = "habitat/"+library_name
         # Set rpath to the SO files found in the pip package
-        cmd = ['patchelf', '--print-rpath', habitat_library]
+        cmd = [patchelf_bin_path, '--print-rpath', habitat_library]
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         original_rpath = proc.stdout.read().strip()
         package_rpath = "$ORIGIN/../nvidia/cuda_runtime/lib:$ORIGIN/../nvidia/cuda_cupti/lib"
-        cmd = ['patchelf', '--set-rpath', package_rpath, habitat_library]
+        cmd = [patchelf_bin_path, '--set-rpath', package_rpath, habitat_library]
         subprocess.check_call(cmd)
 
         build.run(self)
 
-        cmd = ['patchelf', '--set-rpath', original_rpath, habitat_library]
+        cmd = [patchelf_bin_path, '--set-rpath', original_rpath, habitat_library]
         subprocess.check_call(cmd)
 
 def get_extra_requires(cuda_version):
