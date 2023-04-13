@@ -3,11 +3,11 @@ CUDA_TAG=$2
 VENV_NAME=venv_${PYTHON_VERSION}
 
 python3 -m virtualenv ${VENV_NAME} -p ${PYTHON_VERSION}
-ln -s /usr/bin/${PYTHON_VERSION}-config ${VENV_NAME}/local/bin/python3-config
+ln -s /usr/bin/${PYTHON_VERSION}-config ${VENV_NAME}/bin/python3-config
 
-source $VENV_NAME/local/bin/activate
+source $VENV_NAME/bin/activate
 
-rm -r cpp/build analyzer/habitat/*.so
+rm -r cpp/build
 git submodule update --init --recursive
 git lfs pull
 
