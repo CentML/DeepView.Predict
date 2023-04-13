@@ -83,8 +83,13 @@ function install_cupti_sample() {
 function main() {
   if [ "$1" = "--uninstall" ]; then
     uninstall_habitat
+  elif [ "$1" = "--build" ]; then
+    install_cupti_sample
+    check_prereqs
+    compile_habitat_cuda
+    symlink_habitat_cuda
   else
-	install_cupti_sample
+	  install_cupti_sample
     check_prereqs
     compile_habitat_cuda
     symlink_habitat_cuda

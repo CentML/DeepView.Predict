@@ -2,6 +2,7 @@ import codecs
 import os
 import re
 import sys
+import sysconfig
 import subprocess
 
 from setuptools import setup, find_packages
@@ -19,6 +20,14 @@ META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "README.md"
 PYTHON_REQUIRES = ">=3.6"
 
+CUDA_VERSION = ""
+if '--cuda_version' in sys.argv:
+    index = sys.argv.index('--cuda_version')
+    CUDA_VERSION = "+" + sys.argv[index + 1]
+    del sys.argv[index:index+2]
+
+PYTHON_TAG = sysconfig.get_python_version().replace('.', '')
+
 SETUP_REQUIRES = [
     "patchelf"
 ]
@@ -34,7 +43,7 @@ PACKAGE_DATA = {
         "data/kernels.sqlite",
         "data/linear/model.pth",
         "data/lstm/model.pth",
-        "habitat_cuda.cpython-{}{}*.so".format(sys.version_info[0], sys.version_info[1]),
+        "habitat_cuda.cpython-{}*.so".format(PYTHON_TAG),
     ],
 }
 
@@ -67,7 +76,7 @@ class CustomBuildCommand(build):
         # Ensures that it links to the libraries included in the wheel
 
         habitat_dir = os.listdir("habitat")
-        curr_python_ver = "{}{}".format(sys.version_info[0], sys.version_info[1])
+        curr_python_ver = "{}".format(PYTHON_TAG)
         library_name = ""
         for fname in habitat_dir:
             print(fname)
@@ -134,7 +143,7 @@ if __name__ == "__main__":
         name=NAME,
         description=find_meta("description"),
         license=find_meta("license"),
-        version=find_meta("version"),
+        version=find_meta("version")+CUDA_VERSION,
         author=find_meta("author"),
         author_email=find_meta("email"),
         maintainer=find_meta("author"),
@@ -151,6 +160,11 @@ if __name__ == "__main__":
         install_requires=INSTALL_REQUIRES,
         classifiers=CLASSIFIERS,
         keywords=KEYWORDS,
+        options={
+            "bdist_wheel": {
+                "python_tag": PYTHON_TAG
+            }
+        },
         extras_require={
             "cuda117": get_extra_requires("cuda117"),
             "cuda116": get_extra_requires("cuda116"),
