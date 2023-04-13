@@ -7,7 +7,7 @@ ln -s /usr/bin/${PYTHON_VERSION}-config ${VENV_NAME}/bin/python3-config
 
 source $VENV_NAME/bin/activate
 
-rm -r cpp/build
+rm -r cpp/build analyzer/habitat/*.so
 git submodule update --init --recursive
 git lfs pull
 

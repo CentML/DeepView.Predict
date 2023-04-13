@@ -53,6 +53,12 @@ jobs:
       - name: Fetch repository
         uses: actions/checkout@v3
 
+      - name: Add distutils for Python3.7
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt install python3.7-distutils
+
       - name: Build Python3.7 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.7 cu111
@@ -96,6 +102,12 @@ jobs:
       - name: Fetch repository
         uses: actions/checkout@v3
 
+      - name: Add distutils for Python3.7
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt install python3.7-distutils
+
       - name: Build Python3.7 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.7 cu113
@@ -138,6 +150,12 @@ jobs:
 
       - name: Fetch repository
         uses: actions/checkout@v3
+
+      - name: Add distutils for Python3.7
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt install python3.7-distutils
 
       - name: Build Python3.7 wheel
         run: |
@@ -187,6 +205,12 @@ jobs:
 
       - name: Fetch repository
         uses: actions/checkout@v3
+
+      - name: Add distutils for Python3.7
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt install python3.7-distutils
 
       - name: Build Python3.7 wheel
         run: |
