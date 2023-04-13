@@ -1,3 +1,5 @@
-habitat_predict.egg-info
 habitat/habitat_cuda.cpython-36m-x86_64-linux-gnu.so
-habitat-models.tar.gz
+.eggs
+build
+*.egg-info
+dist
