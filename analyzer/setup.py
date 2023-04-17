@@ -21,12 +21,6 @@ META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "README.md"
 PYTHON_REQUIRES = ">=3.7"
 
-CUDA_VERSION = ""
-if '--cuda_version' in sys.argv:
-    index = sys.argv.index('--cuda_version')
-    CUDA_VERSION = "+" + sys.argv[index + 1]
-    del sys.argv[index:index+2]
-
 PYTHON_TAG = sysconfig.get_python_version().replace('.', '')
 
 SETUP_REQUIRES = [
@@ -136,7 +130,7 @@ if __name__ == "__main__":
         name=NAME,
         description=find_meta("description"),
         license=find_meta("license"),
-        version=find_meta("version")+CUDA_VERSION,
+        version=find_meta("version"),
         author=find_meta("author"),
         author_email=find_meta("email"),
         maintainer=find_meta("author"),
