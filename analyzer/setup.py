@@ -60,7 +60,6 @@ KEYWORDS = [
 ]
 
 CLASSIFIERS = [
-    "Do Not Upload",
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",

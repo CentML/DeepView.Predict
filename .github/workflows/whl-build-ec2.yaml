@@ -55,19 +55,19 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          ./build_scripts/build_wheel.sh python3.7 cu117
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          ./build_scripts/build_wheel.sh python3.8 cu117
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          ./build_scripts/build_wheel.sh python3.9 cu117
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          ./build_scripts/build_wheel.sh python3.10 cu117
+          ./build_scripts/build_wheel.sh python3.10
 
       - name: Upload wheels to S3
         run: |
