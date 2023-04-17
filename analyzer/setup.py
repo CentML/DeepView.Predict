@@ -19,7 +19,7 @@ NAME = "deepview-predict"
 PACKAGES = find_packages()
 META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "README.md"
-PYTHON_REQUIRES = ">=3.6"
+PYTHON_REQUIRES = ">=3.7"
 
 CUDA_VERSION = ""
 if '--cuda_version' in sys.argv:
@@ -52,7 +52,9 @@ INSTALL_REQUIRES = [
     "pyyaml",
     "torch>=1.4.0",
     "pandas>=1.1.2",
-    "tqdm>=4.49.0"
+    "tqdm>=4.49.0",
+    "nvidia-cuda-cupti-cu11==11.7.101",
+    "nvidia-cuda-runtime-cu11==11.7.99"
 ]
 
 KEYWORDS = [
@@ -98,15 +100,6 @@ class CustomBuildCommand(build):
         cmd = [patchelf_bin_path, '--set-rpath', original_rpath, habitat_library]
         subprocess.check_call(cmd)
 
-def get_extra_requires(cuda_version):
-    if cuda_version == "cuda117":
-        return ["nvidia-cuda-cupti-cu11==11.7.101", "nvidia-cuda-runtime-cu11==11.7.99"]
-    elif cuda_version == "cuda116":
-        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu116", "nvidia-cuda-runtime-cu116"]
-    elif cuda_version == "cuda113":
-        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu113", "nvidia-cuda-runtime-cu113"]
-    elif cuda_version == "cuda111":
-        return ["nvidia-pyindex", "nvidia-cuda-cupti-cu111", "nvidia-cuda-runtime-cu111"]
 
 ###################################################################
 
@@ -164,11 +157,5 @@ if __name__ == "__main__":
             "bdist_wheel": {
                 "python_tag": PYTHON_TAG
             }
-        },
-        extras_require={
-            "cuda117": get_extra_requires("cuda117"),
-            "cuda116": get_extra_requires("cuda116"),
-            "cuda113": get_extra_requires("cuda113"),
-            "cuda111": get_extra_requires("cuda111")
         }
     )
