@@ -10,11 +10,11 @@ except ImportError as ie:
     traceback.print_exc()
     print(MISSING_LIBRARY_MESSAGE)
 
-__version__ = '1.0.0'
+__version__ = '0.1.0'
 __description__ = 'Cross-GPU performance predictions for PyTorch neural network training.'
 
-__author__ = 'Geoffrey Yu'
-__email__ = 'gxyu@cs.toronto.edu'
+__author__ = 'CentML'
+__email__ = 'support@centml.ai'
 
 __license__ = 'Apache-2.0'
 

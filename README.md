@@ -45,7 +45,17 @@ Currently, we have predictors for the following Nvidia GPUs:
 
 <h2 id="building-locally">Building locally</h2>
 
-### 1. Install CUPTI
+### Installing from pip
+
+Install via pip with the following command
+
+```bash
+pip install deepview-predict
+```
+
+### Installing from source
+
+1. Install CUPTI
 
 CUPTI is a profiling interface required by DeepView.Predict. Select your version of CUDA [here](https://developer.nvidia.com/cuda-toolkit-archive) and follow the instructions to add NVIDIA's repository. Then, install CUPTI with:
   ```bash
@@ -59,34 +69,7 @@ Alternatively, if you do not have root access on your machine, you can use `cond
   ```
 After installing CUPTI, add `$CONDA_HOME/extras/CUPTI/lib64/` to `LD_LIBRARY_PATH` to ensure the library is linked.
 
-### 2. Install DeepView.Predict
-
-You can install via pip if you have the following versions of CUDA and Python
-
-- CUDA: 10.2, 11.1, 11.3, 11.6, 11.7
-- Python: 3.7 - 3.10
-
-### Installing from pip
-
-Install via pip with the following command
-
-```bash
-pip install http://centml-releases.s3-website.us-east-2.amazonaws.com/habitat/wheels/habitat_predict-1.0.0-20221123+cuYYY-pyZZ-none-any.whl
-```
-
-where YYY is your CUDA version and ZZ is your Python version. 
-
-For example, if you are using CUDA 10.2 and Python 3.7): 
-
-```bash
-pip install http://centml-releases.s3-website.us-east-2.amazonaws.com/habitat/wheels/habitat_predict-1.0.0-20221123+cu102-py37-none-any.whl
-```
-
-If you do not find matching version of CUDA and Python above, you need to build DeepView.Predict from source with the following instructions
-
-### Installing from source
-
-1. Install CMake 3.17+.
+2. Install CMake 3.17+.
     - Note that CMake 3.24.0 and 3.24.1 has a bug that breaks DeepView.Predict as it is not able to find the CUPTI directory and you should not use those versions
         - [https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs](https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7608/diffs)
     - Run the following commands to download and install a precompiled version of CMake 3.24.2
@@ -105,22 +88,23 @@ If you do not find matching version of CUDA and Python above, you need to build 
         cmake --version
         ```
         
-2. Install [Git Large File Storage](https://git-lfs.github.com/)
-3. Clone the DeepView.Predict package
+3. Install [Git Large File Storage](https://git-lfs.github.com/)
+
+4. Clone the DeepView.Predict package
     
     ```bash
     git clone https://github.com/CentML/DeepView.Predict
     cd DeepView.Predict
     ```
     
-4. Get the pre-trained models used by DeepView.Predict
+5. Get the pre-trained models used by DeepView.Predict
     
     ```bash
     git submodule init && git submodule update
     git lfs pull
     ```
     
-5. Finally build DeepView.Predict with the following command
+6. Finally build DeepView.Predict with the following command
     
     ```bash
     ./analyzer/install-dev.sh

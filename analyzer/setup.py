@@ -2,7 +2,6 @@ import codecs
 import os
 import pkg_resources
 import re
-import sys
 import sysconfig
 import subprocess
 
@@ -18,7 +17,7 @@ from setuptools.command.build import build
 NAME = "deepview-predict"
 PACKAGES = find_packages()
 META_PATH = os.path.join("habitat", "__init__.py")
-README_PATH = "README.md"
+README_PATH = "../README.md"
 PYTHON_REQUIRES = ">=3.7"
 
 PYTHON_TAG = sysconfig.get_python_version().replace('.', '')
