@@ -20,7 +20,7 @@ META_PATH = os.path.join("habitat", "__init__.py")
 README_PATH = "../README.md"
 PYTHON_REQUIRES = ">=3.7"
 
-PYTHON_TAG = sysconfig.get_python_version().replace('.', '')
+PYTHON_VERSION = sysconfig.get_python_version().replace('.', '')
 
 SETUP_REQUIRES = [
     "patchelf"
@@ -37,7 +37,7 @@ PACKAGE_DATA = {
         "data/kernels.sqlite",
         "data/linear/model.pth",
         "data/lstm/model.pth",
-        "habitat_cuda.cpython-{}*.so".format(PYTHON_TAG),
+        "habitat_cuda.cpython-{}*.so".format(PYTHON_VERSION),
     ],
 }
 
@@ -71,7 +71,7 @@ class CustomBuildCommand(build):
         # Ensures that it links to the libraries included in the wheel
         patchelf_bin_path = pkg_resources.get_distribution("patchelf").location + "/EGG-INFO/scripts/patchelf"
         habitat_dir = os.listdir("habitat")
-        curr_python_ver = "{}".format(PYTHON_TAG)
+        curr_python_ver = "{}".format(PYTHON_VERSION)
         library_name = ""
         for fname in habitat_dir:
             if fname.startswith("habitat_cuda.cpython-"+curr_python_ver) and fname.endswith(".so"):
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         keywords=KEYWORDS,
         options={
             "bdist_wheel": {
-                "python_tag": PYTHON_TAG
+                "python_tag": "py"+ PYTHON_VERSION
             }
         }
     )
