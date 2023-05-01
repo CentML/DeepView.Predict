@@ -177,3 +177,24 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository_url: https://test.pypi.org/legacy/
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: publish-to-test-pypi
+    runs-on: ubuntu-latest
+    environment: Production
+    concurrency: Production
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository_url: https://upload.pypi.org/legacy/
