@@ -70,7 +70,7 @@ jobs:
       group: organization/t4
       labels: [cu117]
     needs: 
-      - create-release-branch
+      - start-runner
     steps:
       - name: Fetch repository
         uses: actions/checkout@v3
