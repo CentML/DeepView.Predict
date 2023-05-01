@@ -1,15 +1,47 @@
 name: CI
 on:
   workflow_dispatch:
+    inputs:
+        tag:
+          description: 'Release Tag. This is in the form x.y.z'
+          required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
+  create-release-branch:
+    name: Creates a release branch and updates the version number
+    runs-on: ubuntu-latest
+    env:
+      CI_COMMIT_AUTHOR: CentML
+      CI_COMMIT_EMAIL: centml-machine-user@users.noreply.github.com
+    steps:
+      - name: Create release branch
+        run: |
+          git branch release/${{ github.event.inputs.tag }}
+
+      - name: Update version
+        run: |
+          pip install incremental
+          pushd analyzer
+          python3 -m incremental.update habitat --newversion=${{ github.event.inputs.tag }}
+          popd
+      
+      - name: Commit updated version number and tag it
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
+          git commit -am "Release version ${{ github.event.inputs.tag }}"
+          git push origin release/${{ github.event.inputs.tag }}
+          git tag ${{ github.event.inputs.tag }}
+
   start-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
+    needs: 
+      - create-release-branch
     outputs:
       label: ${{ steps.start-ec2-runner.outputs.label }}
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
@@ -30,49 +62,61 @@ jobs:
           a10g: false
           v100: false
 
-  whl-build-cu117:
+  build-release:
     runs-on:
       group: organization/t4
       labels: [cu117]
     steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
-
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
-
       - name: Fetch repository
         uses: actions/checkout@v3
+        with:
+          ref: release/${{ github.event.inputs.tag }}
 
-      - name: Build Python3.7 wheel
+      - name: Build Python3.7 distribution
         run: |
           ./build_scripts/build_wheel.sh python3.7
-
-      - name: Build Python3.8 wheel
+      
+      - name: Add Python3.7 to source code dist name
+        run: |
+          pushd analyzer/dist
+          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py37.tar.gz
+          popd
+        
+      - name: Build and upload Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
+      
+      - name: Add Python3.8 to source code dist name
+        run: |
+          pushd analyzer/dist
+          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py38.tar.gz
+          popd
 
-      - name: Build Python3.9 wheel
+      - name: Build and upload Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
+      
+      - name: Add Python3.9 to source code dist name
+        run: |
+          pushd analyzer/dist
+          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py39.tar.gz
+          popd
 
-      - name: Build Python3.10 wheel
+      - name: Build and upload Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-
-      - name: Upload wheels to S3
+        
+      - name: Add Python3.9 to source code dist name
         run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu117/ --recursive --include "*"
-
+          pushd analyzer/dist
+          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py310.tar.gz
+          popd
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: analyzer/dist/*
+  
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
@@ -96,3 +140,56 @@ jobs:
           t4: true # required to match the list above - otherwise the runners will not stop
           a10g: false # required to match the list above - otherwise the runners will not stop
           v100: false
+
+  publish-to-github:
+    name: Publish to Github
+    needs:
+      - whl-build-cu117 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: release/${{ github.event.inputs.tag }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: dist      
+      
+      - name: Publish a release
+        run: |
+          RELEASE_NOTES="$(git log $(git describe --abbrev=0 --tags --always).. --merges --pretty=format:"%s %b" | cut -f 4,7- -d ' ')"
+          echo "Autogenerated Release Notes:"
+          echo "$RELEASE_NOTES"
+          RELEASE_ARTIFACTS=$(find ./dist -name "*${{ github.event.inputs.tag }}*" -type f | paste -s -d ' ' - )
+          VERSION_TAG="v${{ github.event.inputs.tag }}"
+          gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
+          gh release create "$VERSION_TAG" \
+                                  --title "$VERSION_TAG" \
+                                  --notes "$RELEASE_NOTES" \
+                                  --target "$GITHUB_SHA" \
+                                  $RELEASE_ARTIFACTS
+          gh pr create --title "Release $VERSION_TAG" --body "$RELEASE_NOTES"
+
+  publish-to-test-pypi:
+    name: Publish to Test PyPI
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    environment: Test
+    concurrency: Test
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository_url: https://test.pypi.org/legacy/
