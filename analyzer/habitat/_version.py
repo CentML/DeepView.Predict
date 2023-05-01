@@ -7,5 +7,5 @@ Provides habitat version information.
 
 from incremental import Version
 
-__version__ = Version("habitat", 0, 1, 0)
+__version__ = Version("habitat", 0, 0, 7)
 __all__ = ["__version__"]
