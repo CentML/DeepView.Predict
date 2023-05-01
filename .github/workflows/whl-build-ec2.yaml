@@ -38,7 +38,7 @@ jobs:
           git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
           git add .
           git commit -am "Release version ${{ github.event.inputs.tag }}"
-          git push origin release/${{ github.event.inputs.tag }}
+          git push -u origin release/${{ github.event.inputs.tag }}
           git tag ${{ github.event.inputs.tag }}
 
   start-runner:
