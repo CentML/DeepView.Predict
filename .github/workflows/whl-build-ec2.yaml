@@ -114,7 +114,7 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.10
         
-      - name: Add Python3.9 to source code dist name
+      - name: Add Python3.10 to source code dist name
         run: |
           pushd analyzer/dist
           mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py310.tar.gz
