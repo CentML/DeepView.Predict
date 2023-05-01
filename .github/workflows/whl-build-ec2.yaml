@@ -83,47 +83,23 @@ jobs:
       - name: Build Python3.7 distribution
         run: |
           ./build_scripts/build_wheel.sh python3.7
-      
-      - name: Add Python3.7 to source code dist name
-        run: |
-          pushd analyzer/dist
-          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py37.tar.gz
-          popd
         
-      - name: Build and upload Python3.8 wheel
+      - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
       
-      - name: Add Python3.8 to source code dist name
-        run: |
-          pushd analyzer/dist
-          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py38.tar.gz
-          popd
-
-      - name: Build and upload Python3.9 wheel
+      - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
-      
-      - name: Add Python3.9 to source code dist name
-        run: |
-          pushd analyzer/dist
-          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py39.tar.gz
-          popd
 
-      - name: Build and upload Python3.10 wheel
+      - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-        
-      - name: Add Python3.10 to source code dist name
-        run: |
-          pushd analyzer/dist
-          mv deepview-predict-${{ github.event.inputs.tag }}.tar.gz deepview-predict-${{ github.event.inputs.tag }}-py310.tar.gz
-          popd
       
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.tag }}
-          path: analyzer/dist/*
+          path: analyzer/dist/*.whl
   
   stop-runner:
     name: Stop self-hosted EC2 runner
