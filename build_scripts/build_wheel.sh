@@ -13,7 +13,7 @@ git lfs pull
 
 pushd analyzer
 ./install-dev.sh --build
-python3 setup.py sdist bdist_wheel
+python3 setup.py bdist_wheel
 popd
 
 deactivate

@@ -23,7 +23,8 @@ PYTHON_REQUIRES = ">=3.7"
 PYTHON_VERSION = sysconfig.get_python_version().replace('.', '')
 
 SETUP_REQUIRES = [
-    "patchelf"
+    "patchelf",
+    "incremental"
 ]
 
 PACKAGE_DATA = {
@@ -47,7 +48,8 @@ INSTALL_REQUIRES = [
     "pandas>=1.1.2",
     "tqdm>=4.49.0",
     "nvidia-cuda-cupti-cu11==11.7.101",
-    "nvidia-cuda-runtime-cu11==11.7.99"
+    "nvidia-cuda-runtime-cu11==11.7.99",
+    "incremental"
 ]
 
 KEYWORDS = [
@@ -128,12 +130,12 @@ if __name__ == "__main__":
         name=NAME,
         description=find_meta("description"),
         license=find_meta("license"),
-        version=find_meta("version"),
         author=find_meta("author"),
         author_email=find_meta("email"),
         maintainer=find_meta("author"),
         maintainer_email=find_meta("email"),
         long_description=read(README_PATH),
+        use_incremental=True,
         long_description_content_type="text/markdown",
         cmdclass= {
             "build": CustomBuildCommand
