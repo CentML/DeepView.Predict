@@ -28,19 +28,19 @@ To run DeepView.Predict, you need:
 
 Currently, we have predictors for the following Nvidia GPUs:
 
-| GPU        | Generation  | Memory | Mem. Type | SMs |
-| ---------- |:-----------:| ------:| :-------: | :-: |
-| P4000      | Pascal      | 8 GB   | GDDR5     | 14  |
-| P100       | Pascal      | 16 GB  | HBM2      | 56  |
-| V100       | Volta       | 16 GB  | HBM2      | 80  |
-| 2070       | Turing      | 8 GB   | GDDR6     | 36  |
-| 2080Ti     | Turing      | 11 GB  | GDDR6     | 68  |
-| T4         | Turing      | 16 GB  | GDDR6     | 40  |
-| 3090       | Ampere      | 24 GB  | GDDR6X    | 82  |
-| A100       | Ampere      | 40 GB  | HBM2      | 108 |
-| A40        | Ampere      | 48 GB  | GDDR6     | 84  |
-| A4000      | Ampere      | 16 GB  | GDDR6     | 48  |
-| 4000       | Turing      | 8 GB   | GDDR6     | 36  |
+| GPU           | Generation  | Memory | Mem. Type | SMs |
+| -------------:|:-----------:| ------:| :-------: | :-: |
+| P4000         | Pascal      | 8 GB   | GDDR5     | 14  |
+| P100          | Pascal      | 16 GB  | HBM2      | 56  |
+| V100          | Volta       | 16 GB  | HBM2      | 80  |
+| RTX 2070      | Turing      | 8 GB   | GDDR6     | 36  |
+| RTX 2080Ti    | Turing      | 11 GB  | GDDR6     | 68  |
+| T4            | Turing      | 16 GB  | GDDR6     | 40  |
+| RTX 3090      | Ampere      | 24 GB  | GDDR6X    | 82  |
+| A100          | Ampere      | 40 GB  | HBM2      | 108 |
+| A40           | Ampere      | 48 GB  | GDDR6     | 84  |
+| RTX A4000     | Ampere      | 16 GB  | GDDR6     | 48  |
+| RTX 4000      | Turing      | 8 GB   | GDDR6     | 36  |
 
 
 <h2 id="building-locally">Building locally</h2>
