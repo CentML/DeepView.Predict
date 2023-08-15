@@ -2,7 +2,8 @@ import math
 
 from habitat.analysis.kernels import PredictedKernel
 from habitat.analysis.wave_scaling.common import calculate_wave_info
-
+import logging
+logger = logging.getLogger(__name__)
 
 def resimplified_wave_scaling(
     kernel,
@@ -23,6 +24,8 @@ def resimplified_wave_scaling(
     # Check if the kernel is too "small" - if it doesn't fill a single wave
     # on the current device AND if it doesn't fill a single wave on the
     # destination device
+    if (origin_wave_size == 0 or dest_wave_size == 0):
+        logger.warn(f"One or more invalid wave sizes: kernel: {kernel.name} origin: {origin_wave_size}, dest: {dest_wave_size}")
     if ((origin_wave_size == 0 or dest_wave_size == 0) or (kernel.num_blocks // origin_wave_size == 0 and
                                                            kernel.num_blocks // dest_wave_size == 0)):
         # We scale the run time by the compute factor only
