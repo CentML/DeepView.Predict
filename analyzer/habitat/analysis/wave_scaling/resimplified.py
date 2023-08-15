@@ -26,8 +26,7 @@ def resimplified_wave_scaling(
     # destination device
     if (origin_wave_size == 0 or dest_wave_size == 0):
         logger.warn(f"One or more invalid wave sizes: kernel: {kernel.name} origin: {origin_wave_size}, dest: {dest_wave_size}")
-    if ((origin_wave_size == 0 or dest_wave_size == 0) or (kernel.num_blocks // origin_wave_size == 0 and
-                                                           kernel.num_blocks // dest_wave_size == 0)):
+    if ((origin_wave_size == 0 or dest_wave_size == 0) or (kernel.num_blocks // origin_wave_size == 0 and kernel.num_blocks // dest_wave_size == 0)):
         # We scale the run time by the compute factor only
         origin_max_occupancy = math.ceil(
             kernel.num_blocks / origin_device.num_sms
