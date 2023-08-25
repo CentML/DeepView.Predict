@@ -26,8 +26,8 @@ def roofline_wave_scaling(
     # 1. Check if the kernel is too "small" - if it doesn't fill a single wave
     #    on the current device AND if it doesn't fill a single wave on the
     #    destination device
-    if (kernel.num_blocks // origin_wave_size == 0 and
-            kernel.num_blocks // dest_wave_size == 0):
+    if ((origin_wave_size == 0 or dest_wave_size == 0) or (kernel.num_blocks // origin_wave_size == 0 and
+            kernel.num_blocks // dest_wave_size == 0)):
         # We scale the run time by the compute factor only
         origin_max_occupancy = math.ceil(
             kernel.num_blocks / origin_device.num_sms
