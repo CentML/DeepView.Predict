@@ -95,7 +95,11 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-      
+
+      - name: Build Python3.11 wheel
+        run: |
+          ./build_scripts/build_wheel.sh python3.11
+          
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.tag }}
