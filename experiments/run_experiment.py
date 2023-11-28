@@ -23,7 +23,6 @@ DEVICES = [
     habitat.Device.RTX2070,
     habitat.Device.RTX2080Ti,
 
-    habitat.Device.RTX2080Ti,
     habitat.Device.RTX3090,
     habitat.Device.A100,
     habitat.Device.A40,
