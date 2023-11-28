@@ -209,3 +209,18 @@ RTX4000:
   base_clock_mhz: 1005
   peak_gflops_per_second: 4245
 
+H100:
+  compute_major: 9
+  compute_minor: 0
+  max_threads_per_block: 1024
+  max_threads_per_multiprocessor: 2048
+  regs_per_block: 65536
+  regs_per_multiprocessor: 65536
+  warp_size: 32
+  shared_mem_per_block: 49152
+  shared_mem_per_multiprocessor: 233472
+  num_sms: 132
+  shared_mem_per_block_optin: 232448
+  mem_bandwidth_gb: 2135
+  base_clock_mhz: 1095
+  peak_gflops_per_second: 33388
