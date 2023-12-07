@@ -151,7 +151,6 @@ class RuntimePredictor:
             self.load_state(model_path)
 
     def load_state(self, path):
-        return
         checkpoint = torch.load(path)
         self.mu = checkpoint['mu']
         self.sigma = checkpoint['sigma']

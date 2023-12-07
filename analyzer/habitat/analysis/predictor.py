@@ -256,7 +256,8 @@ class Predictor:
             batch=effective_batch,
             in_features=merged['weight'][1],
             out_features=merged['weight'][0],
-            bias=(1 if merged['bias'] is not None else 0)
+            bias=(1 if merged['bias'] is not None else 0),
+            is_forward=is_forward
         )
 
         arguments = [arguments[x] for x in self.linear_pred.model.features]
