@@ -8,6 +8,7 @@ from habitat.analysis.mlp.devices import get_device_features, get_all_devices
 
 
 def get_dataset(path, features, device_features=None):
+    print("get_dataset", path, features)
     if device_features is None:
         device_features = ['mem', 'mem_bw', 'num_sm', 'single']
 

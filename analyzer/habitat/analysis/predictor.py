@@ -140,7 +140,10 @@ class Predictor:
         )
 
     def _special_scale(self, operation, dest_device, scaler):
-        predicted_ms = scaler(operation, dest_device)
+        # predicted_ms = scaler(operation, dest_device)
+        predicted_ms = 0
+        if operation.forward: predicted_ms += scaler(operation, True, dest_device)
+        if operation.backward: predicted_ms += scaler(operation, False, dest_device)
 
         if predicted_ms < 0:
             logger.warn(
@@ -157,7 +160,7 @@ class Predictor:
             dest_device,
         )
 
-    def _conv2d_scale(self, operation, dest_device):
+    def _conv2d_scale(self, operation, is_forward, dest_device):
         # 1. Merge arguments (give them all names)
         merged = name_all_arguments(
             CONV2D_PARAMS,
@@ -181,6 +184,7 @@ class Predictor:
                 if isinstance(merged['padding'], tuple) else merged['padding']
             ),
             bias=(1 if merged['bias'] is not None else 0),
+            is_forward=is_forward
         )
 
         # 3. Call model to make prediction
@@ -191,7 +195,7 @@ class Predictor:
 
         return operation.run_time_ms * pred_dest / pred_orig
 
-    def _conv_transpose2d_scale(self, operation, dest_device):
+    def _conv_transpose2d_scale(self, operation, is_forward, dest_device):
         # 1. Merge arguments (give them all names)
         merged = name_all_arguments(
             CONVTRANSPOSE2D_PARAMS,
@@ -215,6 +219,7 @@ class Predictor:
                 if isinstance(merged['padding'], tuple) else merged['padding']
             ),
             bias=(1 if merged['bias'] is not None else 0),
+            is_forward=is_forward
         )
 
         # 3. Call model to make prediction
@@ -225,7 +230,7 @@ class Predictor:
 
         return operation.run_time_ms * pred_dest / pred_orig
 
-    def _linear_scale(self, operation, dest_device):
+    def _linear_scale(self, operation, is_forward, dest_device):
         merged = name_all_arguments(
             LINEAR_PARAMS,
             operation.arguments.args,
@@ -273,6 +278,7 @@ class Predictor:
             left=merged['input'][1],
             middle=merged['input'][2],
             right=merged['mat2'][2],
+            is_forward=is_forward
         )
         arguments = [arguments[x] for x in self.bmm_pred.model.features]
 
@@ -281,7 +287,7 @@ class Predictor:
 
         return operation.run_time_ms * pred_dest / pred_orig
 
-    def _lstm_scale(self, operation, dest_device):
+    def _lstm_scale(self, operation, is_forward, dest_device):
         # This is hacky, but unfortunately the only way to differentiate these
         # overloaded LSTM calls.
         has_batch_sizes = isinstance(operation.arguments.args[4], bool)
@@ -300,6 +306,7 @@ class Predictor:
                 input_size=merged['input'][2],
                 hidden_size=merged['hx'][0][2],
                 num_layers=merged['num_layers'],
+                is_forward=is_forward
             )
 
         else:
@@ -317,6 +324,7 @@ class Predictor:
                 input_size=merged['input'][1],
                 hidden_size=merged['hx'][0][2],
                 num_layers=merged['num_layers'],
+                is_forward=is_forward
             )
 
         arguments = [arguments[x] for x in self.lstm_pred.model.features]

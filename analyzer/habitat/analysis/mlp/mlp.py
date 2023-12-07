@@ -35,7 +35,7 @@ class LinearMLP(nn.Module):
     def __init__(self, layers, layer_size):
         super().__init__()
 
-        self.features = ["bias", "batch", "in_features", "out_features"]
+        self.features = ["bias", "batch", "in_features", "out_features", "is_forward"]
 
         self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
         self.mlp = MLPBase(layers, layer_size)
@@ -54,7 +54,7 @@ class LSTMMLP(nn.Module):
     def __init__(self, layers, layer_size):
         super().__init__()
 
-        self.features = ['bias', 'bidirectional', 'batch', 'seq_len', 'input_size', 'hidden_size', 'num_layers']
+        self.features = ['bias', 'bidirectional', 'batch', 'seq_len', 'input_size', 'hidden_size', 'num_layers', "is_forward"]
 
         self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
         self.mlp = MLPBase(layers, layer_size)
@@ -74,7 +74,7 @@ class Conv2DMLP(nn.Module):
         super().__init__()
 
         self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
-                         'padding']
+                         'padding', "is_forward"]
 
         # properly manage device parameters
         self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
@@ -94,7 +94,7 @@ class ConvTranspose2DMLP(nn.Module):
         super().__init__()
 
         self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
-                         'padding']
+                         'padding', "is_forward"]
 
         # properly manage device parameters
         self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
@@ -113,7 +113,7 @@ class BMMMLP(nn.Module):
     def __init__(self, layers, layer_size):
         super().__init__()
 
-        self.features = ["batch", "left", "middle", "right"]
+        self.features = ["batch", "left", "middle", "right", "is_forward"]
 
         self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
         self.mlp = MLPBase(layers, layer_size)
@@ -151,6 +151,7 @@ class RuntimePredictor:
             self.load_state(model_path)
 
     def load_state(self, path):
+        return
         checkpoint = torch.load(path)
         self.mu = checkpoint['mu']
         self.sigma = checkpoint['sigma']
@@ -202,8 +203,9 @@ class RuntimePredictor:
         perc_errors_np = np.concatenate(perc_errors)
         mean_perc_err = float(np.mean(perc_errors_np))
         max_perc_err = np.amax(perc_errors_np)
+        perc_error_p90 = np.percentile(perc_errors_np, 90)
 
-        return mean_perc_err, max_perc_err
+        return mean_perc_err, max_perc_err, perc_error_p90
 
     def train_with_dataset(self, dataset_path, epochs=40, use_cuda=True):
         from torch.utils.tensorboard import SummaryWriter
@@ -254,8 +256,8 @@ class RuntimePredictor:
             self.writer.add_scalar("train_loss", train_loss, epoch)
 
             # validate
-            avg_err, max_err = self._validate()
-            print("val avg: %.4f, max: %.4f" % (avg_err, max_err), end="\t")
+            avg_err, max_err, p90 = self._validate()
+            print("val avg: %.4f, p90: %.4f, max: %.4f" % (avg_err, p90, max_err), end="\t")
             self.writer.add_scalar("validation avg_err", avg_err, epoch)
             self.writer.add_scalar("validation max_err", max_err, epoch)
 
