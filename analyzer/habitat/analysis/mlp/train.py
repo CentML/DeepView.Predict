@@ -4,7 +4,7 @@ import torch
 import numpy
 
 from habitat.analysis.mlp.mlp import RuntimePredictor
-
+from habitat.analysis.mlp.dataset_process import get_devices
 
 def main():
     parser = argparse.ArgumentParser(description="MLP Training Script")
@@ -17,12 +17,16 @@ def main():
 
     args = parser.parse_args()
 
+    devices = get_devices(args.dataset_path)
+    print("devices", devices)
+
     # Ensure reproducibility
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     numpy.random.seed(args.seed)
 
-    predictor = RuntimePredictor(args.operation, args.layers, args.layer_size)
+    predictor = RuntimePredictor(args.operation, devices, args.layers, args.layer_size)
+    # def __init__(self, model_name, devices, layers, layer_size, model_path=None):
     predictor.train_with_dataset(args.dataset_path, epochs=args.epochs)
 
 

@@ -6,6 +6,21 @@ from tqdm import tqdm
 
 from habitat.analysis.mlp.devices import get_device_features, get_all_devices
 
+def onehot(idx, count):
+    enc = [0] * count
+    enc[idx] = 1
+    return enc
+
+def get_devices(path):
+    files = glob.glob(path + "/*.sqlite")
+    devices = list()
+    for f in files:
+        device_name = f.split("/")[-1].split("-")[1]
+        if "." in device_name: device_name = device_name[:device_name.index(".")]
+
+        devices.append(device_name)
+
+    return list(set(devices))
 
 def get_dataset(path, features, device_features=None):
     print("get_dataset", path, features)
@@ -49,13 +64,18 @@ def get_dataset(path, features, device_features=None):
     # generate vectorized dataset (one entry for each device with device params)
     device_params = get_all_devices(device_features)
 
+    device_list = list(devices.keys())
+    print("device_list", device_list)
+
     x, y = [], []
-    for device in devices.keys():
+    for idx, device in enumerate(device_list):
         df_device = devices[device]
+        device_encoding = onehot(idx, len(device_list))
+        print("device_encoding", device_encoding)
         for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
             row = row[1]
 
-            x.append(list(row[:-1]) + device_params[device])
-            y.append(row[-1])
+            x.append(device_encoding + list(row[:-1]) + device_params[device])
+            y.append(row.iloc[-1])
 
-    return x, y
+    return device_list, x, y

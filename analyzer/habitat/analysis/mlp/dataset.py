@@ -8,13 +8,16 @@ from habitat.analysis.mlp.dataset_process import get_dataset
 
 class HabitatDataset(Dataset):
     def __init__(self, dataset_path, features):
-        self.x, self.y = get_dataset(dataset_path, features)
+        self.devices, self.x, self.y = get_dataset(dataset_path, features)
 
         # input normalization
         self.x = np.array(self.x)
 
         self.mu = np.mean(self.x, axis=0)
         self.sigma = np.std(self.x, axis=0)
+
+        self.sigma = np.where(self.sigma == 0, 1, self.sigma)
+        print(self.mu, self.sigma)
 
         self.x = np.divide(np.subtract(self.x, self.mu), self.sigma)
 
