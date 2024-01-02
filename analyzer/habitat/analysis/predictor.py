@@ -161,11 +161,11 @@ class Predictor:
         )
 
     def _dest_device_encoding(self, pred, dest_device):
-        if dest_device not in pred.devices:
-            raise Exception(f"Destination device {dest_device} not supported by predictor.")
+        if dest_device.name not in pred.devices:
+            raise Exception(f"Destination device {dest_device} not supported by predictor. The supported devices are {pred.devices}")
 
         enc = [0] * len(pred.devices)
-        enc[pred.devices.index(dest_device)] = 1
+        enc[pred.devices.index(dest_device.name)] = 1
         return enc
 
     def _conv2d_scale(self, operation, is_forward, dest_device):

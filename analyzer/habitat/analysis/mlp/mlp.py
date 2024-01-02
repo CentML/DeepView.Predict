@@ -57,7 +57,7 @@ class LSTMMLP(nn.Module):
 
         self.features = ['bias', 'bidirectional', 'batch', 'seq_len', 'input_size', 'hidden_size', 'num_layers', "is_forward"]
 
-        self.fc1 = nn.Linear(len(self.features) + num_devices, 4, layer_size)
+        self.fc1 = nn.Linear(len(self.features) + num_devices + 4, layer_size)
         self.mlp = MLPBase(layers, layer_size)
         self.fc2 = nn.Linear(layer_size, 1)
 
@@ -155,7 +155,10 @@ class RuntimePredictor:
     @classmethod
     def from_state(cls, model_name, layers, layer_size, path):
         checkpoint = torch.load(path)
-        if "devices" not in checkpoint: return
+        if "devices" not in checkpoint: 
+            print(checkpoint.keys())
+            return
+            raise Exception("\"devices\" not in checkpoint", path)
         devices = checkpoint['devices']
         pred = cls(model_name, devices, layers, layer_size)
         pred.mu = checkpoint['mu']
