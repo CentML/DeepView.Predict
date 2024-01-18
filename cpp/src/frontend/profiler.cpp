@@ -39,5 +39,9 @@ std::vector<KernelInstance> profile(
   return kernels;
 }
 
+void release_cupti_hook(){
+  CuptiManager::instance().unloadCupti();
+}
+
 }
 }
