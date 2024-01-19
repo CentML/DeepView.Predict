@@ -47,8 +47,8 @@ INSTALL_REQUIRES = [
     "torch>=1.4.0",
     "pandas>=1.1.2",
     "tqdm>=4.49.0",
-    "nvidia-cuda-cupti-cu12",
-    "nvidia-cuda-runtime-cu12",
+    "nvidia-cuda-cupti-cu11==11.7.101",
+    "nvidia-cuda-runtime-cu11==11.7.99",
     "incremental"
 ]
 
