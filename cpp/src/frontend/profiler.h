@@ -16,5 +16,6 @@ std::vector<cuda::KernelInstance> profile(std::function<void()> runnable);
 std::vector<cuda::KernelInstance> profile(
     std::function<void()> runnable, const std::string& metric);
 
+void release_cupti_hook();
 }
 }

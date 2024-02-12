@@ -31,4 +31,8 @@ PYBIND11_MODULE(habitat_cuda, m) {
     .def("run_flop_test", [](size_t num_blocks, size_t threads_per_block) {
       habitat::cuda::diagnostics::run_flop_test(num_blocks, threads_per_block);
     }, py::arg("num_blocks") = 8192, py::arg("threads_per_block") = 256);
+  
+  m.def("release_cupti_hook",[](){
+    habitat::frontend::release_cupti_hook();
+  });
 }

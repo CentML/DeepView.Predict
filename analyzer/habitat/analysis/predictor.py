@@ -180,7 +180,7 @@ class Predictor:
                 merged['padding'][0]
                 if isinstance(merged['padding'], tuple) else merged['padding']
             ),
-            bias=(1 if merged['bias'] is not None else 0),
+            bias=(1 if merged.get('bias',None) != None else 0),
         )
 
         # 3. Call model to make prediction
@@ -214,7 +214,7 @@ class Predictor:
                 merged['padding'][0]
                 if isinstance(merged['padding'], tuple) else merged['padding']
             ),
-            bias=(1 if merged['bias'] is not None else 0),
+            bias=(1 if merged.get('bias',None) != None else 0),
         )
 
         # 3. Call model to make prediction
@@ -251,7 +251,7 @@ class Predictor:
             batch=effective_batch,
             in_features=merged['weight'][1],
             out_features=merged['weight'][0],
-            bias=(1 if merged['bias'] is not None else 0)
+            bias=(1 if merged.get('bias',None) != None else 0)
         )
 
         arguments = [arguments[x] for x in self.linear_pred.model.features]
@@ -293,7 +293,7 @@ class Predictor:
                 operation.arguments.kwargs,
             )
             arguments = dict(
-                bias=(1 if merged['bias'] is not None else 0),
+                bias=(1 if merged.get('bias',None) != None else 0),
                 bidirectional=(1 if merged['bidirectional'] else 0),
                 batch=merged['input'][1],  # We require the batch to be in position 1
                 seq_len=merged['input'][0],
@@ -310,7 +310,7 @@ class Predictor:
             )
             max_batch_size = max(operation.arguments.special['batch_sizes'])
             arguments = dict(
-                bias=(1 if merged['bias'] is not None else 0),
+                bias=(1 if merged.get('bias',None) != None else 0),
                 bidirectional=(1 if merged['bidirectional'] else 0),
                 batch=max_batch_size,
                 seq_len=merged['input'][0] // max_batch_size,
