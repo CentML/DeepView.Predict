@@ -5,7 +5,7 @@ on:
 
 jobs:
   create-habitat-index-html:
-    needs: [whl-build-cu102, whl-build-cu111, whl-build-cu113, whl-build-cu116, whl-build-cu117]
+    needs: [whl-build-cu113, whl-build-cu116, whl-build-cu117, whl-build-cu118, whl-build-cu121]
     runs-on: [self-hosted]
     steps:
       - name: Configure AWS Credentials
@@ -17,113 +17,11 @@ jobs:
 
       - name: Create index.html
         run: |
-          python3 /home/builduser/create_index.py habitat -f wheels-cu102 wheels-cu111 wheels-cu113 wheels-cu116 wheels-cu117
+          python3 /home/builduser/create_index.py habitat -f wheels-cu113 wheels-cu116 wheels-cu117 wheels-cu118 wheels-cu121
 
       - name: Upload to S3
         run: |
           aws s3 cp index.html s3://centml-releases/habitat/
-
-  whl-build-cu102:
-    runs-on: [self-hosted, cu102]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
-
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
-
-      - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.7 py37
-
-      - name: Build Python3.8 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.8 py38
-
-      - name: Build Python3.9 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.9 py39
-
-      - name: Build Python3.10 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.10 py310
-        
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu102/ --recursive --exclude "*" --include "*.whl"
-      
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu102 -f $formatted_file_list
-
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu102/
-
-  whl-build-cu111:
-    runs-on: [self-hosted, cu111]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
-
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
-
-      - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.7 py37
-
-      - name: Build Python3.8 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.8 py38
-
-      - name: Build Python3.9 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.9 py39
-
-      - name: Build Python3.10 wheel
-        run: |
-          /home/builduser/build_habitat.sh python3.10 py310
-
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu111/ --recursive --exclude "*" --include "*.whl"
-      
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu111 -f $formatted_file_list
-
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu111/
 
   whl-build-cu113:
     runs-on: [self-hosted, cu113]
@@ -161,6 +59,10 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
+
+      - name: Build Python3.11 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.11 py311
    
       - name: Upload wheels to S3
         run: |
@@ -212,6 +114,10 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
+
+      - name: Build Python3.11 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.11 py311
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v3
@@ -269,6 +175,10 @@ jobs:
       - name: Build Python3.10 wheel
         run: |
           /home/builduser/build_habitat.sh python3.10 py310
+      
+      - name: Build Python3.11 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.11 py311
 
       - name: Upload wheels to S3
         run: |
@@ -283,3 +193,113 @@ jobs:
       - name: Upload index.html to S3
         run: |
           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu117/
+
+    whl-build-cu118:
+    runs-on: [self-hosted, cu118]
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Display host information
+        run: |
+          uname -a
+          hostname
+          pwd
+          id
+          ls -la
+
+      - name: Fetch repository
+        uses: actions/checkout@v3
+
+      - name: Build Python3.7 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.7 py37
+
+      - name: Build Python3.8 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.8 py38
+
+      - name: Build Python3.9 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.9 py39
+
+      - name: Build Python3.10 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.10 py310
+
+      - name: Build Python3.11 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.11 py311
+
+      - name: Upload wheels to S3
+        run: |
+          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu118/ --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(analyzer/dist/*.whl)
+          formatted_file_list=$(basename -a ${file_list[@]})
+          python3 /home/builduser/create_index.py habitat_cu118 -f $formatted_file_list
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu118/
+
+    whl-build-cu121:
+    runs-on: [self-hosted, cu121]
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Display host information
+        run: |
+          uname -a
+          hostname
+          pwd
+          id
+          ls -la
+
+      - name: Fetch repository
+        uses: actions/checkout@v3
+
+      - name: Build Python3.7 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.7 py37
+
+      - name: Build Python3.8 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.8 py38
+
+      - name: Build Python3.9 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.9 py39
+
+      - name: Build Python3.10 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.10 py310
+      
+      - name: Build Python3.11 wheel
+        run: |
+          /home/builduser/build_habitat.sh python3.11 py311
+        
+      - name: Upload wheels to S3
+        run: |
+          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu121/ --recursive --exclude "*" --include "*.whl"
+      
+      - name: Create index.html
+        run: |
+          file_list=(analyzer/dist/*.whl)
+          formatted_file_list=$(basename -a ${file_list[@]})
+          python3 /home/builduser/create_index.py habitat_cu121 -f $formatted_file_list
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu121/
