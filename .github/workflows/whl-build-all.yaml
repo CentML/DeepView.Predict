@@ -194,7 +194,7 @@ jobs:
         run: |
           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu117/
 
-    whl-build-cu118:
+  whl-build-cu118:
     runs-on: [self-hosted, cu118]
     steps:
       - name: Configure AWS Credentials
@@ -249,7 +249,7 @@ jobs:
         run: |
           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu118/
 
-    whl-build-cu121:
+  whl-build-cu121:
     runs-on: [self-hosted, cu121]
     steps:
       - name: Configure AWS Credentials
