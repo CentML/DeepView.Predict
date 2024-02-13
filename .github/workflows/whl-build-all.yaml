@@ -242,9 +242,7 @@ jobs:
       - name: Create index.html
         run: |
           file_list=(analyzer/dist/*.whl)
-          echo $file_list
           formatted_file_list=$(basename -a ${file_list[@]})
-          echo $formatted_file_list
           python3 /home/builduser/create_index.py habitat_cu118 -f $formatted_file_list
 
       - name: Upload index.html to S3
