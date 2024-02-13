@@ -46,23 +46,23 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.7 py37
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.8 py38
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.9 py39
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.10 py310
+          ./build_scripts/build_wheel.sh python3.10
 
       - name: Build Python3.11 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.11 py311
+          ./build_scripts/build_wheel.sh python3.11
    
       - name: Upload wheels to S3
         run: |
@@ -101,23 +101,23 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.7 py37
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.8 py38
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.9 py39
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.10 py310
+          ./build_scripts/build_wheel.sh python3.10
 
       - name: Build Python3.11 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.11 py311
+          ./build_scripts/build_wheel.sh python3.11
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v3
@@ -162,23 +162,23 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.7 py37
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.8 py38
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.9 py39
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.10 py310
+          ./build_scripts/build_wheel.sh python3.10
       
       - name: Build Python3.11 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.11 py311
+          ./build_scripts/build_wheel.sh python3.11
 
       - name: Upload wheels to S3
         run: |
@@ -217,23 +217,23 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.7 py37
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.8 py38
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.9 py39
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.10 py310
+          ./build_scripts/build_wheel.sh python3.10
 
       - name: Build Python3.11 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.11 py311
+          ./build_scripts/build_wheel.sh python3.11
 
       - name: Upload wheels to S3
         run: |
@@ -272,23 +272,23 @@ jobs:
 
       - name: Build Python3.7 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.7 py37
+          ./build_scripts/build_wheel.sh python3.7
 
       - name: Build Python3.8 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.8 py38
+          ./build_scripts/build_wheel.sh python3.8
 
       - name: Build Python3.9 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.9 py39
+          ./build_scripts/build_wheel.sh python3.9
 
       - name: Build Python3.10 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.10 py310
+          ./build_scripts/build_wheel.sh python3.10
       
       - name: Build Python3.11 wheel
         run: |
-          /home/builduser/build_habitat.sh python3.11 py311
+          ./build_scripts/build_wheel.sh python3.11
         
       - name: Upload wheels to S3
         run: |
