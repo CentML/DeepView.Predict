@@ -69,7 +69,7 @@ jobs:
           v100: false
 
   build-release:
-    runs-on: [self-hosted, cu121]
+    runs-on: [self-hosted, cu117]
     needs: 
       - start-runner
     steps:
