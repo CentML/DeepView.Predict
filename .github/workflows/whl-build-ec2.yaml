@@ -69,9 +69,7 @@ jobs:
           v100: false
 
   build-release:
-    runs-on:
-      group: organization/t4
-      labels: [cu117]
+    runs-on: [self-hosted, cu117]
     needs: 
       - start-runner
     steps:
