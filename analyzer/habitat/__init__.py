@@ -10,7 +10,7 @@ except ImportError as ie:
     traceback.print_exc()
     print(MISSING_LIBRARY_MESSAGE)
 
-from ._version import __version__
+__version__ = "0.1.5"
 
 __description__ = 'Cross-GPU performance predictions for PyTorch neural network training.'
 

@@ -4,7 +4,7 @@ import pkg_resources
 import re
 import sysconfig
 import subprocess
-
+import sys
 from setuptools import setup, find_packages
 from setuptools.command.build import build
 
@@ -13,6 +13,28 @@ from setuptools.command.build import build
 # https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty
 
 ###################################################################
+
+# get Habitat version number from source directory
+sys.path.append(os.path.join(os.getcwd()))
+from habitat.__init__ import __version__
+sys.path.pop()
+
+"""
+We define two additional environment arguments during build to include dependencies for 
+different versions of CUDA we're targeting. 
+1. VERSION_TAG: This follows the "version number". For example, if version="1.0" and VERSION_TAG=cu121, then the 
+             version we pass into setuptools.setup would be "1.0+cu121"
+2. EXTRA_REQUIRES: Depends on the CUDA version, we need additional pip libraries to provide CUPTI (among other things).
+                   This is dictated by extra requires. 
+                   Packages should be comma separated and can selectively specify version numbers alongside package names.
+                   EXTRA_REQUIRES="nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99"
+We also need to handle the "default" scenario where neither is defined. We simply fall back to the default 
+requirements set by PyTorch. 
+"""
+
+VERSION_TAG = os.getenv("VERSION_TAG", default="")
+if VERSION_TAG: VERSION_TAG = "+" + VERSION_TAG
+EXTRA_REQUIRES = os.getenv("EXTRA_REQUIRES", default="nvidia-cuda-cupti-cu12,nvidia-cuda-runtime-cu12").split(",")
 
 NAME = "deepview-predict"
 PACKAGES = find_packages()
@@ -24,7 +46,6 @@ PYTHON_VERSION = sysconfig.get_python_version().replace('.', '')
 
 SETUP_REQUIRES = [
     "patchelf",
-    "incremental"
 ]
 
 PACKAGE_DATA = {
@@ -47,10 +68,9 @@ INSTALL_REQUIRES = [
     "torch>=1.4.0",
     "pandas>=1.1.2",
     "tqdm>=4.49.0",
-    "nvidia-cuda-cupti-cu12",
-    "nvidia-cuda-runtime-cu12",
-    "incremental"
-]
+    # "nvidia-cuda-cupti-cu12",
+    # "nvidia-cuda-runtime-cu12",
+] + EXTRA_REQUIRES
 
 KEYWORDS = [
     "neural networks",
@@ -128,6 +148,7 @@ def find_meta(meta):
 if __name__ == "__main__":
     setup(
         name=NAME,
+        version=__version__ + VERSION_TAG,
         description=find_meta("description"),
         license=find_meta("license"),
         author=find_meta("author"),
@@ -135,7 +156,6 @@ if __name__ == "__main__":
         maintainer=find_meta("author"),
         maintainer_email=find_meta("email"),
         long_description=read(README_PATH),
-        use_incremental=True,
         long_description_content_type="text/markdown",
         cmdclass= {
             "build": CustomBuildCommand
