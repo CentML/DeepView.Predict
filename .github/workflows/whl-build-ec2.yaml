@@ -83,31 +83,36 @@ jobs:
           ./build_scripts/build_wheel.sh python3.7
         env:
           VERSION_CUDA_TAG: cu121
+          TORCH_VERSION: torch
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
           VERSION_CUDA_TAG: cu121
- 
+          TORCH_VERSION: torch
+  
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
           VERSION_CUDA_TAG: cu121
-
+          TORCH_VERSION: torch
+ 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
           VERSION_CUDA_TAG: cu121
-
+          TORCH_VERSION: torch
+ 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
           VERSION_CUDA_TAG: cu121
-
+          TORCH_VERSION: torch
+ 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.tag }}
