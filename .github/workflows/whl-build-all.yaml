@@ -50,6 +50,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 
       - name: Build Python3.8 wheel
         run: |
@@ -57,6 +58,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 
       - name: Build Python3.9 wheel
         run: |
@@ -64,21 +66,24 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+ 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
           VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+ 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
           VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-          
+          TORCH_VERSION: torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu113/ --recursive --exclude "*" --include "*.whl"
@@ -120,34 +125,39 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
           VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+ 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
           VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+ 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
           VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+ 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
           VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==1.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
       - name: Upload wheels to S3
         run: |
@@ -190,13 +200,15 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-         
+          TORCH_VERSION: torch==2.0.1
+ 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
           VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==2.0.1
 
       - name: Build Python3.9 wheel
         run: |
@@ -204,6 +216,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==2.0.1
 
       - name: Build Python3.10 wheel
         run: |
@@ -211,6 +224,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==2.0.1
 
       - name: Build Python3.11 wheel
         run: |
@@ -218,6 +232,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+          TORCH_VERSION: torch==2.0.1
 
       - name: Upload wheels to S3
         run: |
@@ -260,6 +275,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+          TORCH_VERSION: torch==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 
       - name: Build Python3.8 wheel
         run: |
@@ -267,7 +283,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
-
+          TORCH_VERSION: torch==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 
       - name: Build Python3.9 wheel
         run: |
@@ -275,7 +291,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
-
+          TORCH_VERSION: torch==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 
       - name: Build Python3.10 wheel
         run: |
@@ -283,7 +299,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
-
+          TORCH_VERSION: torch==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 
       - name: Build Python3.11 wheel
         run: |
@@ -291,6 +307,7 @@ jobs:
         env:
           VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+          TORCH_VERSION: torch==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 
       - name: Upload wheels to S3
         run: |
@@ -332,31 +349,36 @@ jobs:
           ./build_scripts/build_wheel.sh python3.7
         env:
           VERSION_CUDA_TAG: cu121
+          TORCH_VERSION: torch
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
           VERSION_CUDA_TAG: cu121
+          TORCH_VERSION: torch
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
           VERSION_CUDA_TAG: cu121
+          TORCH_VERSION: torch
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
           VERSION_CUDA_TAG: cu121
+          TORCH_VERSION: torch
 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
           VERSION_CUDA_TAG: cu121
- 
+          TORCH_VERSION: torch
+
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu121/ --recursive --exclude "*" --include "*.whl"
