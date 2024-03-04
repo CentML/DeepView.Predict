@@ -42,46 +42,13 @@ jobs:
           git push -u origin release/${{ github.event.inputs.tag }}
           git tag ${{ github.event.inputs.tag }}
 
-  start-runner:
-    name: Start self-hosted EC2 runner
-    runs-on: ubuntu-latest
-    needs: 
-      - create-release-branch
-    outputs:
-      label: ${{ steps.start-ec2-runner.outputs.label }}
-      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws-region: us-east-1
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-      - name: Start EC2 runner
-        id: start-ec2-runner
-        uses: CentML/GPUClusterSwitchGithubAction@v1.3.10
-        with:
-          mode: start
-          github-token: ${{ secrets.CENTML_PAT }}
-          t4: true
-          a10g: false
-          v100: false
-
   build-release:
     runs-on: [self-hosted, cu121]
-    needs: 
-      - start-runner
     steps:
       - name: Fetch repository
         uses: actions/checkout@v3
         with:
           ref: release/${{ github.event.inputs.tag }}
-
-      - name: Build Python3.7 distribution
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu121
 
       - name: Build Python3.8 wheel
         run: |
@@ -111,30 +78,6 @@ jobs:
         with:
           name: ${{ github.event.inputs.tag }}
           path: analyzer/dist/*.whl
-  
-  stop-runner:
-    name: Stop self-hosted EC2 runner
-    needs:
-      - start-runner # required to get output from the start-runner job
-      - build-release # required to wait when the main job is done
-    runs-on: ubuntu-latest
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          aws-region: us-east-1
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-      - name: Stop EC2 runner
-        id: stop-ec2-runner
-        uses: CentML/GPUClusterSwitchGithubAction@v1.3.10
-        with:
-          mode: stop
-          github-token: ${{ secrets.CENTML_PAT }}
-          t4: true # required to match the list above - otherwise the runners will not stop
-          a10g: false # required to match the list above - otherwise the runners will not stop
-          v100: false
 
   publish-to-github:
     name: Publish to Github
@@ -161,51 +104,51 @@ jobs:
           RELEASE_ARTIFACTS=$(find ./dist -name "*${{ github.event.inputs.tag }}*" -type f | paste -s -d ' ' - )
           VERSION_TAG="v${{ github.event.inputs.tag }}"
           gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
-          # gh release create "$VERSION_TAG" \
-          #                         --title "$VERSION_TAG" \
-          #                         --notes "$RELEASE_NOTES" \
-          #                         --target "$GITHUB_SHA" \
-          #                         $RELEASE_ARTIFACTS
-          # gh pr create --title "Release $VERSION_TAG" --body "$RELEASE_NOTES"
+          gh release create "$VERSION_TAG" \
+                                  --title "$VERSION_TAG" \
+                                  --notes "$RELEASE_NOTES" \
+                                  --target "$GITHUB_SHA" \
+                                  $RELEASE_ARTIFACTS
+          gh pr create --title "Release $VERSION_TAG" --body "$RELEASE_NOTES"
 
-  # publish-to-test-pypi:
-  #   name: Publish to Test PyPI
-  #   needs: build-release
-  #   runs-on: ubuntu-latest
-  #   environment: Test
-  #   concurrency: Test
-  #   permissions:
-  #     id-token: write
+  publish-to-test-pypi:
+    name: Publish to Test PyPI
+    needs: build-release
+    runs-on: ubuntu-latest
+    environment: Test
+    concurrency: Test
+    permissions:
+      id-token: write
 
-  #   steps:
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ${{ github.event.inputs.tag }}
-  #         path: dist
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: dist
 
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         repository_url: https://test.pypi.org/legacy/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository_url: https://test.pypi.org/legacy/
 
-  # publish-to-pypi:
-  #   name: Publish to PyPI
-  #   needs: publish-to-test-pypi
-  #   runs-on: ubuntu-latest
-  #   environment: Production
-  #   concurrency: Production
-  #   permissions:
-  #     id-token: write
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: publish-to-test-pypi
+    runs-on: ubuntu-latest
+    environment: Production
+    concurrency: Production
+    permissions:
+      id-token: write
 
-  #   steps:
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ${{ github.event.inputs.tag }}
-  #         path: dist
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag }}
+          path: dist
 
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         repository_url: https://upload.pypi.org/legacy/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository_url: https://upload.pypi.org/legacy/

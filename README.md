@@ -22,8 +22,8 @@ DeepView.Predict is a tool that predicts a deep neural network's training iterat
 <h2 id="installation">Installation</h2>
 
 To run DeepView.Predict, you need:
-- [Python 3.6+](https://www.python.org/)
-- [Pytorch 1.1.0+](https://pytorch.org/)
+- [Python 3.8+](https://www.python.org/)
+- [Pytorch 1.13.1+](https://pytorch.org/)
 - A system equiped with an Nvidia GPU with properly configured CUDA
 
 Currently, we have predictors for the following Nvidia GPUs:

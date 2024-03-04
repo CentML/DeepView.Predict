@@ -44,13 +44,6 @@ jobs:
       - name: Fetch repository
         uses: actions/checkout@v4
 
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu113
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
@@ -114,13 +107,6 @@ jobs:
       - name: Fetch repository
         uses: actions/checkout@v4
 
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu116
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
-
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
@@ -183,13 +169,6 @@ jobs:
 
       - name: Fetch repository
         uses: actions/checkout@v4
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu117
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.8 wheel
         run: |
@@ -254,13 +233,6 @@ jobs:
       - name: Fetch repository
         uses: actions/checkout@v4
 
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu118
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
-
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
@@ -323,12 +295,6 @@ jobs:
 
       - name: Fetch repository
         uses: actions/checkout@v4
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-        env:
-          CUDA_TAG: cu121
 
       - name: Build Python3.8 wheel
         run: |
