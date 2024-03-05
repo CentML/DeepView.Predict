@@ -30,7 +30,7 @@ different versions of CUDA we're targeting.
 We also need to handle the "default" scenario where neither is defined. We simply fall back to the default 
 requirements set by PyTorch. 
 """
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 NAME = "deepview-predict"
 PACKAGES = find_packages()
 META_PATH = os.path.join("habitat", "__init__.py")
