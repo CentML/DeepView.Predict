@@ -48,28 +48,28 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
-          CUDA_TAG: cu113
+          VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
-          CUDA_TAG: cu113
+          VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
-          CUDA_TAG: cu113
+          VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
-          CUDA_TAG: cu113
+          VERSION_CUDA_TAG: cu113
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Upload wheels to S3
@@ -111,28 +111,28 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
-          CUDA_TAG: cu116
+          VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
-          CUDA_TAG: cu116
+          VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
-          CUDA_TAG: cu116
+          VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
-          CUDA_TAG: cu116
+          VERSION_CUDA_TAG: cu116
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Upload wheels to S3
@@ -174,28 +174,28 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
-          CUDA_TAG: cu117
+          VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
-          CUDA_TAG: cu117
+          VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
-          CUDA_TAG: cu117
+          VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
-          CUDA_TAG: cu117
+          VERSION_CUDA_TAG: cu117
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Upload wheels to S3
@@ -237,28 +237,28 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
-          CUDA_TAG: cu118
+          VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
-          CUDA_TAG: cu118
+          VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
-          CUDA_TAG: cu118
+          VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
-          CUDA_TAG: cu118
+          VERSION_CUDA_TAG: cu118
           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Upload wheels to S3
@@ -300,25 +300,25 @@ jobs:
         run: |
           ./build_scripts/build_wheel.sh python3.8
         env:
-          CUDA_TAG: cu121
+          VERSION_CUDA_TAG: cu121
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
         env:
-          CUDA_TAG: cu121
+          VERSION_CUDA_TAG: cu121
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
         env:
-          CUDA_TAG: cu121
+          VERSION_CUDA_TAG: cu121
 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
         env:
-          CUDA_TAG: cu121
+          VERSION_CUDA_TAG: cu121
 
       - name: Upload wheels to S3
         run: |

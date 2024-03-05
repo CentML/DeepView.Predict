@@ -17,7 +17,7 @@ from setuptools.command.build import build
 We define two additional environment arguments during build to include dependencies for 
 different versions of CUDA we're targeting. 
 
-1. CUDA_TAG : This follows the "version number". For example, if version="1.0" and CUDA_TAG =cu121, then the 
+1. VERSION_CUDA_TAG : This follows the "version number". For example, if version="1.0" and VERSION_CUDA_TAG =cu121, then the 
              version we pass into setuptools.setup would be "1.0+cu121"
 
 2. EXTRA_REQUIRES: Depends on the CUDA version, we need additional pip libraries to provide CUPTI (among other things).
@@ -44,8 +44,8 @@ SETUP_REQUIRES = [
     "incremental"
 ]
 
-CUDA_TAG = os.getenv("CUDA_TAG", default="")
-if CUDA_TAG : CUDA_TAG  = "+" + CUDA_TAG 
+VERSION_CUDA_TAG = os.getenv("VERSION_CUDA_TAG", default="")
+if VERSION_CUDA_TAG : VERSION_CUDA_TAG  = "+" + VERSION_CUDA_TAG 
 EXTRA_REQUIRES = os.getenv("EXTRA_REQUIRES", default="nvidia-cuda-cupti-cu12,nvidia-cuda-runtime-cu12").split(",")
 
 PACKAGE_DATA = {
@@ -149,7 +149,7 @@ def find_meta(meta):
 if __name__ == "__main__":
     setup(
         name=NAME,
-        version=VERSION + CUDA_TAG ,
+        version=VERSION + VERSION_CUDA_TAG ,
         description=find_meta("description"),
         license=find_meta("license"),
         author=find_meta("author"),
