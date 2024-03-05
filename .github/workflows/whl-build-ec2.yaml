@@ -53,26 +53,18 @@ jobs:
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
-        env:
-          CUDA_TAG: cu121
   
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
-        env:
-          CUDA_TAG: cu121
  
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-        env:
-          CUDA_TAG: cu121
  
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
-        env:
-          CUDA_TAG: cu121
  
       - uses: actions/upload-artifact@v3
         with:
