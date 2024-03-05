@@ -47,6 +47,8 @@ find_library(NVPerf_HOST_LIBRARY nvperf_host
   ${CUPTI_CUDA_HOME}/lib64
   /usr/local/cuda/lib64
   /usr/local/cuda/extras/CUPTI/lib64
+  /opt/cuda/lib64
+  /opt/cuda/extras/CUPTI/lib64
 )
 
 find_library(NVPerf_TARGET_LIBRARY nvperf_target
@@ -56,6 +58,8 @@ find_library(NVPerf_TARGET_LIBRARY nvperf_target
   ${CUPTI_CUDA_HOME}/lib64
   /usr/local/cuda/lib64
   /usr/local/cuda/extras/CUPTI/lib64
+  /opt/cuda/lib64
+  /opt/cuda/extras/CUPTI/lib64
 )
 
 find_package_handle_standard_args(NVPerf

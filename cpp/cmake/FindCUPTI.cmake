@@ -49,6 +49,8 @@ find_path(CUPTI_INCLUDE_DIR cupti.h
   ${CUPTI_CUDA_HOME}/include
   /usr/local/cuda/include
   /usr/local/cuda/extras/CUPTI/include
+  /opt/cuda/include
+  /opt/cuda/extras/CUPTI/include
 )
 
 find_library(CUPTI_LIBRARY cupti
@@ -58,6 +60,8 @@ find_library(CUPTI_LIBRARY cupti
   ${CUPTI_CUDA_HOME}/lib64
   /usr/local/cuda/lib64
   /usr/local/cuda/extras/CUPTI/lib64
+  /opt/cuda/lib64
+  /opt/cuda/extras/CUPTI/lib64
 )
 
 find_package_handle_standard_args(CUPTI
