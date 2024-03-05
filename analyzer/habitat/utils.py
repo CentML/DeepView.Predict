@@ -1,6 +1,5 @@
 import logging
 import os
-import yaml
 
 
 def set_up_logging():

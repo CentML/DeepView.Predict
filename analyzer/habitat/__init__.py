@@ -10,7 +10,9 @@ except ImportError as ie:
     traceback.print_exc()
     print(MISSING_LIBRARY_MESSAGE)
 
-from ._version import __version__
+import importlib.metadata
+
+__version__ = importlib.metadata.version("deepview-predict")
 
 __description__ = 'Cross-GPU performance predictions for PyTorch neural network training.'
 

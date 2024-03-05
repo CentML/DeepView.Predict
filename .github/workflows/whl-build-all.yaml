@@ -9,7 +9,7 @@ jobs:
     runs-on: [self-hosted]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -27,7 +27,7 @@ jobs:
     runs-on: [self-hosted, cu113]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -42,28 +42,36 @@ jobs:
           ls -la
 
       - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
+        uses: actions/checkout@v4
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
+        env:
+          CUDA_TAG: cu113
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
-
+        env:
+          CUDA_TAG: cu113
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+ 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-
+        env:
+          CUDA_TAG: cu113
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+ 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
-   
+        env:
+          CUDA_TAG: cu113
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu113/ --recursive --exclude "*" --include "*.whl"
@@ -82,7 +90,7 @@ jobs:
     runs-on: [self-hosted, cu116]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -97,33 +105,35 @@ jobs:
           ls -la
 
       - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
+        uses: actions/checkout@v4
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
-
+        env:
+          CUDA_TAG: cu116
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+ 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
-
+        env:
+          CUDA_TAG: cu116
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+ 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-
+        env:
+          CUDA_TAG: cu116
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+ 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels-cu116
-          path: analyzer/dist/*.whl
+        env:
+          CUDA_TAG: cu116
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Upload wheels to S3
         run: |
@@ -143,7 +153,7 @@ jobs:
     runs-on: [self-hosted, cu117]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -158,27 +168,35 @@ jobs:
           ls -la
 
       - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
-
+        uses: actions/checkout@v4
+ 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
+        env:
+          CUDA_TAG: cu117
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
+        env:
+          CUDA_TAG: cu117
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-      
+        env:
+          CUDA_TAG: cu117
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
+        env:
+          CUDA_TAG: cu117
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
       - name: Upload wheels to S3
         run: |
@@ -198,7 +216,7 @@ jobs:
     runs-on: [self-hosted, cu118]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -213,27 +231,35 @@ jobs:
           ls -la
 
       - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
+        uses: actions/checkout@v4
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
+        env:
+          CUDA_TAG: cu118
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
+        env:
+          CUDA_TAG: cu118
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
+        env:
+          CUDA_TAG: cu118
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
+        env:
+          CUDA_TAG: cu118
+          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
       - name: Upload wheels to S3
         run: |
@@ -253,7 +279,7 @@ jobs:
     runs-on: [self-hosted, cu121]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
@@ -268,28 +294,32 @@ jobs:
           ls -la
 
       - name: Fetch repository
-        uses: actions/checkout@v3
-
-      - name: Build Python3.7 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.7
+        uses: actions/checkout@v4
 
       - name: Build Python3.8 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.8
+        env:
+          CUDA_TAG: cu121
 
       - name: Build Python3.9 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.9
+        env:
+          CUDA_TAG: cu121
 
       - name: Build Python3.10 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.10
-      
+        env:
+          CUDA_TAG: cu121
+
       - name: Build Python3.11 wheel
         run: |
           ./build_scripts/build_wheel.sh python3.11
-        
+        env:
+          CUDA_TAG: cu121
+
       - name: Upload wheels to S3
         run: |
           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu121/ --recursive --exclude "*" --include "*.whl"
