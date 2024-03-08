@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: query runners
-      - run: |
+        run: |
           gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
           gh api \
           -H "Accept: application/vnd.github+json" \
