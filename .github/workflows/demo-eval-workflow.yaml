@@ -6,11 +6,12 @@ on:
 jobs:
   query-runners:
     name: Query active runners
+    runs-on: ubuntu-latest
     steps:
-      name: query runners
-      run: |
-        gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
-        gh api \
-        -H "Accept: application/vnd.github+json" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        /orgs/centml/actions/runner-groups
+      - name: query runners
+      - run: |
+          gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
+          gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          /orgs/centml/actions/runner-groups
