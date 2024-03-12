@@ -7,17 +7,39 @@ env:
   DEVICE_PAIRS: T4,V100;T4,A100
 
 jobs:
-  query-runners:
-    name: Run on T4
+  create-summary:
+    needs: [experiments-t4]
+    runs-on: [self-hosted]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+      
+      - name: create directory to gather all csv files
+        run: |
+          mkdir all_results
+        
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all_results
+          merge-multiple: true
+      - run: |
+          ls -R all_results
+
+  experiments-t4:
     runs-on: [self-hosted, dev, t4]
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
 
-      - name: test step
+      - name: run experiments
         run: | 
-          # sudo chmod +x ./experiments/workflow_model_eval.sh
           ./experiments/workflow_model_eval.sh python3.10
-          echo "step completed"
         env:
           LOCAL_DEVICE: T4
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-t4
+          path: ./experiments/results/
