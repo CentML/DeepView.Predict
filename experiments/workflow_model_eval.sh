@@ -36,8 +36,7 @@ for j in "${device_pairs_list[@]}"; do
     orig=${pair[0]}
     dest=${pair[1]}
     if [ ${orig} == ${LOCAL_DEVICE} ]; then
-        # python model_eval_per_device.py ${orig} ${dest}
-        echo ${orig} ${dest}
+        python model_eval_per_device.py ${orig} ${dest}
     fi
 done
 
