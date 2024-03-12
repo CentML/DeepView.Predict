@@ -17,7 +17,7 @@ pushd analyzer
 popd
 
 pushd experiments
-
+echo ${VENV_NAME}
 device_pairs_list=()
 IFS=';' read -ra input_devices <<< "${DEVICE_PAIRS}"
 for i in "${input_devices[@]}"; do
