@@ -9,7 +9,7 @@ env:
 jobs:
   query-runners:
     name: Run on T4
-    runs-on: [self-hosted, cu121]
+    runs-on: [self-hosted, dev]
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
