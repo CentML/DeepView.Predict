@@ -1,5 +1,3 @@
-#!/bin/bash
-
 PYTHON_VERSION=$1
 VENV_NAME=venv_${PYTHON_VERSION}
 
