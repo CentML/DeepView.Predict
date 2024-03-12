@@ -9,7 +9,7 @@ env:
 jobs:
   create-summary:
     needs: [experiments-t4]
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
@@ -23,8 +23,24 @@ jobs:
         with:
           path: all_results
           merge-multiple: true
-      - run: |
+
+      - name: check files
+        run: |
           ls -R all_results
+
+      - name: generate end-to-end and per operation results
+        run: |
+          sudo apt install python3-pip -y
+          pip3 install pandas
+          python3 ./experiments/process_results.py --in-dir all_results --out-e2e out_e2e --out-ops out_ops
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-t4
+          path: |
+            ./experiments/out_e2e/
+            ./experiments/out_ops/
 
   experiments-t4:
     runs-on: [self-hosted, dev, t4]
