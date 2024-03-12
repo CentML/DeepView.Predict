@@ -3,18 +3,18 @@
 PYTHON_VERSION=$1
 VENV_NAME=venv_${PYTHON_VERSION}
 
-# python3 -m virtualenv ${VENV_NAME} -p ${PYTHON_VERSION}
-# ln -s /usr/bin/${PYTHON_VERSION}-config ${VENV_NAME}/bin/python3-config
+python3 -m virtualenv ${VENV_NAME} -p ${PYTHON_VERSION}
+ln -s /usr/bin/${PYTHON_VERSION}-config ${VENV_NAME}/bin/python3-config
 
-# source $VENV_NAME/bin/activate
+source $VENV_NAME/bin/activate
 
-# rm -r cpp/build analyzer/habitat/*.so
-# git submodule update --init --recursive
-# git lfs pull
+rm -r cpp/build analyzer/habitat/*.so
+git submodule update --init --recursive
+git lfs pull
 
-# pushd analyzer
-# ./install-dev.sh
-# popd
+pushd analyzer
+./install-dev.sh
+popd
 
 pushd experiments
 echo ${VENV_NAME}
@@ -41,7 +41,7 @@ for j in "${device_pairs_list[@]}"; do
     fi
 done
 
-# popd 
+popd 
 
-# deactivate
-# rm -r ${VENV_NAME}
+deactivate
+rm -r ${VENV_NAME}
