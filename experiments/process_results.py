@@ -98,6 +98,7 @@ def create_store_folder(dest_folder):
     # create folder to store results
     curr_path = os.path.dirname(os.path.abspath(__file__))
     storage_folder = f"{curr_path}/{dest_folder}"
+    print(storage_folder)
     Path(f"{storage_folder}").mkdir(parents=True, exist_ok=True)
 
 
