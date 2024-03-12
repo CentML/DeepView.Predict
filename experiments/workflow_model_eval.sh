@@ -23,6 +23,7 @@ echo ${LOCAL_DEVICE}
 
 device_pairs_list=()
 IFS=';' read -ra input_devices <<< "${DEVICE_PAIRS}"
+echo "LINE 26 after IFS"
 for i in "${input_devices[@]}"; do
     IFS=',' read -ra pair <<< "${i}"
     orig=${pair[0]}
