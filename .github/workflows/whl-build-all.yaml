@@ -344,7 +344,7 @@ jobs:
     runs-on: [self-hosted, cu121]
     steps:
       - name: Fetch repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: test step
         run: | 
