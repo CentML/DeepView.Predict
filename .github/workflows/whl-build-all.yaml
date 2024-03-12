@@ -3,333 +3,352 @@ name: whl-build-all
 on:
   workflow_dispatch:
 
-jobs:
-  create-habitat-index-html:
-    needs: [whl-build-cu113, whl-build-cu116, whl-build-cu117, whl-build-cu118, whl-build-cu121]
-    runs-on: [self-hosted]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+# jobs:
+#   create-habitat-index-html:
+#     needs: [whl-build-cu113, whl-build-cu116, whl-build-cu117, whl-build-cu118, whl-build-cu121]
+#     runs-on: [self-hosted]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Create index.html
-        run: |
-          python3 /home/builduser/create_index.py habitat -f wheels-cu113 wheels-cu116 wheels-cu117 wheels-cu118 wheels-cu121
+#       - name: Create index.html
+#         run: |
+#           python3 /home/builduser/create_index.py habitat -f wheels-cu113 wheels-cu116 wheels-cu117 wheels-cu118 wheels-cu121
 
-      - name: Upload to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/
+#       - name: Upload to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/
 
-  whl-build-cu113:
-    runs-on: [self-hosted, cu113]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+#   whl-build-cu113:
+#     runs-on: [self-hosted, cu113]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
+#       - name: Display host information
+#         run: |
+#           uname -a
+#           hostname
+#           pwd
+#           id
+#           ls -la
 
-      - name: Fetch repository
-        uses: actions/checkout@v4
+#       - name: Fetch repository
+#         uses: actions/checkout@v4
 
-      - name: Build Python3.8 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.8
-        env:
-          VERSION_CUDA_TAG: cu113
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.8 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.8
+#         env:
+#           VERSION_CUDA_TAG: cu113
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Build Python3.9 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.9
-        env:
-          VERSION_CUDA_TAG: cu113
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.9 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.9
+#         env:
+#           VERSION_CUDA_TAG: cu113
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
-      - name: Build Python3.10 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.10
-        env:
-          VERSION_CUDA_TAG: cu113
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.10 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.10
+#         env:
+#           VERSION_CUDA_TAG: cu113
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
-      - name: Build Python3.11 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.11
-        env:
-          VERSION_CUDA_TAG: cu113
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.11 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.11
+#         env:
+#           VERSION_CUDA_TAG: cu113
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu113/ --recursive --exclude "*" --include "*.whl"
+#       - name: Upload wheels to S3
+#         run: |
+#           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu113/ --recursive --exclude "*" --include "*.whl"
       
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu113 -f $formatted_file_list
+#       - name: Create index.html
+#         run: |
+#           file_list=(analyzer/dist/*.whl)
+#           formatted_file_list=$(basename -a ${file_list[@]})
+#           python3 /home/builduser/create_index.py habitat_cu113 -f $formatted_file_list
 
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu113/
+#       - name: Upload index.html to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu113/
 
-  whl-build-cu116:
-    runs-on: [self-hosted, cu116]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+#   whl-build-cu116:
+#     runs-on: [self-hosted, cu116]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
+#       - name: Display host information
+#         run: |
+#           uname -a
+#           hostname
+#           pwd
+#           id
+#           ls -la
 
-      - name: Fetch repository
-        uses: actions/checkout@v4
+#       - name: Fetch repository
+#         uses: actions/checkout@v4
 
-      - name: Build Python3.8 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.8
-        env:
-          VERSION_CUDA_TAG: cu116
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.8 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.8
+#         env:
+#           VERSION_CUDA_TAG: cu116
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
-      - name: Build Python3.9 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.9
-        env:
-          VERSION_CUDA_TAG: cu116
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.9 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.9
+#         env:
+#           VERSION_CUDA_TAG: cu116
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
-      - name: Build Python3.10 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.10
-        env:
-          VERSION_CUDA_TAG: cu116
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.10 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.10
+#         env:
+#           VERSION_CUDA_TAG: cu116
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
  
-      - name: Build Python3.11 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.11
-        env:
-          VERSION_CUDA_TAG: cu116
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.11 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.11
+#         env:
+#           VERSION_CUDA_TAG: cu116
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu116/ --recursive --exclude "*" --include "*.whl"
+#       - name: Upload wheels to S3
+#         run: |
+#           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu116/ --recursive --exclude "*" --include "*.whl"
       
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu116 -f $formatted_file_list
+#       - name: Create index.html
+#         run: |
+#           file_list=(analyzer/dist/*.whl)
+#           formatted_file_list=$(basename -a ${file_list[@]})
+#           python3 /home/builduser/create_index.py habitat_cu116 -f $formatted_file_list
 
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu116/
+#       - name: Upload index.html to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu116/
 
-  whl-build-cu117:
-    runs-on: [self-hosted, cu117]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+#   whl-build-cu117:
+#     runs-on: [self-hosted, cu117]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
           
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
+#       - name: Display host information
+#         run: |
+#           uname -a
+#           hostname
+#           pwd
+#           id
+#           ls -la
 
-      - name: Fetch repository
-        uses: actions/checkout@v4
+#       - name: Fetch repository
+#         uses: actions/checkout@v4
  
-      - name: Build Python3.8 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.8
-        env:
-          VERSION_CUDA_TAG: cu117
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.8 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.8
+#         env:
+#           VERSION_CUDA_TAG: cu117
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Build Python3.9 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.9
-        env:
-          VERSION_CUDA_TAG: cu117
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.9 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.9
+#         env:
+#           VERSION_CUDA_TAG: cu117
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Build Python3.10 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.10
-        env:
-          VERSION_CUDA_TAG: cu117
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.10 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.10
+#         env:
+#           VERSION_CUDA_TAG: cu117
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Build Python3.11 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.11
-        env:
-          VERSION_CUDA_TAG: cu117
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
+#       - name: Build Python3.11 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.11
+#         env:
+#           VERSION_CUDA_TAG: cu117
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.7.101,nvidia-cuda-runtime-cu11==11.7.99
 
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu117/ --recursive --exclude "*" --include "*.whl"
+#       - name: Upload wheels to S3
+#         run: |
+#           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu117/ --recursive --exclude "*" --include "*.whl"
       
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu117 -f $formatted_file_list
+#       - name: Create index.html
+#         run: |
+#           file_list=(analyzer/dist/*.whl)
+#           formatted_file_list=$(basename -a ${file_list[@]})
+#           python3 /home/builduser/create_index.py habitat_cu117 -f $formatted_file_list
 
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu117/
+#       - name: Upload index.html to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu117/
 
-  whl-build-cu118:
-    runs-on: [self-hosted, cu118]
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+#   whl-build-cu118:
+#     runs-on: [self-hosted, cu118]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
+#       - name: Display host information
+#         run: |
+#           uname -a
+#           hostname
+#           pwd
+#           id
+#           ls -la
 
-      - name: Fetch repository
-        uses: actions/checkout@v4
+#       - name: Fetch repository
+#         uses: actions/checkout@v4
 
-      - name: Build Python3.8 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.8
-        env:
-          VERSION_CUDA_TAG: cu118
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+#       - name: Build Python3.8 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.8
+#         env:
+#           VERSION_CUDA_TAG: cu118
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
-      - name: Build Python3.9 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.9
-        env:
-          VERSION_CUDA_TAG: cu118
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+#       - name: Build Python3.9 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.9
+#         env:
+#           VERSION_CUDA_TAG: cu118
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
-      - name: Build Python3.10 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.10
-        env:
-          VERSION_CUDA_TAG: cu118
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+#       - name: Build Python3.10 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.10
+#         env:
+#           VERSION_CUDA_TAG: cu118
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
-      - name: Build Python3.11 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.11
-        env:
-          VERSION_CUDA_TAG: cu118
-          EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
+#       - name: Build Python3.11 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.11
+#         env:
+#           VERSION_CUDA_TAG: cu118
+#           EXTRA_REQUIRES: nvidia-cuda-cupti-cu11==11.8.87,nvidia-cuda-runtime-cu11==11.8.89
 
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu118/ --recursive --exclude "*" --include "*.whl"
+#       - name: Upload wheels to S3
+#         run: |
+#           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu118/ --recursive --exclude "*" --include "*.whl"
       
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu118 -f $formatted_file_list
+#       - name: Create index.html
+#         run: |
+#           file_list=(analyzer/dist/*.whl)
+#           formatted_file_list=$(basename -a ${file_list[@]})
+#           python3 /home/builduser/create_index.py habitat_cu118 -f $formatted_file_list
 
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu118/
+#       - name: Upload index.html to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu118/
 
-  whl-build-cu121:
+#   whl-build-cu121:
+#     runs-on: [self-hosted, cu121]
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+#           aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+#           aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+
+#       - name: Display host information
+#         run: |
+#           uname -a
+#           hostname
+#           pwd
+#           id
+#           ls -la
+
+#       - name: Fetch repository
+#         uses: actions/checkout@v4
+
+#       - name: Build Python3.8 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.8
+#         env:
+#           VERSION_CUDA_TAG: cu121
+
+#       - name: Build Python3.9 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.9
+#         env:
+#           VERSION_CUDA_TAG: cu121
+
+#       - name: Build Python3.10 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.10
+#         env:
+#           VERSION_CUDA_TAG: cu121
+
+#       - name: Build Python3.11 wheel
+#         run: |
+#           ./build_scripts/build_wheel.sh python3.11
+#         env:
+#           VERSION_CUDA_TAG: cu121
+
+#       - name: Upload wheels to S3
+#         run: |
+#           aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu121/ --recursive --exclude "*" --include "*.whl"
+      
+#       - name: Create index.html
+#         run: |
+#           file_list=(analyzer/dist/*.whl)
+#           formatted_file_list=$(basename -a ${file_list[@]})
+#           python3 /home/builduser/create_index.py habitat_cu121 -f $formatted_file_list
+
+#       - name: Upload index.html to S3
+#         run: |
+#           aws s3 cp index.html s3://centml-releases/habitat/wheels-cu121/
+
+
+env:
+  DEVICE_PAIRS: T4,V100;T4,A100
+
+jobs:
+  query-runners:
+    name: Run on T4
     runs-on: [self-hosted, cu121]
     steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
-          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
-
-      - name: Display host information
-        run: |
-          uname -a
-          hostname
-          pwd
-          id
-          ls -la
-
       - name: Fetch repository
         uses: actions/checkout@v4
 
-      - name: Build Python3.8 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.8
+      - name: test step
+        run: | 
+          sudo chmod +x ./experiments/workflow_model_eval.sh
+          ./experiments/workflow_model_eval.sh python3.10
         env:
-          VERSION_CUDA_TAG: cu121
-
-      - name: Build Python3.9 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.9
-        env:
-          VERSION_CUDA_TAG: cu121
-
-      - name: Build Python3.10 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.10
-        env:
-          VERSION_CUDA_TAG: cu121
-
-      - name: Build Python3.11 wheel
-        run: |
-          ./build_scripts/build_wheel.sh python3.11
-        env:
-          VERSION_CUDA_TAG: cu121
-
-      - name: Upload wheels to S3
-        run: |
-          aws s3 cp analyzer/dist/ s3://centml-releases/habitat/wheels-cu121/ --recursive --exclude "*" --include "*.whl"
-      
-      - name: Create index.html
-        run: |
-          file_list=(analyzer/dist/*.whl)
-          formatted_file_list=$(basename -a ${file_list[@]})
-          python3 /home/builduser/create_index.py habitat_cu121 -f $formatted_file_list
-
-      - name: Upload index.html to S3
-        run: |
-          aws s3 cp index.html s3://centml-releases/habitat/wheels-cu121/
+          LOCAL_DEVICE: T4
