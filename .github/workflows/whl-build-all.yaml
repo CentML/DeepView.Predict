@@ -350,5 +350,6 @@ jobs:
         run: | 
           sudo chmod +x ./experiments/workflow_model_eval.sh
           ./experiments/workflow_model_eval.sh python3.10
+          echo "step completed"
         env:
           LOCAL_DEVICE: T4
