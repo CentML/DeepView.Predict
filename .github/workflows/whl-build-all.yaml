@@ -8,7 +8,7 @@ env:
 
 jobs:
   create-summary:
-    needs: [experiments-t4]
+    needs: [experiments-t4, experiments-v100]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch repository
@@ -59,3 +59,21 @@ jobs:
         with:
           name: artifacts-t4
           path: ./experiments/results/
+
+  experiments-v100:
+      runs-on: [self-hosted, dev, v100]
+      steps:
+        - name: Fetch repository
+          uses: actions/checkout@v4
+
+        - name: run experiments
+          run: | 
+            ./experiments/workflow_model_eval.sh python3.10
+          env:
+            LOCAL_DEVICE: V100
+
+        - name: upload artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: artifacts-v100
+            path: ./experiments/results/
