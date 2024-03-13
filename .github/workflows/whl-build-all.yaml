@@ -37,7 +37,7 @@ jobs:
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-t4
+          name: artifacts-combined
           path: |
             ./experiments/out_e2e/
             ./experiments/out_ops/
