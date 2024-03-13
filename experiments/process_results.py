@@ -179,16 +179,19 @@ def ops_results(config_name, config, out_ops):
         combined = predictions.copy()
         combined["run_time_ms_measured"] = actual["run_time_ms"]
         combined = combined.rename(columns={"run_time_ms": "run_time_ms_predicted"})
-        combined["pct_error"] = percent_error(
+        total_predicted_time = sum(combined["run_time_ms_measured"])
+        combined["wgt_pred_time"] = combined["run_time_ms_predicted"]/total_predicted_time
+        combined["pct_error"] = abs(percent_error(
             predicted=combined["run_time_ms_predicted"],
             actual=combined["run_time_ms_measured"],
-        )
+        ))
 
         file_name = "{}-{}-{}-breakdown-combined.csv".format(
             config_name,
             origin_device,
             dest_device,
         )
+        combined = combined.sort_values(by=["wgt_pred_time","pct_error"], ascending=[False,False])
         combined.to_csv(os.path.join(storage_path, file_name), index=False)
 
 

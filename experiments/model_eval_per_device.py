@@ -233,16 +233,11 @@ def main():
         storage_folder=storage_folder,
     )
 
-    print("running dcgan experiments")
     run_dcgan_experiments(context)
-    # print("running inception experiments")
-    # run_inception_experiments(context)
-    # print("running resnet50 experiments")
-    # run_resnet50_experiments(context)
-    # print("running gnmt experiments")
-    # run_gnmt_experiments(context)
-    # print("running nanogpt experiments")
-    # run_nanogpt_experiments(context)
+    run_inception_experiments(context)
+    run_resnet50_experiments(context)
+    run_gnmt_experiments(context)
+    run_nanogpt_experiments(context)
 
 
 if __name__ == "__main__":
