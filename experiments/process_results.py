@@ -100,11 +100,12 @@ def create_store_folder(dest_folder):
     storage_folder = f"{curr_path}/{dest_folder}"
     print(storage_folder)
     Path(f"{storage_folder}").mkdir(parents=True, exist_ok=True)
+    return storage_folder
 
 
 def e2e_results(config_name, config, out_e2e):
 
-    create_store_folder(out_e2e)
+    storage_path = create_store_folder(out_e2e)
 
     all_frames = []
     actual = config.e2e_actual
@@ -140,12 +141,12 @@ def e2e_results(config_name, config, out_e2e):
     all_data = all_data.sort_values(by=["origin_device", "dest_device"])
 
     file_name = "{}-e2e-combined.csv".format(config_name)
-    all_data.to_csv(os.path.join(out_e2e, file_name), index=False)
+    all_data.to_csv(os.path.join(storage_path, file_name), index=False)
 
 
 def ops_results(config_name, config, out_ops):
 
-    create_store_folder(out_ops)
+    storage_path = create_store_folder(out_ops)
 
     for origin_device, dest_device in itertools.permutations(DEVICES, 2):
         if (origin_device, dest_device) not in config.ops:
@@ -188,7 +189,7 @@ def ops_results(config_name, config, out_ops):
             origin_device,
             dest_device,
         )
-        combined.to_csv(os.path.join(out_ops, file_name), index=False)
+        combined.to_csv(os.path.join(storage_path, file_name), index=False)
 
 
 def main():
