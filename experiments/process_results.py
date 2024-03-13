@@ -98,7 +98,6 @@ def create_store_folder(dest_folder):
     # create folder to store results
     curr_path = os.path.dirname(os.path.abspath(__file__))
     storage_folder = f"{curr_path}/{dest_folder}"
-    print(storage_folder)
     Path(f"{storage_folder}").mkdir(parents=True, exist_ok=True)
     return storage_folder
 
@@ -135,6 +134,7 @@ def e2e_results(config_name, config, out_e2e):
             predicted=merged["run_time_ms_predicted"],
             actual=merged["run_time_ms_measured"],
         )
+        print(config_name,'\n',merged)
         all_frames.append(merged)
 
     all_data = pd.concat(all_frames, axis="index", ignore_index=True)
