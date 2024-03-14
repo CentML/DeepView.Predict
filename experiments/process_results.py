@@ -18,6 +18,7 @@ DEVICES = [
     "P100",
     "V100",
     "A100",
+    "L4"
 ]
 
 E2E_FILE = re.compile(
