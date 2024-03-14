@@ -31,9 +31,12 @@ torch.backends.cudnn.benchmark = True
 
 def record_e2e(config_name, origin_device, data, storage_folder):
     file_name = "{}-{}-e2e.csv".format(config_name, origin_device.name)
-    with open(os.path.join(storage_folder, file_name), "w") as file:
+    file_path = os.path.join(storage_folder, file_name)
+    exists = os.path.exists(file_path)
+    with open(file_path, "a") as file:
         writer = csv.writer(file)
-        writer.writerow(["device", "run_time_ms"])
+        if not exists: writer.writerow(["device", "run_time_ms"])
+        #writer.writerow(["device", "run_time_ms"])
         for device, run_time_ms in data:
             writer.writerow([device.name, run_time_ms])
 
@@ -234,10 +237,10 @@ def main():
     )
 
     run_dcgan_experiments(context)
-    run_inception_experiments(context)
-    run_resnet50_experiments(context)
-    run_gnmt_experiments(context)
-    run_nanogpt_experiments(context)
+    # run_inception_experiments(context)
+    # run_resnet50_experiments(context)
+    # run_gnmt_experiments(context)
+    # run_nanogpt_experiments(context)
 
 
 if __name__ == "__main__":
