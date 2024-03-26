@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DEVICE_PAIRS: T4,V100;T4,L4;L4,V100
+  DEVICE_PAIRS: T4,V100
 
 jobs:
   create-summary:

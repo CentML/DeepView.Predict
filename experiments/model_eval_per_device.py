@@ -101,7 +101,7 @@ def run_experiment_config(config_name, runnable, context):
         context.storage_folder,
     )
     print(f"time from trace.run_time_ms : {trace.run_time_ms}")
-    e2e_results = [(context.origin_device, trace.run_time.ms)]
+    e2e_results = [(context.origin_device, trace.run_time_ms)]
 
     predicted_trace = trace.to_device(context.destination_device)
     record_breakdown(
