@@ -47,12 +47,14 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
         origin_device.name,
         dest_device.name,
     )
+    ops_sum = 0
     with open(os.path.join(storage_folder, file_name), "w") as file:
         writer = csv.writer(file)
         writer.writerow(["operation", "run_time_ms"])
         for op in trace.operations:
+            ops_sum += op.run_time_ms
             writer.writerow([op.name, op.run_time_ms])
-
+    print(f"ops sum: {ops_sum}")
 
 def compute_threshold(runnable, context):
     tracker = habitat.OperationTracker(context.origin_device)
@@ -74,7 +76,8 @@ def compute_threshold(runnable, context):
 def run_experiment_config(config_name, runnable, context):
     print("Processing:", config_name)
     origin_run_time_ms = context.profiler.measure_ms(runnable)
-    e2e_results = [(context.origin_device, origin_run_time_ms)]
+    print(f"time from context.profiler.measure_ms: {origin_run_time_ms}")
+    # e2e_results = [(context.origin_device, origin_run_time_ms)]
 
     threshold = compute_threshold(runnable, context)
     tracker = habitat.OperationTracker(
@@ -97,6 +100,8 @@ def run_experiment_config(config_name, runnable, context):
         trace,
         context.storage_folder,
     )
+    print(f"time from trace.run_time_ms : {trace.run_time_ms}")
+    e2e_results = [(context.origin_device, trace.run_time.ms)]
 
     predicted_trace = trace.to_device(context.destination_device)
     record_breakdown(
@@ -106,6 +111,7 @@ def run_experiment_config(config_name, runnable, context):
         predicted_trace,
         context.storage_folder,
     )
+    print(f"e2e: {config_name} | run_time_ms : {predicted_trace.run_time_ms}")
     e2e_results.append((context.destination_device, predicted_trace.run_time_ms))
 
     record_e2e(config_name, context.origin_device, e2e_results, context.storage_folder)

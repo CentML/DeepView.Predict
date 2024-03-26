@@ -221,6 +221,6 @@ L4:
   shared_mem_per_multiprocessor: 102400
   num_sms: 58
   shared_mem_per_block_optin: 101376
-  mem_bandwidth_gb: 300 
+  mem_bandwidth_gb: 254 
   base_clock_mhz: 795
   peak_gflops_per_second: 15022
