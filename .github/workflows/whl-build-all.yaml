@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DEVICE_PAIRS: T4,V100
+  DEVICE_PAIRS: T4,V100;T4,L4;V100,L4
 
 jobs:
   create-summary:
@@ -79,7 +79,7 @@ jobs:
             path: ./experiments/results/
 
   experiments-l4:
-        runs-on: [self-hosted, dev, l4]
+        runs-on: [self-hosted, dev, L4]
         steps:
           - name: Fetch repository
             uses: actions/checkout@v4
