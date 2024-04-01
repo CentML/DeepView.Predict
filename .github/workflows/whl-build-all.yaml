@@ -4,20 +4,20 @@ on:
   workflow_dispatch:
 
 env:
-  DEVICE_PAIRS: T4,V100;T4,L4;V100,L4
+  DEVICE_PAIRS: T4,A100;
 
 jobs:
   create-summary:
-    needs: [experiments-t4, experiments-v100, experiments-l4]
+    needs: [experiments-t4, experiments-v100, experiments-l4, experiments-a100]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
-      
+
       - name: create directory to gather all csv files
         run: |
           mkdir all_results
-        
+
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -49,7 +49,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: run experiments
-        run: | 
+        run: |
           ./experiments/workflow_model_eval.sh python3.10
         env:
           LOCAL_DEVICE: T4
@@ -61,37 +61,55 @@ jobs:
           path: ./experiments/results/
 
   experiments-v100:
-      runs-on: [self-hosted, dev, V100]
-      steps:
-        - name: Fetch repository
-          uses: actions/checkout@v4
+    runs-on: [self-hosted, dev, V100]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
 
-        - name: run experiments
-          run: | 
-            ./experiments/workflow_model_eval.sh python3.10
-          env:
-            LOCAL_DEVICE: V100
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: V100
 
-        - name: upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: artifacts-v100
-            path: ./experiments/results/
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-v100
+          path: ./experiments/results/
 
   experiments-l4:
-        runs-on: [self-hosted, dev, L4]
-        steps:
-          - name: Fetch repository
-            uses: actions/checkout@v4
+    runs-on: [self-hosted, dev, L4]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
 
-          - name: run experiments
-            run: | 
-              ./experiments/workflow_model_eval.sh python3.10
-            env:
-              LOCAL_DEVICE: L4
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: L4
 
-          - name: upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: artifacts-l4
-              path: ./experiments/results/
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-l4
+          path: ./experiments/results/
+
+  experiments-a100:
+    runs-on: [self-hosted, dev, a100]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: A100
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-a100
+          path: ./experiments/results/
