@@ -61,7 +61,7 @@ jobs:
           path: ./experiments/results/
 
   experiments-v100:
-    runs-on: [self-hosted, dev, V100]
+    runs-on: [self-hosted, dev, v100]
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
           path: ./experiments/results/
 
   experiments-l4:
-    runs-on: [self-hosted, dev, L4]
+    runs-on: [self-hosted, dev, l4]
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
