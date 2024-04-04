@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 env:
-  DEVICE_PAIRS: T4,A100;T4,V100;T4,L4;V100,L4;A100,L4;A100,V100;
+  DEVICE_PAIRS: L4,A100
 
 jobs:
   create-summary:
-    needs: [experiments-t4, experiments-v100, experiments-l4, experiments-a100]
+    needs: [experiments-l4, experiments-a100]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch repository
@@ -42,41 +42,41 @@ jobs:
             ./experiments/out_e2e/
             ./experiments/out_ops/
 
-  experiments-t4:
-    runs-on: [self-hosted, dev, t4]
-    steps:
-      - name: Fetch repository
-        uses: actions/checkout@v4
+  # experiments-t4:
+  #   runs-on: [self-hosted, dev, t4]
+  #   steps:
+  #     - name: Fetch repository
+  #       uses: actions/checkout@v4
 
-      - name: run experiments
-        run: |
-          ./experiments/workflow_model_eval.sh python3.10
-        env:
-          LOCAL_DEVICE: T4
+  #     - name: run experiments
+  #       run: |
+  #         ./experiments/workflow_model_eval.sh python3.10
+  #       env:
+  #         LOCAL_DEVICE: T4
 
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifacts-t4
-          path: ./experiments/results/
+  #     - name: upload artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: artifacts-t4
+  #         path: ./experiments/results/
 
-  experiments-v100:
-    runs-on: [self-hosted, dev, v100]
-    steps:
-      - name: Fetch repository
-        uses: actions/checkout@v4
+  # experiments-v100:
+  #   runs-on: [self-hosted, dev, v100]
+  #   steps:
+  #     - name: Fetch repository
+  #       uses: actions/checkout@v4
 
-      - name: run experiments
-        run: |
-          ./experiments/workflow_model_eval.sh python3.10
-        env:
-          LOCAL_DEVICE: V100
+  #     - name: run experiments
+  #       run: |
+  #         ./experiments/workflow_model_eval.sh python3.10
+  #       env:
+  #         LOCAL_DEVICE: V100
 
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifacts-v100
-          path: ./experiments/results/
+  #     - name: upload artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: artifacts-v100
+  #         path: ./experiments/results/
 
   experiments-l4:
     runs-on: [self-hosted, dev, l4]
