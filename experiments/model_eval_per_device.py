@@ -50,10 +50,10 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
     ops_sum = 0
     with open(os.path.join(storage_folder, file_name), "w") as file:
         writer = csv.writer(file)
-        writer.writerow(["operation", "run_time_ms"])
+        writer.writerow(["operation", "run_time_ms", "args"])
         for op in trace.operations:
             ops_sum += op.run_time_ms
-            writer.writerow([op.name, op.run_time_ms])
+            writer.writerow([op.name, op.run_time_ms, op.arguments.args if op.arguments else 'None'])
     print(f"ops sum: {ops_sum}")
 
 def compute_threshold(runnable, context):
@@ -242,11 +242,11 @@ def main():
         storage_folder=storage_folder,
     )
 
-    run_dcgan_experiments(context)
-    run_inception_experiments(context)
+    # run_dcgan_experiments(context)
+    # run_inception_experiments(context)
     run_resnet50_experiments(context)
-    run_gnmt_experiments(context)
-    run_nanogpt_experiments(context)
+    # run_gnmt_experiments(context)
+    # run_nanogpt_experiments(context)
 
 
 if __name__ == "__main__":
