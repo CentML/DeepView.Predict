@@ -91,12 +91,16 @@ class PredictedOperation(Operation):
         measured_operation,
         forward,
         backward,
-        device
+        device,
+        measured_local=0,
+        predicted_local=0,
     ):
         self._measured_operation = measured_operation
         self._forward = forward
         self._backward = backward
         self._device = device
+        self._measured_local = measured_local
+        self._predicted_local = predicted_local
 
     @property
     def name(self):
@@ -122,3 +126,11 @@ class PredictedOperation(Operation):
         raise RuntimeError(
             'Cannot make a prediction using a predicted operation.',
         )
+
+    @property
+    def measured_local(self):
+        return self._measured_local
+    
+    @property
+    def predicted_local(self):
+        return self._predicted_local
