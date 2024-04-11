@@ -85,7 +85,6 @@ class Conv2DMLP(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.mlp(x)
-        x = F.dropout(x, p=0.2)
         x = self.fc2(x)
 
         return x

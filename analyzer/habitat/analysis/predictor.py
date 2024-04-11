@@ -76,7 +76,7 @@ class Predictor:
             path_to_data("lstm/model.pth"),
         )
         self.conv2d_pred = RuntimePredictor(
-            "conv2d", 9, 1024,
+            "conv2d", 8, 1024,
             path_to_data("conv2d/model.pth"),
         )
         self.bmm_pred = RuntimePredictor(
