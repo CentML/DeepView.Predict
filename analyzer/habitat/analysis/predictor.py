@@ -67,26 +67,48 @@ class Predictor:
         self._wave_scaling_strategy = wave_scaling_strategy
 
         # Load MLP predictor from saved models
-        self.linear_pred = RuntimePredictor(
+        # self.linear_pred = RuntimePredictor(
+        #     "linear", 8, 1024,
+        #     path_to_data("linear/model.pth"),
+        # )
+        # self.lstm_pred = RuntimePredictor(
+        #     "lstm", 8, 1024,
+        #     path_to_data("lstm/model.pth"),
+        # )
+        # self.conv2d_pred = RuntimePredictor(
+        #     "conv2d", 8, 1024,
+        #     path_to_data("conv2d/model.pth"),
+        # )
+        # self.bmm_pred = RuntimePredictor(
+        #     "bmm", 8, 1024,
+        #     path_to_data("bmm/model.pth"),
+        # )
+        # self.conv_transpose2d_pred = RuntimePredictor(
+        #     "conv_transpose2d", 8, 1024,
+        #     path_to_data("conv_transpose2d/model.pth"),
+        # )
+
+        self.linear_pred = RuntimePredictor.from_state(
             "linear", 8, 1024,
             path_to_data("linear/model.pth"),
         )
-        self.lstm_pred = RuntimePredictor(
+        self.lstm_pred = RuntimePredictor.from_state(
             "lstm", 8, 1024,
             path_to_data("lstm/model.pth"),
         )
-        self.conv2d_pred = RuntimePredictor(
+        self.conv2d_pred = RuntimePredictor.from_state(
             "conv2d", 8, 1024,
             path_to_data("conv2d/model.pth"),
         )
-        self.bmm_pred = RuntimePredictor(
+        self.bmm_pred = RuntimePredictor.from_state(
             "bmm", 8, 1024,
             path_to_data("bmm/model.pth"),
         )
-        self.conv_transpose2d_pred = RuntimePredictor(
+        self.conv_transpose2d_pred = RuntimePredictor.from_state(
             "conv_transpose2d", 8, 1024,
             path_to_data("conv_transpose2d/model.pth"),
         )
+
 
 
     def predict_operation(self, operation, dest_device):
@@ -158,6 +180,14 @@ class Predictor:
             measured_local,
             predicted_local
         )
+    
+    def _dest_device_encoding(self, pred, dest_device):
+        if dest_device.name not in pred.devices:
+            raise Exception(f"Destination device {dest_device} not supported by predictor. The supported devices are {pred.devices}")
+
+        enc = [0] * len(pred.devices)
+        enc[pred.devices.index(dest_device.name)] = 1
+        return enc
 
     def _conv2d_scale(self, operation, dest_device):
         # 1. Merge arguments (give them all names)
@@ -187,7 +217,8 @@ class Predictor:
 
         # 3. Call model to make prediction
         arguments = [arguments[x] for x in self.conv2d_pred.model.features]
-
+        arguments = self._dest_device_encoding(self.conv2d_pred, dest_device) + arguments
+    
         pred_dest = self.conv2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv2d_pred.predict(arguments, operation.device.name)
 

@@ -32,7 +32,7 @@ class MLPBase(nn.Module):
 
 
 class LinearMLP(nn.Module):
-    def __init__(self, layers, layer_size):
+    def __init__(self, num_devices, layers, layer_size):
         super().__init__()
 
         self.features = ["bias", "batch", "in_features", "out_features"]
@@ -51,7 +51,7 @@ class LinearMLP(nn.Module):
 
 
 class LSTMMLP(nn.Module):
-    def __init__(self, layers, layer_size):
+    def __init__(self, num_devices, layers, layer_size):
         super().__init__()
 
         self.features = ['bias', 'bidirectional', 'batch', 'seq_len', 'input_size', 'hidden_size', 'num_layers']
@@ -70,14 +70,32 @@ class LSTMMLP(nn.Module):
 
 
 class Conv2DMLP(nn.Module):
-    def __init__(self, layers, layer_size):
+    # def __init__(self, layers, layer_size):
+    #     super().__init__()
+
+    #     self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
+    #                      'padding']
+
+    #     # properly manage device parameters
+    #     self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
+    #     self.mlp = MLPBase(layers, layer_size)
+    #     self.fc2 = nn.Linear(layer_size, 1)
+
+    # def forward(self, x):
+    #     x = self.fc1(x)
+    #     x = F.relu(x)
+    #     x = self.mlp(x)
+    #     x = self.fc2(x)
+
+    #     return x
+    def __init__(self, num_devices, layers, layer_size):
         super().__init__()
 
         self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
                          'padding']
 
         # properly manage device parameters
-        self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
+        self.fc1 = nn.Linear(len(self.features) + num_devices + 4, layer_size)
         self.mlp = MLPBase(layers, layer_size)
         self.fc2 = nn.Linear(layer_size, 1)
 
@@ -89,8 +107,10 @@ class Conv2DMLP(nn.Module):
 
         return x
 
+
+
 class ConvTranspose2DMLP(nn.Module):
-    def __init__(self, layers, layer_size):
+    def __init__(self, num_devices, layers, layer_size):
         super().__init__()
 
         self.features = ['bias', 'batch', 'image_size', 'in_channels', 'out_channels', 'kernel_size', 'stride',
@@ -110,7 +130,7 @@ class ConvTranspose2DMLP(nn.Module):
         return x
 
 class BMMMLP(nn.Module):
-    def __init__(self, layers, layer_size):
+    def __init__(self, num_devices, layers, layer_size):
         super().__init__()
 
         self.features = ["batch", "left", "middle", "right"]
@@ -129,8 +149,45 @@ class BMMMLP(nn.Module):
 
 
 class RuntimePredictor:
-    def __init__(self, model_name, layers, layer_size, model_path=None):
+    # def __init__(self, model_name, layers, layer_size, model_path=None):
+    #     self.model_name = model_name
+    #     self.layers = layers
+    #     self.layer_size = layer_size
+
+    #     self.model = {
+    #         "linear": LinearMLP,
+    #         "lstm": LSTMMLP,
+    #         "conv2d": Conv2DMLP,
+    #         "conv_transpose2d": ConvTranspose2DMLP,
+    #         "bmm": BMMMLP,
+    #     }[self.model_name](layers, layer_size)
+
+    #     self.device_params = ['mem', 'mem_bw', 'num_sm', 'single']
+
+    #     self.mu = None
+    #     self.sigma = None
+
+    #     if model_path is not None:
+    #         self.load_state(model_path)
+
+    # def load_state(self, path):
+    #     checkpoint = torch.load(path)
+    #     self.mu = checkpoint['mu']
+    #     self.sigma = checkpoint['sigma']
+    #     self.model.load_state_dict(checkpoint['model'])
+
+    # def save_state(self, path):
+    #     checkpoint = {
+    #         "mu": self.mu,
+    #         "sigma": self.sigma,
+    #         "model": self.model.state_dict()
+    #     }
+
+    #     torch.save(checkpoint, path)
+
+    def __init__(self, model_name, devices, layers, layer_size, model_path=None):
         self.model_name = model_name
+        self.devices = devices
         self.layers = layers
         self.layer_size = layer_size
 
@@ -140,15 +197,34 @@ class RuntimePredictor:
             "conv2d": Conv2DMLP,
             "conv_transpose2d": ConvTranspose2DMLP,
             "bmm": BMMMLP,
-        }[self.model_name](layers, layer_size)
+        }[self.model_name](len(self.devices), layers, layer_size)
 
-        self.device_params = ['mem', 'mem_bw', 'num_sm', 'single']
+        self.device_params = ["mem", "mem_bw", "num_sm", "single"]
 
         self.mu = None
         self.sigma = None
 
         if model_path is not None:
+            print(model_path)
             self.load_state(model_path)
+
+    @classmethod
+    def from_state(cls, model_name, layers, layer_size, path):
+        checkpoint = torch.load(path)
+        # if "devices" not in checkpoint: 
+        #     print(checkpoint.keys())
+        #     return
+        devices = checkpoint.get('devices',[])
+        pred = cls(model_name, devices, layers, layer_size)
+        pred.mu = checkpoint['mu']
+        pred.sigma = checkpoint['sigma']
+        pred.model.load_state_dict(checkpoint["model"])
+
+        return pred
+
+    @classmethod
+    def from_dataset(cls, model_name, layers, layer_size, dataset_path, epochs):
+        pass
 
     def load_state(self, path):
         checkpoint = torch.load(path)
@@ -160,7 +236,8 @@ class RuntimePredictor:
         checkpoint = {
             "mu": self.mu,
             "sigma": self.sigma,
-            "model": self.model.state_dict()
+            "model": self.model.state_dict(),
+            "devices": self.devices
         }
 
         torch.save(checkpoint, path)
