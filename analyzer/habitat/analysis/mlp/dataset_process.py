@@ -64,27 +64,28 @@ def get_dataset(path, features, device_features=None):
     # generate vectorized dataset (one entry for each device with device params)
     device_params = get_all_devices(device_features)
 
-    # x, y = [], []
-    # for device in devices.keys():
-    #     df_device = devices[device]
-    #     for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
-    #         row = row[1]
-
-    #         x.append(list(row[:-1]) + device_params[device])
-    #         y.append(row[-1])
-
-    # return x, y
-    device_list = list(devices.keys())
     x, y = [], []
-    for idx, device in enumerate(device_list):
+    for device in devices.keys():
         df_device = devices[device]
-        device_encoding = onehot(idx, len(device_list))
-        print("device_encoding", device_encoding)
         for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
             row = row[1]
 
-            x.append(device_encoding + list(row[:-1]) + device_params[device])
-            y.append(row.iloc[-1])
+            x.append(list(row[:-1]) + device_params[device])
+            y.append(row[-1])
 
-    return device_list, x, y
+    return x, y
+    
+    # device_list = list(devices.keys())
+    # x, y = [], []
+    # for idx, device in enumerate(device_list):
+    #     df_device = devices[device]
+    #     device_encoding = onehot(idx, len(device_list))
+    #     print("device_encoding", device_encoding)
+    #     for row in tqdm(df_device.iterrows(), leave=False, desc=device, total=len(df_device.index)):
+    #         row = row[1]
+
+    #         x.append(device_encoding + list(row[:-1]) + device_params[device])
+    #         y.append(row.iloc[-1])
+
+    # return device_list, x, y
 
