@@ -7,8 +7,8 @@ from habitat.analysis.mlp.dataset_process import get_dataset
 
 
 class HabitatDataset(Dataset):
-    def __init__(self, dataset_path, features):
-        self.x, self.y = get_dataset(dataset_path, features)
+    def __init__(self, dataset_path, features, device_features=None):
+        self.x, self.y = get_dataset(dataset_path, features, device_features)
 
         # input normalization
         self.x = np.array(self.x)

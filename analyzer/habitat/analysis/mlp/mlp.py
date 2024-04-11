@@ -95,18 +95,24 @@ class Conv2DMLP(nn.Module):
                          'padding']
 
         # properly manage device parameters
-        self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
+        self.fc1 = nn.Linear(len(self.features) + 8, layer_size)
         self.mlp = MLPBase(layers, layer_size)
-        self.fc2 = nn.Linear(layer_size, 1)
+        self.fc2 = nn.ModuleList([nn.Linear(layer_size, 512), 
+                                nn.ReLU(),
+                                nn.Linear(512,256),
+                                nn.ReLU(), 
+                                nn.Linear(256,128),
+                                nn.ReLU(),
+                                nn.Linear(128,1)])
 
     def forward(self, x):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.mlp(x)
-        x = self.fc2(x)
+        for l in self.fc2:
+            x = l(x)
 
         return x
-
 
 
 class ConvTranspose2DMLP(nn.Module):
@@ -289,7 +295,8 @@ class RuntimePredictor:
         self.model = self.model.to(self.device)
 
         # construct dataset loaders
-        self.dataset = HabitatDataset(dataset_path, self.model.features)
+        device_features = ['mem', 'mem_bw', 'num_sm', 'single','mem_clock','peak_gflops','l1_cache','l2_cache']  if self.model_name == 'conv2d' else None
+        self.dataset = HabitatDataset(dataset_path, self.model.features, device_features)
 
         # get normalization parameters from dataset loader
         self.mu, self.sigma = self.dataset.mu, self.dataset.sigma
@@ -348,8 +355,8 @@ class RuntimePredictor:
     def predict(self, kernel_arguments, device_name):
         # move to CPU and change to single prec
         self.model = self.model.to(torch.device('cpu')).float()
-
-        device_features = get_device_features(device_name, self.device_params)
+        device_params = ['mem', 'mem_bw', 'num_sm', 'single','mem_clock','peak_gflops','l1_cache','l2_cache']  if self.model_name == 'conv2d' else self.device_params
+        device_features = get_device_features(device_name, device_params)
         kernel_params = kernel_arguments
         features = np.array(kernel_params + device_features)
 
