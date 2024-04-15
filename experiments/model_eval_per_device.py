@@ -50,16 +50,19 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
     ops_sum = 0
     with open(os.path.join(storage_folder, file_name), "w") as file:
         writer = csv.writer(file)
-        writer.writerow(["operation", "run_time_ms", "args", "measured_local", "predicted_local"])
+        writer.writerow(["operation", "run_time_ms", "measured_local", "predicted_local", "unscaled_predicted"])
         for op in trace.operations:
             measured_local = None
             predicted_local = None
+            unscaled_predicted = None
             if hasattr(op,'measured_local'):
                 measured_local = op.measured_local
             if hasattr(op, 'predicted_local'):
                 predicted_local = op.predicted_local
+            if hasattr(op, 'unscaled_predicted'):
+                unscaled_predicted = op.unscaled_predicted
             ops_sum += op.run_time_ms
-            writer.writerow([op.name, op.run_time_ms, op.arguments.args if op.arguments else 'None', measured_local, predicted_local])
+            writer.writerow([op.name, op.run_time_ms, measured_local, predicted_local, unscaled_predicted])
     print(f"ops sum: {ops_sum}")
 
 def compute_threshold(runnable, context):

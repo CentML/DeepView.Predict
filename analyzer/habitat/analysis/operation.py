@@ -94,6 +94,7 @@ class PredictedOperation(Operation):
         device,
         measured_local=0,
         predicted_local=0,
+        unscaled_predicted = 0
     ):
         self._measured_operation = measured_operation
         self._forward = forward
@@ -101,6 +102,7 @@ class PredictedOperation(Operation):
         self._device = device
         self._measured_local = measured_local
         self._predicted_local = predicted_local
+        self._unscaled_predicted = unscaled_predicted
 
     @property
     def name(self):
@@ -134,3 +136,7 @@ class PredictedOperation(Operation):
     @property
     def predicted_local(self):
         return self._predicted_local
+    
+    @property
+    def unscaled_predicted(self):
+        return self._unscaled_predicted
