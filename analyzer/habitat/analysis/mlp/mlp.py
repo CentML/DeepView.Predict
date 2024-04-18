@@ -109,6 +109,7 @@ class Conv2DMLP(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.mlp(x)
+        x = F.dropout(x, p=0.3)
         for l in self.fc2:
             x = l(x)
 
