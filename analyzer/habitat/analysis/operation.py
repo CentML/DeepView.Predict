@@ -51,6 +51,9 @@ class MeasuredOperation(Operation):
         forward,
         backward,
         device,
+        func,
+        args,
+        kwargs
     ):
         super().__init__()
         self._name = name
@@ -58,6 +61,9 @@ class MeasuredOperation(Operation):
         self._forward = forward
         self._backward = backward
         self._device = device
+        self._func = func
+        self._args = args 
+        self._kwargs = kwargs
 
     @property
     def name(self):
@@ -78,6 +84,18 @@ class MeasuredOperation(Operation):
     @property
     def device(self):
         return self._device
+    
+    @property
+    def func(self):
+        return self._func
+    
+    @property
+    def args(self):
+        return self._args 
+    
+    @property
+    def kwargs(self):
+        return self._kwargs
 
     def to_device(self, dest_device, predictor):
         if dest_device.name == self._device.name:
