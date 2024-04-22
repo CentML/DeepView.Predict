@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import numpy as np
 import torch
-
+import gc
 import habitat
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.profiling.run_time import RunTimeProfiler
@@ -41,6 +41,8 @@ def re_run_operations(tracker, num_shuffles, origin_device, config_name, storage
             fw_time = fw.run_time_ms
             bw_time = bw.run_time_ms if bw else 0
             run_times_arr.append(fw_time + bw_time)
+        torch.cuda.empty_cache()
+        gc.collect()
 
     for random_op, run_times_arr in ops:
         pred_time = random_op.to_device(origin_device, predictor).run_time_ms
@@ -127,35 +129,30 @@ def run_experiment_config(config_name, runnable, context):
         runnable()
 
     trace = tracker.get_tracked_trace()
-    re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
-    # for op in tracker._operations:
-    #     fw, bw = tracker._profiler.measure_operation(op.func, op.args, op.kwargs)
-    #     fw_time = fw.run_time_ms
-    #     bw_time = bw.run_time_ms if bw else 0
-    #     print(fw_time + bw_time)
+    # re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
 
-    # record_breakdown(
-    #     config_name,
-    #     context.origin_device,
-    #     context.origin_device,
-    #     trace,
-    #     context.storage_folder,
-    # )
-    # print(f"time from trace.run_time_ms : {trace.run_time_ms}")
-    # e2e_results = [(context.origin_device, trace.run_time_ms)]
+    record_breakdown(
+        config_name,
+        context.origin_device,
+        context.origin_device,
+        trace,
+        context.storage_folder,
+    )
+    print(f"time from trace.run_time_ms : {trace.run_time_ms}")
+    e2e_results = [(context.origin_device, trace.run_time_ms)]
 
-    # predicted_trace = trace.to_device(context.destination_device)
-    # record_breakdown(
-    #     config_name,
-    #     context.origin_device,
-    #     context.destination_device,
-    #     predicted_trace,
-    #     context.storage_folder,
-    # )
-    # print(f"e2e: {config_name} | run_time_ms : {predicted_trace.run_time_ms}")
-    # e2e_results.append((context.destination_device, predicted_trace.run_time_ms))
+    predicted_trace = trace.to_device(context.destination_device)
+    record_breakdown(
+        config_name,
+        context.origin_device,
+        context.destination_device,
+        predicted_trace,
+        context.storage_folder,
+    )
+    print(f"e2e: {config_name} | run_time_ms : {predicted_trace.run_time_ms}")
+    e2e_results.append((context.destination_device, predicted_trace.run_time_ms))
 
-    # record_e2e(config_name, context.origin_device, e2e_results, context.storage_folder)
+    record_e2e(config_name, context.origin_device, e2e_results, context.storage_folder)
 
 
 def run_resnet50_experiments(context):
