@@ -284,10 +284,10 @@ def main():
     )
 
     run_dcgan_experiments(context)
-    # run_inception_experiments(context)
-    # run_resnet50_experiments(context)
-    # run_gnmt_experiments(context)
-    # run_nanogpt_experiments(context)
+    run_inception_experiments(context)
+    run_resnet50_experiments(context)
+    run_gnmt_experiments(context)
+    run_nanogpt_experiments(context)
 
 
 if __name__ == "__main__":
