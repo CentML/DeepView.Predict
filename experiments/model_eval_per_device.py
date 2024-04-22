@@ -41,8 +41,6 @@ def re_run_operations(tracker, num_shuffles, origin_device, config_name, storage
             fw_time = fw.run_time_ms
             bw_time = bw.run_time_ms if bw else 0
             run_times_arr.append(fw_time + bw_time)
-        torch.cuda.empty_cache()
-        gc.collect()
 
     for random_op, run_times_arr in ops:
         pred_time = random_op.to_device(origin_device, predictor).run_time_ms
@@ -129,7 +127,7 @@ def run_experiment_config(config_name, runnable, context):
         runnable()
 
     trace = tracker.get_tracked_trace()
-    # re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
+    re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
 
     record_breakdown(
         config_name,
@@ -280,11 +278,11 @@ def main():
         storage_folder=storage_folder,
     )
 
-    run_dcgan_experiments(context)
-    run_inception_experiments(context)
+    # run_dcgan_experiments(context)
+    # run_inception_experiments(context)
     run_resnet50_experiments(context)
-    run_gnmt_experiments(context)
-    run_nanogpt_experiments(context)
+    # run_gnmt_experiments(context)
+    # run_nanogpt_experiments(context)
 
 
 if __name__ == "__main__":
