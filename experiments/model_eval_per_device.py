@@ -43,8 +43,8 @@ def re_run_operations(tracker, num_shuffles, origin_device, config_name, storage
             run_times_arr.append(fw_time + bw_time)
 
     for random_op, run_times_arr in ops:
-        pred_time = random_op.to_device(origin_device, predictor).run_time_ms
-        run_times_arr.append(pred_time)
+        predicted_obj = predictor.predict_operation(random_op, origin_device)
+        run_times_arr.append(predicted_obj.unscaled_predicted)
 
     file_name = "{}-{}-predicted_local.csv".format(config_name, origin_device.name)
     run_names = [f"run_{i}" for i in range(num_shuffles)]
