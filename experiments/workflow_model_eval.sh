@@ -37,6 +37,11 @@ for j in "${device_pairs_list[@]}"; do
     fi
 done
 
+popd
+
+pushd analyzer/habitat/data
+find -iname "model.pth" | xargs sha256sum
+
 popd 
 
 deactivate
