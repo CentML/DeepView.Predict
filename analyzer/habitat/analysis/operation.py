@@ -1,4 +1,4 @@
-
+import warnings
 
 class Operation:
     """
@@ -99,7 +99,8 @@ class MeasuredOperation(Operation):
 
     def to_device(self, dest_device, predictor):
         if dest_device.name == self._device.name:
-            return self
+            warnings.warn("Predicting to the same device.")
+            # return self
         return predictor.predict_operation(self, dest_device)
 
 
