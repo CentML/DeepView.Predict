@@ -15,7 +15,7 @@ from habitat.analysis.predictor import Predictor
 
 # Experiment configuration
 
-RESNET50_BATCHES = [16, 32]#[16, 32, 64]
+RESNET50_BATCHES = [16, 32, 64]#[16, 32, 64]
 GNMT_BATCHES = [16, 32, 48]
 NANOGPT_BATCHES = [32, 48, 64]
 DCGAN_BATCHES = [64, 96, 128]
