@@ -296,7 +296,7 @@ class RuntimePredictor:
         self.model = self.model.to(self.device)
 
         # construct dataset loaders
-        device_features = ['mem', 'mem_bw', 'num_sm', 'single','mem_clock','peak_gflops','l1_cache','l2_cache']  if self.model_name == 'conv2d' else None
+        device_features = ['mem', 'mem_bw', 'num_sm', 'single']  if self.model_name == 'conv2d' else None
         self.dataset = HabitatDataset(dataset_path, self.model.features, device_features)
 
         # get normalization parameters from dataset loader
