@@ -15,7 +15,7 @@ from habitat.analysis.predictor import Predictor
 
 # Experiment configuration
 
-RESNET50_BATCHES = [16, 32]#[16, 32, 64]
+RESNET50_BATCHES = [16, 32, 64]#[16, 32, 64]
 GNMT_BATCHES = [16, 32, 48]
 NANOGPT_BATCHES = [32, 48, 64]
 DCGAN_BATCHES = [64, 96, 128]
@@ -127,7 +127,7 @@ def run_experiment_config(config_name, runnable, context):
         runnable()
 
     trace = tracker.get_tracked_trace()
-    re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
+    # re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
 
     record_breakdown(
         config_name,
