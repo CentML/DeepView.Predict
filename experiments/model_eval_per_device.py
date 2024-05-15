@@ -27,7 +27,7 @@ Context = collections.namedtuple(
     ["origin_device", "destination_device", "profiler", "percentile", "storage_folder"],
 )
 
-torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = False
 
 ## RE-RUN OPS ####
 
