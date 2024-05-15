@@ -51,9 +51,9 @@ class MeasuredOperation(Operation):
         forward,
         backward,
         device,
-        func,
-        args,
-        kwargs
+        # func,
+        # args,
+        # kwargs
     ):
         super().__init__()
         self._name = name
@@ -61,9 +61,9 @@ class MeasuredOperation(Operation):
         self._forward = forward
         self._backward = backward
         self._device = device
-        self._func = func
-        self._args = args 
-        self._kwargs = kwargs
+        # self._func = func
+        # self._args = args 
+        # self._kwargs = kwargs
 
     @property
     def name(self):

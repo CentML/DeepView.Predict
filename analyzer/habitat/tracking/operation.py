@@ -67,9 +67,9 @@ class OperationTracker(TrackerBase):
                     forward=forward,
                     backward=backward,
                     device=self._device,
-                    func=func,
-                    args=args,
-                    kwargs=kwargs
+                    # func=func,
+                    # args=args,
+                    # kwargs=kwargs
                 ))
 
                 # Actually run the hooked function
