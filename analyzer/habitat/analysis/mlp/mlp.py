@@ -356,8 +356,8 @@ class RuntimePredictor:
     def predict(self, kernel_arguments, device_name):
         # move to CPU and change to single prec
         self.model = self.model.to(torch.device('cpu')).float()
-        # device_params = ['mem', 'mem_bw', 'num_sm', 'single','mem_clock','peak_gflops','l1_cache','l2_cache']  if self.model_name == 'conv2d' else self.device_params
-        device_features = get_device_features(device_name, self.device_params)
+        device_params = ['mem', 'mem_bw', 'num_sm', 'single','l1_cache','l2_cache']  if self.model_name == 'conv2d' else self.device_params
+        device_features = get_device_features(device_name, device_params)
         kernel_params = kernel_arguments
         features = np.array(kernel_params + device_features)
 
