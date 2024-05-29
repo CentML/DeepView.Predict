@@ -93,10 +93,12 @@ T4:
   shared_mem_per_multiprocessor: 65536
   num_sms: 40
   shared_mem_per_block_optin: 0
-  #mem_bandwidth_gb: 239
-  mem_bandwidth_gb: 320
-  base_clock_mhz: 585
-  peak_gflops_per_second: 1804
+  mem_bandwidth_gb: 239
+  #mem_bandwidth_gb: 320
+  # base_clock_mhz: 585
+  base_clock_mhz: 1590
+  # peak_gflops_per_second: 1804
+  peak_gflops_per_second: 3527
 
 V100:
   compute_major: 7
@@ -142,10 +144,12 @@ A100:
   shared_mem_per_multiprocessor: 163840
   num_sms: 108
   shared_mem_per_block_optin: 0
-  mem_bandwidth_gb: 1555
-  #base_clock_mhz: 1410
-  base_clock_mhz: 765
-  peak_gflops_per_second: 8341
+  # mem_bandwidth_gb: 1555
+  mem_bandwidth_gb: 1160
+  base_clock_mhz: 1410
+  # base_clock_mhz: 765
+  # peak_gflops_per_second: 8341
+  peak_gflops_per_second: 9737
 
 RTX3090:
   compute_major: 8
@@ -224,7 +228,7 @@ L4:
   #num_sms: 58
   num_sms: 60
   shared_mem_per_block_optin: 101376
-  #mem_bandwidth_gb: 254 
-  mem_bandwidth_gb: 300
-  base_clock_mhz: 795
-  peak_gflops_per_second: 15022
+  mem_bandwidth_gb: 254 
+  # mem_bandwidth_gb: 300
+  base_clock_mhz: 2040
+  peak_gflops_per_second: 15130

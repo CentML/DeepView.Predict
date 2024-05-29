@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 import numpy as np
 import torch
-import time
 import habitat
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.profiling.run_time import RunTimeProfiler
@@ -89,7 +88,6 @@ def run_experiment_config(config_name, runnable, context):
     print("Processing:", config_name)
     origin_run_time_ms = context.profiler.measure_ms(runnable)
     print(f"time from context.profiler.measure_ms: {origin_run_time_ms}")
-    # e2e_results = [(context.origin_device, origin_run_time_ms)]
 
     threshold = compute_threshold(runnable, context)
     tracker = habitat.OperationTracker(
@@ -106,7 +104,6 @@ def run_experiment_config(config_name, runnable, context):
         runnable()
 
     trace = tracker.get_tracked_trace()
-    # re_run_operations(tracker,5, context.origin_device, config_name, context.storage_folder)
 
     record_breakdown(
         config_name,
