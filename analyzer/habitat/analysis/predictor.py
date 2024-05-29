@@ -88,28 +88,6 @@ class Predictor:
             path_to_data("conv_transpose2d/model.pth"),
         )
 
-        # self.linear_pred = RuntimePredictor.from_state(
-        #     "linear", 8, 1024,
-        #     path_to_data("linear/model.pth"),
-        # )
-        # self.lstm_pred = RuntimePredictor.from_state(
-        #     "lstm", 8, 1024,
-        #     path_to_data("lstm/model.pth"),
-        # )
-        # self.conv2d_pred = RuntimePredictor.from_state(
-        #     "conv2d", 8, 1024,
-        #     path_to_data("conv2d/model.pth"),
-        # )
-        # self.bmm_pred = RuntimePredictor.from_state(
-        #     "bmm", 8, 1024,
-        #     path_to_data("bmm/model.pth"),
-        # )
-        # self.conv_transpose2d_pred = RuntimePredictor.from_state(
-        #     "conv_transpose2d", 8, 1024,
-        #     path_to_data("conv_transpose2d/model.pth"),
-        # )
-
-
 
     def predict_operation(self, operation, dest_device):
         if operation.name not in SPECIAL_OPERATIONS:
@@ -125,7 +103,7 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._conv2d_scale)
         elif operation.name == 'lstm':
             return self._special_scale(operation, dest_device, self._lstm_scale)
-        elif operation.name == 'linear':
+        elif operation.name in ['linear','__matmul__']:
             return self._special_scale(operation, dest_device, self._linear_scale)
         elif operation.name == 'bmm':
             return self._special_scale(operation, dest_device, self._bmm_scale)
@@ -223,7 +201,7 @@ class Predictor:
         pred_dest = self.conv2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv2d_pred.predict(arguments, operation.device.name)
 
-        return (operation.run_time_ms * pred_dest / pred_orig,operation.run_time_ms, pred_orig, pred_dest)
+        return (operation.run_time_ms * pred_dest / pred_orig,operation, pred_orig, pred_dest)
         #return (pred_dest, operation.run_time_ms, pred_orig)
 
     def _conv_transpose2d_scale(self, operation, dest_device):
@@ -258,7 +236,7 @@ class Predictor:
         pred_dest = self.conv_transpose2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv_transpose2d_pred.predict(arguments, operation.device.name)
 
-        return (operation.run_time_ms * pred_dest / pred_orig,operation.run_time_ms, pred_orig, pred_dest)
+        return (operation.run_time_ms * pred_dest / pred_orig,operation, pred_orig, pred_dest)
         #return (pred_dest, operation.run_time_ms, pred_orig)
 
     def _linear_scale(self, operation, dest_device):
@@ -295,7 +273,7 @@ class Predictor:
         pred_dest = self.linear_pred.predict(arguments, dest_device.name)
         pred_orig = self.linear_pred.predict(arguments, operation.device.name)
 
-        return (operation.run_time_ms * pred_dest / pred_orig,operation.run_time_ms, pred_orig, pred_dest)
+        return (operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest)
 
     def _bmm_scale(self, operation, dest_device):
         merged = name_all_arguments(
@@ -315,7 +293,7 @@ class Predictor:
         pred_dest = self.bmm_pred.predict(arguments, dest_device.name)
         pred_orig = self.bmm_pred.predict(arguments, operation.device.name)
 
-        return (operation.run_time_ms * pred_dest / pred_orig,operation.run_time_ms, pred_orig, pred_dest)
+        return (operation.run_time_ms * pred_dest / pred_orig,operation, pred_orig, pred_dest)
         #return (pred_dest, operation.run_time_ms, pred_orig)
 
     def _lstm_scale(self, operation, dest_device):
@@ -361,5 +339,5 @@ class Predictor:
         pred_dest = self.lstm_pred.predict(arguments, dest_device.name)
         pred_orig = self.lstm_pred.predict(arguments, operation.device.name)
 
-        return (operation.run_time_ms * pred_dest / pred_orig,operation.run_time_ms, pred_orig, pred_dest)
+        return (operation.run_time_ms * pred_dest / pred_orig,operation, pred_orig, pred_dest)
         #return (pred_dest, operation.run_time_ms, pred_orig)

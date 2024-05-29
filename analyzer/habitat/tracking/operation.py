@@ -44,7 +44,7 @@ class OperationTracker(TrackerBase):
                 # We only track the arguments if the operation is "special"
                 # (i.e. we use special handling to scale it to a different
                 # device).
-                is_special_op = func.__name__ in SPECIAL_OPERATIONS
+                is_special_op = (func.__name__ in SPECIAL_OPERATIONS) or (func.__name__ in ['__mul__','pow','__rmul__'])
                 arguments = (
                     Arguments.from_raw_arguments(args, kwargs)
                     if is_special_op else None

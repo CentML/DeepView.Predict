@@ -9,6 +9,7 @@ SPECIAL_OPERATIONS = {
 
     # Matrix multiply operations
     'linear',
+    '__matmul__', # calls the same kernel as linear
     'bmm',
 
     # Recurrent operations

@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import numpy as np
 import torch
-import gc
+import time
 import habitat
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.profiling.run_time import RunTimeProfiler
@@ -29,31 +29,6 @@ Context = collections.namedtuple(
 
 torch.backends.cudnn.benchmark = False
 
-## RE-RUN OPS ####
-
-def re_run_operations(tracker, num_shuffles, origin_device, config_name, storage_folder):
-    predictor = Predictor()
-    ops = [(op,[]) for op in tracker._operations] # op, run_times
-    for _ in range(num_shuffles):
-        np.random.shuffle(ops)
-        for random_op, run_times_arr in ops:
-            fw, bw = tracker._profiler.measure_operation(random_op.func, random_op.args, random_op.kwargs)
-            fw_time = fw.run_time_ms
-            bw_time = bw.run_time_ms if bw else 0
-            run_times_arr.append(fw_time + bw_time)
-
-    for random_op, run_times_arr in ops:
-        pred_time = random_op.to_device(origin_device, predictor).unscaled_predicted
-        run_times_arr.append(pred_time)
-
-    file_name = "{}-{}-predicted_local.csv".format(config_name, origin_device.name)
-    run_names = [f"run_{i}" for i in range(num_shuffles)]
-    with open(os.path.join(storage_folder, file_name), "w") as file:
-        writer = csv.writer(file)
-        writer.writerow(["operation"]+run_names+["predicted_local"])
-        for op,times in ops:
-            writer.writerow([op.name] + times)
-
 def record_e2e(config_name, origin_device, data, storage_folder):
     file_name = "{}-{}-e2e.csv".format(config_name, origin_device.name)
     file_path = os.path.join(storage_folder, file_name)
@@ -75,19 +50,22 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
     ops_sum = 0
     with open(os.path.join(storage_folder, file_name), "w") as file:
         writer = csv.writer(file)
-        writer.writerow(["operation", "run_time_ms", "measured_local", "predicted_local", "unscaled_predicted"])
+        writer.writerow(["operation", "run_time_ms", "ktime_local", "runtime_local", "args", "predicted_local", "unscaled_predicted"])
         for op in trace.operations:
-            measured_local = None
+            arguments = op.arguments.debug_args if op.arguments else ""
+            ktime = 0
+            runtime = 0
             predicted_local = None
             unscaled_predicted = None
             if hasattr(op,'measured_local'):
-                measured_local = op.measured_local
+                ktime = op.measured_local.ktime_ns*1e-6 if not isinstance(op.measured_local,int) else 0
+                runtime = op.measured_local.run_time_ms if not isinstance(op.measured_local,int) else 0
             if hasattr(op, 'predicted_local'):
                 predicted_local = op.predicted_local
             if hasattr(op, 'unscaled_predicted'):
                 unscaled_predicted = op.unscaled_predicted
             ops_sum += op.run_time_ms
-            writer.writerow([op.name, op.run_time_ms, measured_local, predicted_local, unscaled_predicted])
+            writer.writerow([op.name, op.run_time_ms, ktime, runtime, arguments ,predicted_local, unscaled_predicted])
     print(f"ops sum: {ops_sum}")
 
 def compute_threshold(runnable, context):
@@ -123,6 +101,15 @@ def run_experiment_config(config_name, runnable, context):
         ],
         metrics_threshold_ms=threshold,
     )
+    print("WARM-UP !!!!")
+    start = time.time()
+    dur = 0
+    max_time = 60 # sec <=> 1 min
+    while dur < max_time:
+        runnable()
+        torch.cuda.synchronize()
+        dur = time.time() - start
+
     with tracker.track():
         runnable()
 
