@@ -101,14 +101,6 @@ def run_experiment_config(config_name, runnable, context):
         ],
         metrics_threshold_ms=threshold,
     )
-    print("WARM-UP !!!!")
-    start = time.time()
-    dur = 0
-    max_time = 60 # sec <=> 1 min
-    while dur < max_time:
-        runnable()
-        torch.cuda.synchronize()
-        dur = time.time() - start
 
     with tracker.track():
         runnable()
