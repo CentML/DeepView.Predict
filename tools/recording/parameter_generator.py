@@ -3,13 +3,15 @@ import numpy as np
 from scipy.stats import gaussian_kde
 import sys
 import random 
+from typing import Dict, List
 
 class main_generator():
+    "Special distribution for conv2d and linear records"
 
     def __init__(self, ops):
 
-        self._distribution = None
-        self._ops = ops 
+        self._distribution: gaussian_kde = None
+        self._ops: str = ops 
 
         if ops == 'conv2d':
             filename = 'conv2d_sampled_params.pkl'
@@ -19,11 +21,12 @@ class main_generator():
         with open(filename, 'rb') as f:
             data = pickle.load(f)
 
-        param_dict = dict()
-        dist_arr = []
+        param_dict: Dict[str,int] = dict()
+        dist_arr: List[List[int,int]] = []
 
         if ops == "conv2d":
-            model_counts = dict()
+            # weight by model count
+            model_counts: Dict[str,int] = dict()
             for row in data:
                 model_name = row[0]
                 if model_name not in model_counts:
@@ -39,7 +42,7 @@ class main_generator():
             self._distribution = gaussian_kde(rows, weights=weights)
 
         elif ops == "linear":
-            param_dict = {
+            param_dict: Dict[str,List[int]] = {
                 "linear_in_features" : list(),
                 "linear_out_features" : list()
             }
@@ -76,6 +79,7 @@ class main_generator():
                         ]
 
     def round(self, n: float) -> int:
+        "randomly round up or down"
         n = abs(n)
         frac = n - int(n)
         r = random.random()  # [0,1)
