@@ -23,6 +23,7 @@ class Recorder:
             id INTEGER PRIMARY KEY,
             {features}
             is_forward INTEGER NOT NULL,
+            ktime_ns INTEGER NOT NULL,
             run_time_ms REAL NOT NULL
           )
         """.format(features=features_sql)
@@ -30,9 +31,10 @@ class Recorder:
           INSERT INTO recordings (
             {features},
             is_forward,
+            ktime_ns,
             run_time_ms
           )
-          VALUES ({values} ?, ?)
+          VALUES ({values} ?, ?, ?)
         """.format(
             features=','.join(self._features),
             values='?,' * len(self._features),
@@ -64,11 +66,11 @@ class Recorder:
         self._cursor.execute("SELECT COUNT(*) FROM recordings")
         return self._cursor.fetchone()[0]
 
-    def record(self, config, is_forward, run_time_ms, recorded_kernels):
+    def record(self, config, is_forward, ktime_ns, run_time_ms, recorded_kernels):
         try:
             self._cursor.execute(
                 self._insert_recording,
-                (*tuple(map(int, config)), int(is_forward), run_time_ms),
+                (*tuple(map(int, config)), int(is_forward), int(ktime_ns), run_time_ms),
             )
             recording_id = self._cursor.lastrowid
             for kernel in recorded_kernels:

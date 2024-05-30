@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 MIN_IN_CHANNELS = 3
 MIN_OUT_CHANNELS = 16
 
-torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = False
 
 
 def index_to_config(args, index):

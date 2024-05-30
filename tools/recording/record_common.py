@@ -8,6 +8,8 @@ import torch
 import habitat
 from habitat.profiling.operation import OperationProfiler
 from database import Recorder
+from parameter_generator import main_generator
+import sys
 
 
 
@@ -119,6 +121,8 @@ class Measurer:
 
         last_count = self._recorder.get_num_recordings()
 
+        params_generator = main_generator(self._op_name)
+
         try:
             for idx, config_id in enumerate(to_record):
                 if idx < num_configs_measured:
@@ -126,8 +130,19 @@ class Measurer:
                 if args.skip is not None and idx < args.skip:
                     continue
 
-                config = self._index_to_config(args, config_id)
-                self._record(config, *self._measure(config))
+                if self._op_name in ['conv2d','linear']:
+                    sample = params_generator.generate_sample()
+                    config = list(self._index_to_config(args, config_id))
+                    config[len(config) - len(sample):] = sample
+                    config = tuple(config)
+                else:
+                    config = self._index_to_config(args, config_id)
+
+                logger.info(f"config: {config}")
+
+                fw, bw = self._measure(config)
+
+                self._record(config, fw, bw)
 
                 if (idx + 1) % 100 == 0:
                     logger.info('[{}/{}] Processed'.format(idx + 1, slice_size))
@@ -144,9 +159,13 @@ class Measurer:
             self._recorder.commit()
 
     def _measure(self, config):
+        config_with_problems = [
+            # include here the configs that throw errors and we need to skip
+            # eg conv2d: (False, 50, 182, 1706, 205, 2, 2, 1) 
+        ]
         try:
             kwargs = self._config_to_profiler_args(config)
-            if kwargs is None:
+            if kwargs is None or config in config_with_problems:
                 return None, None
             return self._profiler.measure_operation(
                 record_kernels=not self._args.no_kernels,
@@ -166,7 +185,8 @@ class Measurer:
                     "cuDNN error" not in msg and
                     "Calculated padded" not in msg):
                 logger.exception('Unexpected error during measurement.')
-                # logger.info("error: " + msg)
+                logger.info(f"config: {config}")
+                sys.exit("error with the current configuration, please add it to config_with_problems array")
             return None, None
 
     def _record(self, config, forward_result, backward_result):
@@ -174,6 +194,7 @@ class Measurer:
             self._recorder.record(
                 config=config,
                 is_forward=True,
+                ktime_ns=forward_result.ktime_ns,
                 run_time_ms=forward_result.run_time_ms,
                 recorded_kernels=forward_result.kernels,
             )
@@ -181,6 +202,7 @@ class Measurer:
             self._recorder.record(
                 config=config,
                 is_forward=False,
+                ktime_ns=backward_result.ktime_ns,
                 run_time_ms=backward_result.run_time_ms,
                 recorded_kernels=backward_result.kernels,
             )
