@@ -12,7 +12,6 @@ from parameter_generator import main_generator
 import sys
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -35,42 +34,46 @@ class Measurer:
 
     def _initialize(self):
         def signal_handler(signal, frame):
-            logger.info('Received shutdown command. Will shutdown after '
-                        'completing current measurement.')
+            logger.info(
+                "Received shutdown command. Will shutdown after "
+                "completing current measurement."
+            )
             self._shutdown_early = True
+
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
 
     def add_args(self, parser):
-        parser.add_argument('device', type=str)
-        parser.add_argument('--seed', type=int, default=1337)
-        parser.add_argument('--num-points', type=int, default=200000)
-        parser.add_argument('--rank', type=int, default=0)
-        parser.add_argument('--world-size', type=int, default=1)
-        parser.add_argument('--no-kernels', action='store_true')
-        parser.add_argument('--skip', type=int)
+        parser.add_argument("device", type=str)
+        parser.add_argument("--seed", type=int, default=1337)
+        parser.add_argument("--num-points", type=int, default=200000)
+        parser.add_argument("--rank", type=int, default=0)
+        parser.add_argument("--world-size", type=int, default=1)
+        parser.add_argument("--no-kernels", action="store_true")
+        parser.add_argument("--skip", type=int)
 
     def measure_configurations(self, args, num_configs):
         # Store the arguments for future use
         self._args = args
 
         if args.rank >= args.world_size:
-            raise ValueError('Rank must be less than world size.')
+            raise ValueError("Rank must be less than world size.")
         if args.num_points % args.world_size != 0:
-            raise ValueError(
-                'Number of points must be divisible by the world size.')
+            raise ValueError("Number of points must be divisible by the world size.")
 
         # Want to ensure we measure the same configurations across each device
         random.seed(args.seed)
 
-        logger.info('Total configurations: %d', num_configs)
+        logger.info("Total configurations: %d", num_configs)
 
         to_record = random.sample(range(num_configs), args.num_points)
         if self._index_filter is not None:
-            to_record = list(filter(
-                lambda idx: self._index_filter(args, idx),
-                to_record,
-            ))
+            to_record = list(
+                filter(
+                    lambda idx: self._index_filter(args, idx),
+                    to_record,
+                )
+            )
             slice_size = len(to_record) // args.world_size
         else:
             slice_size = args.num_points // args.world_size
@@ -86,9 +89,9 @@ class Measurer:
             # configurations sequentially.
             random.shuffle(to_record)
             offset = slice_size * args.rank
-            to_record = to_record[offset:offset + slice_size]
+            to_record = to_record[offset : offset + slice_size]
 
-        file_name = '{}-{}-{}.sqlite'.format(
+        file_name = "{}-{}-{}.sqlite".format(
             self._op_name,
             args.device,
             args.rank,
@@ -108,13 +111,13 @@ class Measurer:
         # A device doesn't need to be passed in here
         self._profiler = OperationProfiler(device=None, measure_for=3)
 
-        logger.info('Warming up...')
+        logger.info("Warming up...")
         self._measure(self._index_to_config(args, to_record[0]))
         self._measure(self._index_to_config(args, to_record[1]))
         self._measure(self._index_to_config(args, to_record[2]))
 
         logger.info(
-            'Starting to record. This process records slice %d of %d.',
+            "Starting to record. This process records slice %d of %d.",
             args.rank + 1,
             args.world_size,
         )
@@ -131,11 +134,11 @@ class Measurer:
                 if args.skip is not None and idx < args.skip:
                     continue
 
-                if self._op_name in ['conv2d','linear']:
+                if self._op_name in ["conv2d", "linear"]:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
                     sample = params_generator.generate_sample()
                     config = list(self._index_to_config(args, config_id))
-                    config[len(config) - len(sample):] = sample
+                    config[len(config) - len(sample) :] = sample
                     config = tuple(config)
                 else:
                     config = self._index_to_config(args, config_id)
@@ -147,12 +150,14 @@ class Measurer:
                 self._record(config, fw, bw)
 
                 if (idx + 1) % 100 == 0:
-                    logger.info('[{}/{}] Processed'.format(idx + 1, slice_size))
+                    logger.info("[{}/{}] Processed".format(idx + 1, slice_size))
 
                 if idx % 100 == 0:
                     self._recorder.commit()
                     cur_count = self._recorder.get_num_recordings()
-                    logger.info(f"commit. num_recordings: {cur_count}, new: {cur_count-last_count}")
+                    logger.info(
+                        f"commit. num_recordings: {cur_count}, new: {cur_count-last_count}"
+                    )
                     last_count = cur_count
 
                 if self._shutdown_early:
@@ -163,7 +168,7 @@ class Measurer:
     def _measure(self, config):
         config_with_problems = [
             # include here the configs that throw errors and we need to skip
-            # eg conv2d: (False, 50, 182, 1706, 205, 2, 2, 1) 
+            # eg conv2d: (False, 50, 182, 1706, 205, 2, 2, 1)
         ]
         try:
             kwargs = self._config_to_profiler_args(config)
@@ -181,14 +186,20 @@ class Measurer:
                 allocated = torch.cuda.memory_allocated()
                 torch.cuda.empty_cache()
                 gc.collect()
-                logger.info(f"Cleared memory: {allocated} -> {torch.cuda.memory_allocated()}")
+                logger.info(
+                    f"Cleared memory: {allocated} -> {torch.cuda.memory_allocated()}"
+                )
 
-            if ("out of memory" not in msg and
-                    "cuDNN error" not in msg and
-                    "Calculated padded" not in msg):
-                logger.exception('Unexpected error during measurement.')
+            if (
+                "out of memory" not in msg
+                and "cuDNN error" not in msg
+                and "Calculated padded" not in msg
+            ):
+                logger.exception("Unexpected error during measurement.")
                 logger.info(f"config: {config}")
-                sys.exit("error with the current configuration, please add it to config_with_problems array")
+                sys.exit(
+                    "error with the current configuration, please add it to config_with_problems array"
+                )
             return None, None
 
     def _record(self, config, forward_result, backward_result):
