@@ -11,12 +11,17 @@ def get_dataset(path, features, device_features=None):
     if device_features is None:
         device_features = ['mem', 'mem_bw', 'num_sm', 'single']
 
-    SELECT_QUERY = """
+    SELECT_QUERY_RUNTIME = """
       SELECT {features}, SUM(run_time_ms) AS run_time_ms
       FROM recordings
       GROUP BY {features}
     """
-
+    
+    SELECT_QUERY_KTIME = """
+      SELECT {features}, SUM(ktime_ns) * 1e-6 AS run_time_ms
+      FROM recordings
+      GROUP BY {features}
+    """
     # read datasets
     files = glob.glob(path + "/*.sqlite")
 
@@ -25,6 +30,12 @@ def get_dataset(path, features, device_features=None):
     for f in files:
         device_name = f.split("/")[-1].split("-")[1]
         if "." in device_name: device_name = device_name[:device_name.index(".")]
+
+        if device_name in ['A100', 'T4', 'L4', 'V100']:
+            SELECT_QUERY = SELECT_QUERY_KTIME
+        else:
+            SELECT_QUERY = SELECT_QUERY_RUNTIME
+
 
         conn = sqlite3.connect(f)
         query = SELECT_QUERY.format(features=",".join(features))
