@@ -14,6 +14,11 @@ import sys
 
 logger = logging.getLogger(__name__)
 
+"""
+Some operators such as conv2d and linear need to be sampled from a different distribution (gaussian + uniform)
+main_generator generates these new samples
+"""
+SPECIAL_SAMPLING_OPS = ['conv2d','linear']
 
 class Measurer:
     def __init__(
@@ -125,7 +130,8 @@ class Measurer:
         last_count = self._recorder.get_num_recordings()
 
         # For conv2d and linear, obtain a new generator combining random and gaussian samples
-        params_generator = main_generator(self._op_name)
+        if self._op_name in SPECIAL_SAMPLING_OPS:
+            params_generator = main_generator(self._op_name)
 
         try:
             for idx, config_id in enumerate(to_record):
@@ -134,7 +140,7 @@ class Measurer:
                 if args.skip is not None and idx < args.skip:
                     continue
 
-                if self._op_name in ["conv2d", "linear"]:
+                if self._op_name in SPECIAL_SAMPLING_OPS:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
                     sample = params_generator.generate_sample()
                     config = list(self._index_to_config(args, config_id))

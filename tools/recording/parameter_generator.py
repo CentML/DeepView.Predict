@@ -75,10 +75,13 @@ class main_generator:
                     return round_sample
 
             elif self._ops == "linear":
-                return [
-                    self.round(sample[0][0]),  # in_features
-                    self.round(sample[1][0]),  # out_features
-                ]
+                in_features = self.round(sample[0][0])
+                out_features = self.round(sample[1][0])
+                if in_features != 0 and out_features != 0:
+                    return [
+                        in_features,  # in_features
+                        out_features,  # out_features
+                    ]
 
     def round(self, n: float) -> int:
         "randomly round up or down"
