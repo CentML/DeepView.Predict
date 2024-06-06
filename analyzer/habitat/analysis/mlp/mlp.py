@@ -3,8 +3,9 @@ import time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from torch.utils.data import random_split, DataLoader
+import pathlib
+import os
 
 import numpy as np
 
@@ -147,8 +148,13 @@ class RuntimePredictor:
         self.mu = None
         self.sigma = None
 
+        # create directory to save model
+        curr_dir = os.getcwd()
+        pathlib.Path(f"{curr_dir}/saved_models/{model_name}").mkdir(exist_ok=True)
+
         if model_path is not None:
             self.load_state(model_path)
+
 
     def load_state(self, path):
         checkpoint = torch.load(path)
