@@ -103,7 +103,7 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._conv2d_scale)
         elif operation.name == 'lstm':
             return self._special_scale(operation, dest_device, self._lstm_scale)
-        elif operation.name == 'linear':
+        elif operation.name in ['linear','__matmul__']:
             return self._special_scale(operation, dest_device, self._linear_scale)
         elif operation.name == 'bmm':
             return self._special_scale(operation, dest_device, self._bmm_scale)
