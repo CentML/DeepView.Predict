@@ -1,0 +1,115 @@
+name: whl-build-all
+
+on:
+  workflow_dispatch:
+
+env:
+  DEVICE_PAIRS: L4,A100;L4,T4;T4,A100;L4,V100;V100,A100;T4,V100
+
+jobs:
+  create-summary:
+    needs: [experiments-t4, experiments-l4, experiments-a100, experiments-v100]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: create directory to gather all csv files
+        run: |
+          mkdir all_results
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all_results
+          merge-multiple: true
+
+      - name: check files
+        run: |
+          ls -R all_results
+
+      - name: generate end-to-end and per operation results
+        run: |
+          sudo apt install python3-pip -y
+          pip3 install pandas
+          python3 ./experiments/process_results.py --in-dir all_results --out-e2e out_e2e --out-ops out_ops
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-combined
+          path: |
+            ./experiments/out_e2e/
+            ./experiments/out_ops/
+
+  experiments-t4:
+    runs-on: [self-hosted, dev, t4]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: T4
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-t4
+          path: ./experiments/results/
+
+  experiments-v100:
+    runs-on: [self-hosted, dev, v100]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: V100
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-v100
+          path: ./experiments/results/
+
+  experiments-l4:
+    runs-on: [self-hosted, dev, l4]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: L4
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-l4
+          path: ./experiments/results/
+
+  experiments-a100:
+    runs-on: [self-hosted, dev, a100]
+    steps:
+      - name: Fetch repository
+        uses: actions/checkout@v4
+
+      - name: run experiments
+        run: |
+          ./experiments/workflow_model_eval.sh python3.10
+        env:
+          LOCAL_DEVICE: A100
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-a100
+          path: ./experiments/results/
