@@ -50,7 +50,7 @@ jobs:
 
       - name: run experiments
         run: |
-          ./experiments/workflow_model_eval.sh python3.10
+          ./experiments/benchmarker_helper_script.sh python3.10
         env:
           LOCAL_DEVICE: T4
 
@@ -68,7 +68,7 @@ jobs:
 
       - name: run experiments
         run: |
-          ./experiments/workflow_model_eval.sh python3.10
+          ./experiments/benchmarker_helper_script.sh python3.10
         env:
           LOCAL_DEVICE: V100
 
@@ -86,7 +86,7 @@ jobs:
 
       - name: run experiments
         run: |
-          ./experiments/workflow_model_eval.sh python3.10
+          ./experiments/benchmarker_helper_script.sh python3.10
         env:
           LOCAL_DEVICE: L4
 
@@ -104,7 +104,7 @@ jobs:
 
       - name: run experiments
         run: |
-          ./experiments/workflow_model_eval.sh python3.10
+          ./experiments/benchmarker_helper_script.sh python3.10
         env:
           LOCAL_DEVICE: A100
 
