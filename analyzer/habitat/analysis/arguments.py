@@ -4,6 +4,7 @@ import torch
 class Arguments:
     """
     Stores representations of an operation's arguments.
+    debug_args is used for benchmarking and reporting
     """
     def __init__(self, args, kwargs, debug_args):
         self.args = args
@@ -19,7 +20,7 @@ class Arguments:
             for arg_name, arg_value in kwargs.items()
         }
         debug_args = tuple(map(_debug_process_argument,args))
-        return cls(processed_args, processed_kwargs)
+        return cls(processed_args, processed_kwargs, debug_args)
 
 
 def _process_argument(argument):

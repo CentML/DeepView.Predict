@@ -8,8 +8,10 @@ import torch
 import habitat
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.profiling.run_time import RunTimeProfiler
-from habitat.analysis.operation import MeasuredOperation
 from habitat.analysis.predictor import Predictor
+
+DEFAULT_PREDICTOR = Predictor()
+SPECIAL_OPERATIONS = ["conv2d", "linear", "__matmul__", "conv_transpose2d", "lstm", "bmm"]
 ###############################################################################
 
 # Experiment configuration
@@ -50,18 +52,19 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
         writer = csv.writer(file)
         writer.writerow(["operation", "run_time_ms", "ktime_local", "runtime_local", "args", "predicted_local", "unscaled_predicted"])
         for op in trace.operations:
-            arguments = op.arguments.debug_args if op.arguments else ""
-            ktime = 0
-            runtime = 0
-            predicted_local = None
-            unscaled_predicted = None
-            if hasattr(op,'measured_local'):
-                ktime = op.measured_local.ktime_ns*1e-6 if not isinstance(op.measured_local,int) else 0
-                runtime = op.measured_local.run_time_ms if not isinstance(op.measured_local,int) else 0
-            if hasattr(op, 'predicted_local'):
-                predicted_local = op.predicted_local
-            if hasattr(op, 'unscaled_predicted'):
-                unscaled_predicted = op.unscaled_predicted
+            if op.name in SPECIAL_OPERATIONS:
+                ktime = op.ktime_ns*1e-6
+                runtime = op.run_time_ms
+                arguments = op.arguments.debug_args
+                predicted_local = op.to_device(origin_device, DEFAULT_PREDICTOR).run_time_ms
+                unscaled_predicted = op.to_device(dest_device, DEFAULT_PREDICTOR, True).run_time_ms
+            else:
+                ktime = 0
+                runtime = 0
+                predicted_local = 0
+                arguments = ""
+                unscaled_predicted = 0
+            
             ops_sum += op.run_time_ms
             writer.writerow([op.name, op.run_time_ms, ktime, runtime, arguments ,predicted_local, unscaled_predicted])
     print(f"ops sum: {ops_sum}")
@@ -114,14 +117,14 @@ def run_experiment_config(config_name, runnable, context):
     print(f"time from trace.run_time_ms : {trace.run_time_ms}")
     e2e_results = [(context.origin_device, trace.run_time_ms)]
 
-    predicted_trace = trace.to_device(context.destination_device)
     record_breakdown(
         config_name,
         context.origin_device,
         context.destination_device,
-        predicted_trace,
+        trace,
         context.storage_folder,
     )
+    predicted_trace = trace.to_device(context.destination_device)
     print(f"e2e: {config_name} | run_time_ms : {predicted_trace.run_time_ms}")
     e2e_results.append((context.destination_device, predicted_trace.run_time_ms))
 

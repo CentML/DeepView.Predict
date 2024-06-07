@@ -89,7 +89,7 @@ class Predictor:
         )
 
 
-    def predict_operation(self, operation, dest_device):
+    def predict_operation(self, operation, dest_device, unscaled=False):
         if operation.name not in SPECIAL_OPERATIONS:
             return PredictedOperation(
                 operation,
@@ -100,15 +100,15 @@ class Predictor:
             )
 
         if operation.name == 'conv2d':
-            return self._special_scale(operation, dest_device, self._conv2d_scale)
+            return self._special_scale(operation, dest_device, self._conv2d_scale, unscaled)
         elif operation.name == 'lstm':
-            return self._special_scale(operation, dest_device, self._lstm_scale)
+            return self._special_scale(operation, dest_device, self._lstm_scale, unscaled)
         elif operation.name in ['linear','__matmul__']:
-            return self._special_scale(operation, dest_device, self._linear_scale)
+            return self._special_scale(operation, dest_device, self._linear_scale, unscaled)
         elif operation.name == 'bmm':
-            return self._special_scale(operation, dest_device, self._bmm_scale)
+            return self._special_scale(operation, dest_device, self._bmm_scale, unscaled)
         elif operation.name == 'conv_transpose2d':
-            return self._special_scale(operation, dest_device, self._conv_transpose2d_scale)
+            return self._special_scale(operation, dest_device, self._conv_transpose2d_scale, unscaled)
 
         logger.warn('Unhandled special operation: %s', operation.name)
         return PredictedOperation(
@@ -139,8 +139,8 @@ class Predictor:
             device=dest_device,
         )
 
-    def _special_scale(self, operation, dest_device, scaler):
-        predicted_ms, measured_local, predicted_local, unscaled_predicted = scaler(operation, dest_device)
+    def _special_scale(self, operation, dest_device, scaler, unscaled=False):
+        predicted_ms = scaler(operation, dest_device, unscaled)
 
         if predicted_ms < 0:
             logger.warn(
@@ -154,13 +154,10 @@ class Predictor:
             operation,
             RunTimePurePrediction(predicted_ms, dest_device),
             None,
-            dest_device,
-            measured_local,
-            predicted_local,
-            unscaled_predicted
+            dest_device
         )
 
-    def _conv2d_scale(self, operation, dest_device):
+    def _conv2d_scale(self, operation, dest_device, unscaled=False):
         # 1. Merge arguments (give them all names)
         merged = name_all_arguments(
             CONV2D_PARAMS,
@@ -192,9 +189,12 @@ class Predictor:
         pred_dest = self.conv2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv2d_pred.predict(arguments, operation.device.name)
 
-        return operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest
+        if unscaled:
+            return pred_dest
 
-    def _conv_transpose2d_scale(self, operation, dest_device):
+        return operation.run_time_ms * pred_dest / pred_orig
+
+    def _conv_transpose2d_scale(self, operation, dest_device, unscaled=False):
         # 1. Merge arguments (give them all names)
         merged = name_all_arguments(
             CONVTRANSPOSE2D_PARAMS,
@@ -226,9 +226,12 @@ class Predictor:
         pred_dest = self.conv_transpose2d_pred.predict(arguments, dest_device.name)
         pred_orig = self.conv_transpose2d_pred.predict(arguments, operation.device.name)
 
-        return operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest
+        if unscaled:
+            return pred_dest
 
-    def _linear_scale(self, operation, dest_device):
+        return operation.run_time_ms * pred_dest / pred_orig
+
+    def _linear_scale(self, operation, dest_device, unscaled=False):
         merged = name_all_arguments(
             LINEAR_PARAMS,
             operation.arguments.args,
@@ -262,9 +265,12 @@ class Predictor:
         pred_dest = self.linear_pred.predict(arguments, dest_device.name)
         pred_orig = self.linear_pred.predict(arguments, operation.device.name)
 
-        return operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest
+        if unscaled:
+            return pred_dest
 
-    def _bmm_scale(self, operation, dest_device):
+        return operation.run_time_ms * pred_dest / pred_orig
+
+    def _bmm_scale(self, operation, dest_device, unscaled=False):
         merged = name_all_arguments(
             BMM_PARAMS,
             operation.arguments.args,
@@ -282,9 +288,12 @@ class Predictor:
         pred_dest = self.bmm_pred.predict(arguments, dest_device.name)
         pred_orig = self.bmm_pred.predict(arguments, operation.device.name)
 
-        return operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest
+        if unscaled:
+            return pred_dest
 
-    def _lstm_scale(self, operation, dest_device):
+        return operation.run_time_ms * pred_dest / pred_orig
+
+    def _lstm_scale(self, operation, dest_device, unscaled=False):
         # This is hacky, but unfortunately the only way to differentiate these
         # overloaded LSTM calls.
         has_batch_sizes = isinstance(operation.arguments.args[4], bool)
@@ -327,4 +336,7 @@ class Predictor:
         pred_dest = self.lstm_pred.predict(arguments, dest_device.name)
         pred_orig = self.lstm_pred.predict(arguments, operation.device.name)
 
-        return operation.run_time_ms * pred_dest / pred_orig, operation, pred_orig, pred_dest
+        if unscaled:
+            return pred_dest
+
+        return operation.run_time_ms * pred_dest / pred_orig

@@ -148,10 +148,6 @@ class RuntimePredictor:
         self.mu = None
         self.sigma = None
 
-        # create directory to save model
-        curr_dir = os.getcwd()
-        pathlib.Path(f"{curr_dir}/saved_models/{model_name}").mkdir(exist_ok=True)
-
         if model_path is not None:
             self.load_state(model_path)
 
