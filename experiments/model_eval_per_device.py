@@ -63,11 +63,11 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
             [
                 "operation", # operation name
                 "run_time_ms", # predicted runtime in ms
+                "unscaled_predicted", # unscaled prediction to destination device
+                "args", # operation args 
                 "ktime_local", # measured local kernel time
                 "runtime_local", # measured local runtime
-                "args", # operation args 
                 "predicted_local", # prediction to origin device
-                "unscaled_predicted", # unscaled prediction to destination device
             ]
         )
         for op in trace.operations:
@@ -98,11 +98,11 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
                 [
                     op.name,
                     scaled_predicted,
+                    unscaled_predicted,
+                    arguments,
                     ktime,
                     runtime,
-                    arguments,
                     predicted_local,
-                    unscaled_predicted,
                 ]
             )
     print(f"ops sum: {ops_sum}")
