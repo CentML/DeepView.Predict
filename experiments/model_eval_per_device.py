@@ -56,7 +56,7 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
                 ktime = op.ktime_ns*1e-6
                 runtime = op.run_time_ms
                 arguments = op.arguments.debug_args
-                predicted_local = op.to_device(origin_device, DEFAULT_PREDICTOR).run_time_ms
+                predicted_local = op.to_device(dest_device, DEFAULT_PREDICTOR).run_time_ms
                 unscaled_predicted = op.to_device(dest_device, DEFAULT_PREDICTOR, True).run_time_ms
             else:
                 ktime = 0
