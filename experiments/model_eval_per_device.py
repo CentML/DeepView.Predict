@@ -11,7 +11,14 @@ from habitat.profiling.run_time import RunTimeProfiler
 from habitat.analysis.predictor import Predictor
 
 DEFAULT_PREDICTOR = Predictor()
-SPECIAL_OPERATIONS = ["conv2d", "linear", "__matmul__", "conv_transpose2d", "lstm", "bmm"]
+SPECIAL_OPERATIONS = [
+    "conv2d",
+    "linear",
+    "__matmul__",
+    "conv_transpose2d",
+    "lstm",
+    "bmm",
+]
 ###############################################################################
 
 # Experiment configuration
@@ -30,13 +37,15 @@ Context = collections.namedtuple(
 
 torch.backends.cudnn.benchmark = True
 
+
 def record_e2e(config_name, origin_device, data, storage_folder):
     file_name = "{}-{}-e2e.csv".format(config_name, origin_device.name)
     file_path = os.path.join(storage_folder, file_name)
     exists = os.path.exists(file_path)
     with open(file_path, "a") as file:
         writer = csv.writer(file)
-        if not exists: writer.writerow(["device", "run_time_ms"])
+        if not exists:
+            writer.writerow(["device", "run_time_ms"])
         for device, run_time_ms in data:
             writer.writerow([device.name, run_time_ms])
 
@@ -50,24 +59,49 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
     ops_sum = 0
     with open(os.path.join(storage_folder, file_name), "w") as file:
         writer = csv.writer(file)
-        writer.writerow(["operation", "run_time_ms", "ktime_local", "runtime_local", "args", "predicted_local", "unscaled_predicted"])
+        writer.writerow(
+            [
+                "operation",
+                "run_time_ms",
+                "ktime_local",
+                "runtime_local",
+                "args",
+                "predicted_local",
+                "unscaled_predicted",
+            ]
+        )
         for op in trace.operations:
             if op.name in SPECIAL_OPERATIONS:
-                ktime = op.ktime_ns*1e-6
+                ktime = op.ktime_ns * 1e-6
                 runtime = op.run_time_ms
                 arguments = op.arguments.debug_args
-                predicted_local = op.to_device(dest_device, DEFAULT_PREDICTOR).run_time_ms
-                unscaled_predicted = op.to_device(dest_device, DEFAULT_PREDICTOR, True).run_time_ms
+                predicted_local = op.to_device(
+                    origin_device, DEFAULT_PREDICTOR
+                ).run_time_ms
+                unscaled_predicted = op.to_device(
+                    dest_device, DEFAULT_PREDICTOR, True
+                ).run_time_ms
             else:
                 ktime = 0
                 runtime = 0
                 predicted_local = 0
                 arguments = ""
                 unscaled_predicted = 0
-            
+
             ops_sum += op.run_time_ms
-            writer.writerow([op.name, op.run_time_ms, ktime, runtime, arguments ,predicted_local, unscaled_predicted])
+            writer.writerow(
+                [
+                    op.name,
+                    op.run_time_ms,
+                    ktime,
+                    runtime,
+                    arguments,
+                    predicted_local,
+                    unscaled_predicted,
+                ]
+            )
     print(f"ops sum: {ops_sum}")
+
 
 def compute_threshold(runnable, context):
     tracker = habitat.OperationTracker(context.origin_device)
