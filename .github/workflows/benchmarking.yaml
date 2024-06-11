@@ -31,7 +31,7 @@ jobs:
       - name: generate end-to-end and per operation results
         run: |
           sudo apt install python3-pip -y
-          pip3 install pandas
+          pip3 install pandas dominate
           python3 ./experiments/process_results.py --in-dir all_results --out-e2e out_e2e --out-ops out_ops
 
       - name: upload artifact

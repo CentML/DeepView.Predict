@@ -61,21 +61,19 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
         writer = csv.writer(file)
         writer.writerow(
             [
-                "operation", # operation name
-                "run_time_ms", # predicted runtime in ms
-                "unscaled_predicted", # unscaled prediction to destination device
-                "args", # operation args 
-                "ktime_local", # measured local kernel time
-                "runtime_local", # measured local runtime
-                "predicted_local", # prediction to origin device
+                "operation",  # operation name
+                "run_time_ms",  # predicted runtime in ms
+                "unscaled_predicted",  # unscaled prediction to destination device
+                "args",  # operation args
+                "ktime_local",  # measured local kernel time
+                "runtime_local",  # measured local runtime
+                "predicted_local",  # prediction to origin device
             ]
         )
         for op in trace.operations:
 
-            scaled_predicted = op.to_device(
-                dest_device, DEFAULT_PREDICTOR
-            ).run_time_ms
-            
+            scaled_predicted = op.to_device(dest_device, DEFAULT_PREDICTOR).run_time_ms
+
             if op.name in SPECIAL_OPERATIONS:
                 ktime = op.ktime_ns * 1e-6
                 runtime = op.run_time_ms
