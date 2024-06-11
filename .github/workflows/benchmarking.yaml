@@ -1,4 +1,4 @@
-name: whl-build-all
+name: benchmark
 
 on:
   workflow_dispatch:
