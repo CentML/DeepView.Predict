@@ -52,10 +52,12 @@ jobs:
       - name: Generate html pages
         run: |
           python3 ./experiments/generate_html_summary.py --e2e ./experiments/out_e2e --ops ./experiments/out_ops
+          mkdir benchmark_results
+          mv *.html benchmark_results
       
       - name: Upload to S3
         run: |
-          aws s3 cp *.html s3://centml-releases/habitat/benchmark
+          aws s3 cp ./benchmark_results s3://centml-releases/habitat/benchmark --recursive
  
 
   experiments-t4:
