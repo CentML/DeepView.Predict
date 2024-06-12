@@ -9,7 +9,24 @@ from dominate.tags import *
 import glob
 import pandas as pd
 import math
-from habitat.analysis import SPECIAL_OPERATIONS
+
+SPECIAL_OPERATIONS = {
+    # Convolution
+    'conv2d',
+    'conv_transpose2d',
+
+    # Matrix multiply operations
+    'linear',
+    '__matmul__', # calls the same kernel as linear
+    'bmm',
+
+    # Recurrent operations
+    'lstm',
+    'gru',
+    'rnn_tanh',
+    'rnn_relu',
+}
+
 
 BENCHMARKER_TITLE = "deepview.predict-benchmark"
 
