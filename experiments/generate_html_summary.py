@@ -8,6 +8,8 @@ import dominate
 from dominate.tags import *
 import glob
 import pandas as pd
+import math
+from habitat.analysis import SPECIAL_OPERATIONS
 
 BENCHMARKER_TITLE = "deepview.predict-benchmark"
 
@@ -20,6 +22,10 @@ def get_pct_error_color(pct_err):
         return "#ffa500"
     else:
         return "#ff0000"
+
+
+def get_pct_err(predicted, measured):
+    return round((predicted - measured) / measured, 3)
 
 
 def generate_summary(e2e_files):
@@ -127,7 +133,6 @@ def generate_summary(e2e_files):
 def generate_details(ops_files):
     for f in sorted(list(glob.glob(f"{ops_files}/*.csv"))):
         doc = dominate.document(title=BENCHMARKER_TITLE)
-
         with doc.head:
             style(
                 """\
@@ -141,11 +146,43 @@ def generate_details(ops_files):
                     """
             )
 
-        file_name = f.replace('+','-').split('/')[-1].replace('.csv','')
+        file_name = f.replace("+", "-").split("/")[-1].replace(".csv", "")
         df = pd.read_csv(f)
+        df_special_ops = df[df["operation"].isin(SPECIAL_OPERATIONS)]
+        df_no_special_ops = df[~df["operation"].isin(SPECIAL_OPERATIONS)]
+        mlp_err = get_pct_err(
+            df_special_ops["run_time_ms_predicted"].sum(),
+            df_special_ops["run_time_ms_measured"].sum(),
+        )
+        wave_scale_err = get_pct_err(
+            df_no_special_ops["run_time_ms_predicted"].sum(),
+            df_no_special_ops["run_time_ms_measured"].sum(),
+        )
+
+        err_tbl = [("mlp err", mlp_err), ("wave scale err", wave_scale_err)]
+
         col_names = df.columns.to_list()
         with doc:
             h1(file_name)
+            with div():
+                err_table = table()
+                table_head = thead()
+                header_row = tr()
+                header_row += th("category")
+                header_row += th("pct err")
+                table_head += header_row
+                err_table.add(table_head)
+
+                table_body = tbody()
+                for name, err in err_tbl:
+                    row = tr()
+                    row += td(name)
+                    row += td(err)
+                    table_body += row
+                err_table.add(table_body)
+
+            br()
+
             with div():
                 file_table = table()
                 table_head = thead()
@@ -153,18 +190,22 @@ def generate_details(ops_files):
                 for c in col_names:
                     header_row += th(c)
                 table_head += header_row
-                file_table.add(table_head) 
+                file_table.add(table_head)
 
                 table_body = tbody()
                 for _, item in df.iterrows():
                     row = tr()
                     row += td(item["operation"])
-                    row += td(round(item["run_time_ms_predicted"],3))
+                    row += td(round(item["run_time_ms_predicted"], 3))
                     row += td(round(item["unscaled_predicted_ms"], 3))
                     row += td(round(item["run_time_ms_measured"], 3))
                     row += td(round(item["wgt_pred_time"], 3))
                     row += td(round(item["pct_error"], 3))
-                    row += td(item["args"])
+                    row += td(
+                        item["args"]
+                        if isinstance(item["args"], str) or not math.isnan(item["args"])
+                        else "[]"
+                    )
                     row += td(round(item["ktime_local_ms"], 3))
                     row += td(round(item["runtime_local_ms"], 3))
                     row += td(round(item["predicted_local_ms"], 3))
@@ -172,10 +213,9 @@ def generate_details(ops_files):
 
                 file_table.add(table_body)
 
-
-
         with open(f"{file_name}.html", "w") as f:
             f.write(doc.render())
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

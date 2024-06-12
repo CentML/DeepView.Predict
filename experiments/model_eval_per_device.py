@@ -11,22 +11,15 @@ from habitat.profiling.run_time import RunTimeProfiler
 from habitat.analysis.predictor import Predictor
 
 DEFAULT_PREDICTOR = Predictor()
-SPECIAL_OPERATIONS = [
-    "conv2d",
-    "linear",
-    "__matmul__",
-    "conv_transpose2d",
-    "lstm",
-    "bmm",
-]
+
 ###############################################################################
 
 # Experiment configuration
 
-RESNET50_BATCHES = [16]  # , 32, 64]
-GNMT_BATCHES = [16]  # , 32, 48]
-NANOGPT_BATCHES = [32]  # , 48, 64]
-DCGAN_BATCHES = [64]  # , 96, 128]
+RESNET50_BATCHES = [16, 32, 64]
+GNMT_BATCHES = [16, 32, 48]
+NANOGPT_BATCHES = [32, 48, 64]
+DCGAN_BATCHES = [64, 96, 128]
 
 ###############################################################################
 

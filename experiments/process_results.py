@@ -51,7 +51,7 @@ class Index:
                 actual = df[df["device"] == origin_device]
 
                 config.e2e_predicted[origin_device] = predictions
-                config.e2e_actual[origin_device] = actual.iloc[0]["run_time_ms"]
+                config.e2e_actual[origin_device] = actual["run_time_ms"].mean()
             else:
                 dest_device = ops_match.group("dest_device")
                 config.ops[(origin_device, dest_device)] = df
