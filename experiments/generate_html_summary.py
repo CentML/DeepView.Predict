@@ -9,23 +9,21 @@ from dominate.tags import *
 import glob
 import pandas as pd
 import math
-from datetime import datetime 
+from datetime import datetime
 
 SPECIAL_OPERATIONS = {
     # Convolution
-    'conv2d',
-    'conv_transpose2d',
-
+    "conv2d",
+    "conv_transpose2d",
     # Matrix multiply operations
-    'linear',
-    '__matmul__', # calls the same kernel as linear
-    'bmm',
-
+    "linear",
+    "__matmul__",  # calls the same kernel as linear
+    "bmm",
     # Recurrent operations
-    'lstm',
-    'gru',
-    'rnn_tanh',
-    'rnn_relu',
+    "lstm",
+    "gru",
+    "rnn_tanh",
+    "rnn_relu",
 }
 
 
@@ -67,10 +65,9 @@ def generate_summary(e2e_files):
             }
             """
         )
-    
+
     with doc:
         h1(f"Last update: {str(datetime.now())}")
-
 
     for f in sorted(list(glob.glob(f"{e2e_files}/*.csv"))):
         table_tile = f.split("/")[-1].split("-")[0]
@@ -241,8 +238,8 @@ def generate_details(ops_files):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--e2e", required=True)
-    parser.add_argument("--ops", required=True)
+    parser.add_argument("--e2e", required=True, help="Path to e2e folder")
+    parser.add_argument("--ops", required=True, help="Path to ops folder")
     args = parser.parse_args()
 
     generate_summary(args.e2e)
