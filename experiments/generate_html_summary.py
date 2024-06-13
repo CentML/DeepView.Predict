@@ -9,6 +9,7 @@ from dominate.tags import *
 import glob
 import pandas as pd
 import math
+from datetime import datetime 
 
 SPECIAL_OPERATIONS = {
     # Convolution
@@ -66,13 +67,17 @@ def generate_summary(e2e_files):
             }
             """
         )
+    
+    with doc:
+        h1(f"Last update: {str(datetime.now())}")
+
 
     for f in sorted(list(glob.glob(f"{e2e_files}/*.csv"))):
         table_tile = f.split("/")[-1].split("-")[0]
         df = pd.read_csv(f)
         devices_names = list(df["origin_device"].unique())
         with doc:
-            h1(table_tile)
+            h2(table_tile)
             with div():
                 attr(cls="model-div")
                 # end-to-end predictions
