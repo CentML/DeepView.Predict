@@ -31,7 +31,7 @@ jobs:
       - name: generate end-to-end and per operation results
         run: |
           sudo apt install python3-pip -y
-          pip3 install pandas
+          pip3 install pandas dominate
           python3 ./experiments/process_results.py --in-dir all_results --out-e2e out_e2e --out-ops out_ops
 
       - name: upload artifact
@@ -41,6 +41,24 @@ jobs:
           path: |
             ./experiments/out_e2e/
             ./experiments/out_ops/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.HABITAT_AWS_ACCESS_KEY }}
+          aws-region: ${{ secrets.HABITAT_AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.HABITAT_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Generate html pages
+        run: |
+          python3 ./experiments/generate_html_summary.py --e2e ./experiments/out_e2e --ops ./experiments/out_ops
+          mkdir benchmark_results
+          mv *.html benchmark_results
+      
+      - name: Upload to S3
+        run: |
+          aws s3 cp ./benchmark_results s3://centml-releases/habitat/benchmark --recursive
+ 
 
   experiments-t4:
     runs-on: [self-hosted, dev, t4]

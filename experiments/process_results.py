@@ -51,7 +51,7 @@ class Index:
                 actual = df[df["device"] == origin_device]
 
                 config.e2e_predicted[origin_device] = predictions
-                config.e2e_actual[origin_device] = actual.iloc[0]["run_time_ms"]
+                config.e2e_actual[origin_device] = actual["run_time_ms"].mean()
             else:
                 dest_device = ops_match.group("dest_device")
                 config.ops[(origin_device, dest_device)] = df
@@ -167,7 +167,7 @@ def ops_results(config_name, config, out_ops):
         combined = predictions.copy()
         combined["run_time_ms_measured"] = actual["run_time_ms"]
         combined = combined.rename(columns={"run_time_ms": "run_time_ms_predicted"})
-        total_predicted_time = sum(combined["run_time_ms_measured"])
+        total_predicted_time = sum(combined["run_time_ms_predicted"])
         combined["wgt_pred_time"] = (
             combined["run_time_ms_predicted"] / total_predicted_time
         )
@@ -191,14 +191,14 @@ def ops_results(config_name, config, out_ops):
             [
                 "operation",
                 "run_time_ms_predicted",
-                "unscaled_predicted",
+                "unscaled_predicted_ms",
                 "run_time_ms_measured",
                 "wgt_pred_time",
-                "pct_error", 
+                "pct_error",
                 "args",
-                "ktime_local",
-                "runtime_local",
-                "predicted_local",
+                "ktime_local_ms",
+                "runtime_local_ms",
+                "predicted_local_ms",
             ]
         ]
         combined.to_csv(os.path.join(storage_path, file_name), index=False)

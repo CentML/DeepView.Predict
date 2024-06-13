@@ -1,7 +1,6 @@
 import functools
 import logging
 import operator
-import os
 
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.analysis.operation import PredictedOperation
@@ -191,6 +190,9 @@ class Predictor:
 
         if unscaled:
             return pred_dest
+        
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
 
         return operation.run_time_ms * pred_dest / pred_orig
 
@@ -228,7 +230,10 @@ class Predictor:
 
         if unscaled:
             return pred_dest
-
+        
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
+        
         return operation.run_time_ms * pred_dest / pred_orig
 
     def _linear_scale(self, operation, dest_device, unscaled=False):
@@ -268,6 +273,9 @@ class Predictor:
         if unscaled:
             return pred_dest
 
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
+        
         return operation.run_time_ms * pred_dest / pred_orig
 
     def _bmm_scale(self, operation, dest_device, unscaled=False):
@@ -290,6 +298,9 @@ class Predictor:
 
         if unscaled:
             return pred_dest
+
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
 
         return operation.run_time_ms * pred_dest / pred_orig
 
@@ -338,5 +349,8 @@ class Predictor:
 
         if unscaled:
             return pred_dest
+
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
 
         return operation.run_time_ms * pred_dest / pred_orig

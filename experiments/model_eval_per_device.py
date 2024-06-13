@@ -11,14 +11,7 @@ from habitat.profiling.run_time import RunTimeProfiler
 from habitat.analysis.predictor import Predictor
 
 DEFAULT_PREDICTOR = Predictor()
-SPECIAL_OPERATIONS = [
-    "conv2d",
-    "linear",
-    "__matmul__",
-    "conv_transpose2d",
-    "lstm",
-    "bmm",
-]
+
 ###############################################################################
 
 # Experiment configuration
@@ -61,43 +54,36 @@ def record_breakdown(config_name, origin_device, dest_device, trace, storage_fol
         writer = csv.writer(file)
         writer.writerow(
             [
-                "operation", # operation name
-                "run_time_ms", # predicted runtime in ms
-                "unscaled_predicted", # unscaled prediction to destination device
-                "args", # operation args 
-                "ktime_local", # measured local kernel time
-                "runtime_local", # measured local runtime
-                "predicted_local", # prediction to origin device
+                "operation",  # operation name
+                "run_time_ms",  # predicted runtime in ms
+                "unscaled_predicted_ms",  # unscaled prediction to destination device
+                "args",  # operation args
+                "ktime_local_ms",  # measured local kernel time
+                "runtime_local_ms",  # measured local runtime
+                "predicted_local_ms",  # prediction to origin device
             ]
         )
         for op in trace.operations:
 
-            scaled_predicted = op.to_device(
-                dest_device, DEFAULT_PREDICTOR
-            ).run_time_ms
-            
-            if op.name in SPECIAL_OPERATIONS:
-                ktime = op.ktime_ns * 1e-6
-                runtime = op.run_time_ms
-                arguments = op.arguments.debug_args
-                predicted_local = op.to_device(
-                    origin_device, DEFAULT_PREDICTOR
-                ).run_time_ms
-                unscaled_predicted = op.to_device(
-                    dest_device, DEFAULT_PREDICTOR, True
-                ).run_time_ms
-            else:
-                ktime = 0
-                runtime = 0
-                predicted_local = 0
-                arguments = ""
-                unscaled_predicted = 0
-
+            predicted = (
+                op.to_device(dest_device, DEFAULT_PREDICTOR).run_time_ms
+                if origin_device.name != dest_device.name
+                else op.run_time_ms
+            )
+            unscaled_predicted = (
+                op.to_device(dest_device, DEFAULT_PREDICTOR, True).run_time_ms
+                if origin_device.name != dest_device.name
+                else op.run_time_ms
+            )
+            arguments = op.arguments.debug_args if op.arguments else None
+            ktime = op.ktime_ns * 1e-6
+            runtime = op.run_time_ms
+            predicted_local = op.to_device(origin_device, DEFAULT_PREDICTOR).run_time_ms
             ops_sum += op.run_time_ms
             writer.writerow(
                 [
                     op.name,
-                    scaled_predicted,
+                    predicted,
                     unscaled_predicted,
                     arguments,
                     ktime,
