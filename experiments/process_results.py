@@ -10,7 +10,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-DEVICES = ["RTX2070", "RTX2080Ti", "P4000", "T4", "P100", "V100", "A100", "L4"]
+DEVICES = ["RTX2070", "RTX2080Ti", "P4000", "T4", "P100", "V100", "A100", "L4", "A4000", "A40", "H100"]
 
 E2E_FILE = re.compile(
     "(?P<config_name>[a-zA-Z0-9\+]+)-(?P<origin_device>[a-zA-Z0-9]+)-e2e.csv"
