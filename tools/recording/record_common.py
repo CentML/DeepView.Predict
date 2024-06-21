@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 Some operators such as conv2d and linear need to be sampled from a different distribution (gaussian + uniform)
 main_generator generates these new samples
 """
-SPECIAL_SAMPLING_OPS = ['conv2d','linear']
+SPECIAL_SAMPLING_OPS = ['conv2d','linear', 'batch_norm']
 
 class Measurer:
     def __init__(
@@ -72,6 +72,7 @@ class Measurer:
         logger.info("Total configurations: %d", num_configs)
 
         to_record = random.sample(range(num_configs), args.num_points)
+        print(f"before filter :{len(to_record)}")
         if self._index_filter is not None:
             to_record = list(
                 filter(
@@ -134,7 +135,7 @@ class Measurer:
             params_generator = main_generator(self._op_name)
 
         try:
-            for idx, config_id in enumerate(to_record):
+            for idx, config_id in enumerate(to_record[:100]):
                 if idx < num_configs_measured:
                     continue
                 if args.skip is not None and idx < args.skip:
@@ -144,7 +145,11 @@ class Measurer:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
                     sample = params_generator.generate_sample()
                     config = list(self._index_to_config(args, config_id))
-                    config[len(config) - len(sample) :] = sample
+                    # for bachnorm, config is (batch, channel, image_size) and we need to replace channel := pos[1]
+                    if self._op_name == "batch_norm":
+                        config[1] = sample[0]
+                    else:
+                        config[len(config) - len(sample) :] = sample
                     config = tuple(config)
                 else:
                     config = self._index_to_config(args, config_id)

@@ -128,6 +128,22 @@ class BMMMLP(nn.Module):
 
         return x
 
+class BatchNorm(nn.Module):
+    def __init__(self, layers, layer_size):
+        super().__init__()
+
+        self.features = ["batch","channels","image_size"]
+        self.fc1 = nn.Linear(len(self.features) + 4, layer_size)
+        self.mlp = MLPBase(layers, layer_size)
+        self.fc2 = nn.Linear(layer_size, 1)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.mlp(x)
+        x = self.fc2(x)
+
+        return x
 
 class RuntimePredictor:
     def __init__(self, model_name, layers, layer_size, model_path=None):
@@ -141,6 +157,7 @@ class RuntimePredictor:
             "conv2d": Conv2DMLP,
             "conv_transpose2d": ConvTranspose2DMLP,
             "bmm": BMMMLP,
+            "batch_norm": BatchNorm,
         }[self.model_name](layers, layer_size)
 
         self.device_params = ['mem', 'mem_bw', 'num_sm', 'single']

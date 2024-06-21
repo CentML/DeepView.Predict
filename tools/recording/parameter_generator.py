@@ -14,7 +14,7 @@ class main_generator:
         self._distribution: gaussian_kde = None
         self._ops: str = ops
 
-        if ops == "conv2d":
+        if ops == "conv2d" or ops == "batch_norm":
             filename = "conv2d_sampled_params.pkl"
         elif ops == "linear":
             filename = "linear_sampled_params.pkl"
@@ -25,7 +25,7 @@ class main_generator:
         param_dict: Dict[str, int] = dict()
         dist_arr: List[List[int, int]] = []
 
-        if ops == "conv2d":
+        if ops == "conv2d" or ops == "batch_norm":
             # weight by model count
             model_counts: Dict[str, int] = dict()
             for row in data:
@@ -61,7 +61,7 @@ class main_generator:
 
         round_sample = []
         while True:
-            # keep sampling until valid configuration for conv2d
+            # keep sampling until valid configuration is found
             sample = self._distribution.resample(1)
             if self._ops == "conv2d":
                 round_sample = [
@@ -73,6 +73,17 @@ class main_generator:
                 ]
                 if round_sample[2] != 0 and round_sample[3] != 0:
                     return round_sample
+            
+            elif self._ops == "batch_norm":
+                round_sample = [
+                    self.round(sample[0][0]),  # in_channels
+                    self.round(sample[1][0]),  # out_channels
+                    self.round(sample[2][0]),  # kernel_size
+                    self.round(sample[3][0]),  # stride
+                    self.round(sample[4][0]),  # padding
+                ]
+                if round_sample[1] != 0:
+                    return [round_sample[1]]
 
             elif self._ops == "linear":
                 in_features = self.round(sample[0][0])
