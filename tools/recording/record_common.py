@@ -135,7 +135,7 @@ class Measurer:
             params_generator = main_generator(self._op_name)
 
         try:
-            for idx, config_id in enumerate(to_record[:100]):
+            for idx, config_id in enumerate(to_record):
                 if idx < num_configs_measured:
                     continue
                 if args.skip is not None and idx < args.skip:
