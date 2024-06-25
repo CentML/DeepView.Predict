@@ -1,7 +1,7 @@
 import functools
 import logging
 import operator
-import math
+import numpy as np
 
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.analysis.operation import PredictedOperation
@@ -384,7 +384,7 @@ class Predictor:
             channels=merged['input'][1],
             # batch_norm can be called by BatchNorm1d, BatchNorm2d, BatchNorm3d
             # so we need to collapse all features after channels into a single int
-            image_size=math.prod(merged['input'][2:]),
+            image_size=np.mean(merged['input'][2:]),
         )
 
         # 3. Call model to make prediction
