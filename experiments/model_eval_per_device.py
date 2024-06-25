@@ -16,10 +16,10 @@ DEFAULT_PREDICTOR = Predictor()
 
 # Experiment configuration
 
-RESNET50_BATCHES = [64]#[16, 32, 64]
-GNMT_BATCHES = [48]#[16, 32, 48]
-NANOGPT_BATCHES = [64]#[32, 48, 64]
-DCGAN_BATCHES = [128]#[64, 96, 128]
+RESNET50_BATCHES = [16, 32, 64]
+GNMT_BATCHES = [16, 32, 48]
+NANOGPT_BATCHES = [32, 48, 64]
+DCGAN_BATCHES = [64, 96, 128]
 
 ###############################################################################
 
