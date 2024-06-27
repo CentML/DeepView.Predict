@@ -1,6 +1,7 @@
 import functools
 import logging
 import operator
+import numpy as np
 
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.analysis.operation import PredictedOperation
@@ -11,7 +12,6 @@ from habitat.data import path_to_data
 from habitat.utils import ms_to_ns, name_all_arguments
 
 from habitat.analysis.mlp.mlp import RuntimePredictor
-
 logger = logging.getLogger(__name__)
 
 CONV2D_PARAMS = [
@@ -52,6 +52,16 @@ LSTM_PARAMS = [
 
 MATMUL_PARAMS = ['input', 'other', 'out']
 
+BATCH_NORM = [
+    'input',
+    'running_mean',
+    'running_var',
+    'weight',
+    'bias',
+    'training',
+    'momentum',
+    'eps'
+]
 
 class Predictor:
     def __init__(
@@ -86,6 +96,10 @@ class Predictor:
             "conv_transpose2d", 8, 1024,
             path_to_data("conv_transpose2d/model.pth"),
         )
+        self.batch_norm_pred = RuntimePredictor(
+            "batch_norm", 8, 1024,
+            path_to_data("batch_norm/model.pth"),
+        )
 
 
     def predict_operation(self, operation, dest_device, unscaled=False):
@@ -108,6 +122,8 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._bmm_scale, unscaled)
         elif operation.name == 'conv_transpose2d':
             return self._special_scale(operation, dest_device, self._conv_transpose2d_scale, unscaled)
+        elif operation.name == "batch_norm":
+            return self._special_scale(operation, dest_device, self._batch_norm_scale, unscaled)
 
         logger.warn('Unhandled special operation: %s', operation.name)
         return PredictedOperation(
@@ -354,3 +370,34 @@ class Predictor:
             return pred_orig
 
         return operation.run_time_ms * pred_dest / pred_orig
+
+    def _batch_norm_scale(self, operation, dest_device, unscaled=False):
+        merged = name_all_arguments(
+            BATCH_NORM,
+            operation.arguments.args,
+            operation.arguments.kwargs,
+        )
+
+        # 2. Construct arguments that the predictor expects
+        arguments = dict(
+            batch=merged['input'][0],
+            channels=merged['input'][1],
+            # batch_norm can be called by BatchNorm1d, BatchNorm2d, BatchNorm3d
+            # so we need to collapse all features after channels into a single int
+            image_size=np.mean(merged['input'][2:]),
+        )
+
+        # 3. Call model to make prediction
+        arguments = [arguments[x] for x in self.batch_norm_pred.model.features]
+
+        pred_dest = self.batch_norm_pred.predict(arguments, dest_device.name)
+        pred_orig = self.batch_norm_pred.predict(arguments, operation.device.name)
+
+        if unscaled:
+            return pred_dest
+        
+        if dest_device.name == operation.device.name: #local prediction
+            return pred_orig
+
+        return operation.run_time_ms * pred_dest / pred_orig
+

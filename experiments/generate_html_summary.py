@@ -19,6 +19,7 @@ SPECIAL_OPERATIONS = {
     "linear",
     "__matmul__",  # calls the same kernel as linear
     "bmm",
+    "batch_norm",
     # Recurrent operations
     "lstm",
     "gru",

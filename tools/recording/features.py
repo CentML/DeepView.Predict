@@ -1,4 +1,8 @@
-
+batch_norm = [
+    'batch',
+    'image_size',
+    'channels',
+]
 
 conv2d = [
     'bias',
@@ -41,4 +45,5 @@ FEATURES = {
     'conv2d': conv2d,
     'linear': linear,
     'lstm': lstm,
+    'batch_norm': batch_norm
 }

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 Some operators such as conv2d and linear need to be sampled from a different distribution (gaussian + uniform)
 main_generator generates these new samples
 """
-SPECIAL_SAMPLING_OPS = ['conv2d','linear']
+SPECIAL_SAMPLING_OPS = ['conv2d','linear', 'batch_norm']
 
 class Measurer:
     def __init__(
@@ -72,6 +72,7 @@ class Measurer:
         logger.info("Total configurations: %d", num_configs)
 
         to_record = random.sample(range(num_configs), args.num_points)
+        print(f"before filter :{len(to_record)}")
         if self._index_filter is not None:
             to_record = list(
                 filter(
