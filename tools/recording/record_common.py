@@ -145,11 +145,7 @@ class Measurer:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
                     sample = params_generator.generate_sample()
                     config = list(self._index_to_config(args, config_id))
-                    # for bachnorm, config is (batch, channel, image_size) and we need to replace channel := pos[1]
-                    if self._op_name == "batch_norm":
-                        config[1] = sample[0]
-                    else:
-                        config[len(config) - len(sample) :] = sample
+                    config[len(config) - len(sample) :] = sample
                     config = tuple(config)
                 else:
                     config = self._index_to_config(args, config_id)

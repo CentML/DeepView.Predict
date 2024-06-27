@@ -1,7 +1,7 @@
 batch_norm = [
     'batch',
-    'channels',
     'image_size',
+    'channels',
 ]
 
 conv2d = [

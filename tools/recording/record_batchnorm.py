@@ -20,8 +20,8 @@ def index_to_config(args, index):
 
     return (
         batch,
+        image_size,
         channels,
-        image_size
     )
 
 def index_filter(args, index):
@@ -30,7 +30,7 @@ def index_filter(args, index):
     #       them to each "contribute equally". We weigh the image size more to
     #       select smaller image sizes.
     # image_size (1-dim) * channels
-    batchnorm_size = math.pow(config[2], 1.15) * config[1]
+    batchnorm_size = math.pow(config[1], 1.15) * config[2]
 
     # NOTE: This value was chosen arbitrarily: we don't want the 
     #       channels and image size to all be too large. This way, large values
@@ -42,9 +42,11 @@ def index_filter(args, index):
     return batchnorm_size <= 35000000 and config[0] > 1
 
 def config_to_profiler_args(config):
-    (batch,
-     channels,
-     image_size) = config
+    (
+        batch,
+        image_size,
+        channels,
+     ) = config
     
     device = torch.device('cuda')
     batchnorm = torch.nn.BatchNorm2d(channels).to(device)
