@@ -283,8 +283,9 @@ class Predictor:
 
         arguments = [arguments[x] for x in self.linear_pred.model.features]
 
-        pred_dest = self.linear_pred.predict(arguments, dest_device.name)
-        pred_orig = self.linear_pred.predict(arguments, operation.device.name)
+        pred_dest = (operation.run_time_ms - operation.ktime_ns * 1e-6) + self.linear_pred.predict(arguments, dest_device.name)
+
+        pred_orig = (operation.run_time_ms - operation.ktime_ns * 1e-6) + self.linear_pred.predict(arguments, operation.device.name)
 
         if unscaled:
             return pred_dest
