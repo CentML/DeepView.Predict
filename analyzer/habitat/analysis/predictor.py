@@ -116,9 +116,9 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._conv2d_scale, unscaled)
         elif operation.name == 'lstm':
             return self._special_scale(operation, dest_device, self._lstm_scale, unscaled)
-        elif operation.name in ['linear','__matmul__']:
+        elif operation.name == 'linear':
             return self._special_scale(operation, dest_device, self._linear_scale, unscaled)
-        elif operation.name == 'bmm':
+        elif operation.name in ['bmm', '__matmul__']:
             return self._special_scale(operation, dest_device, self._bmm_scale, unscaled)
         elif operation.name == 'conv_transpose2d':
             return self._special_scale(operation, dest_device, self._conv_transpose2d_scale, unscaled)
@@ -283,9 +283,9 @@ class Predictor:
 
         arguments = [arguments[x] for x in self.linear_pred.model.features]
 
-        pred_dest = (operation.run_time_ms - operation.ktime_ns * 1e-6) + self.linear_pred.predict(arguments, dest_device.name)
+        pred_dest = self.linear_pred.predict(arguments, dest_device.name)
 
-        pred_orig = (operation.run_time_ms - operation.ktime_ns * 1e-6) + self.linear_pred.predict(arguments, operation.device.name)
+        pred_orig = self.linear_pred.predict(arguments, operation.device.name)
 
         if unscaled:
             return pred_dest
