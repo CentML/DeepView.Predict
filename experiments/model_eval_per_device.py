@@ -281,9 +281,9 @@ def main():
         storage_folder=storage_folder,
     )
 
-    # run_dcgan_experiments(context)
-    # run_inception_experiments(context)
-    # run_resnet50_experiments(context)
+    run_dcgan_experiments(context)
+    run_inception_experiments(context)
+    run_resnet50_experiments(context)
     run_nanogpt_experiments(context)
 
 
