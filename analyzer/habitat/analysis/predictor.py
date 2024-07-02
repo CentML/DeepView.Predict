@@ -416,5 +416,5 @@ class Predictor:
         if dest_device.name == operation.device.name: #local prediction
             return pred_orig
 
-        return operation.run_time_ms * pred_dest / pred_origb
+        return operation.run_time_ms * pred_dest / pred_orig
 
