@@ -2,6 +2,7 @@ import functools
 import logging
 import operator
 import numpy as np
+import math
 
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.analysis.operation import PredictedOperation
@@ -296,18 +297,33 @@ class Predictor:
         return operation.run_time_ms * pred_dest / pred_orig
 
     def _bmm_scale(self, operation, dest_device, unscaled=False):
+        # nn.Linear may call __matmul__ which in turn calls bmm
+        # but the shape of the arguments may be [a,b,c,d]. 
+        # So we need to reshape them into [a*b,c,d]
+        reshape_args = []
+        for arg in operation.arguments.args:
+            if len(arg) > 3:
+                reshape_args.append([math.prod(arg[:-2]),arg[-2], arg[-1]])
+            else:
+                reshape_args.append(arg)
+        operation.arguments.args = reshape_args
+        
         merged = name_all_arguments(
             BMM_PARAMS,
             operation.arguments.args,
             operation.arguments.kwargs,
         )
-
+    
         arguments = dict(
             batch=merged['input'][0],
             left=merged['input'][1],
             middle=merged['input'][2],
             right=merged['mat2'][2],
         )
+
+        if operation.name == '__matmul__':
+            print(arguments)
+
         arguments = [arguments[x] for x in self.bmm_pred.model.features]
 
         pred_dest = self.bmm_pred.predict(arguments, dest_device.name)
@@ -400,5 +416,5 @@ class Predictor:
         if dest_device.name == operation.device.name: #local prediction
             return pred_orig
 
-        return operation.run_time_ms * pred_dest / pred_orig
+        return operation.run_time_ms * pred_dest / pred_origb
 
