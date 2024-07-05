@@ -16,6 +16,10 @@ class main_generator:
 
         if ops == "conv2d" or ops == "batch_norm":
             filename = "conv2d_sampled_params.pkl"
+
+        elif ops == "bmm":
+            filename = "bmm_sampled_params.pkl"
+
         elif ops == "linear":
             filename = "linear_sampled_params.pkl"
 
@@ -25,7 +29,7 @@ class main_generator:
         param_dict: Dict[str, int] = dict()
         dist_arr: List[List[int, int]] = []
 
-        if ops == "conv2d" or ops == "batch_norm":
+        if ops in ["conv2d", "bmm", "batch_norm"]:
             # weight by model count
             model_counts: Dict[str, int] = dict()
             for row in data:
@@ -73,7 +77,7 @@ class main_generator:
                 ]
                 if round_sample[2] != 0 and round_sample[3] != 0:
                     return round_sample
-            
+
             elif self._ops == "batch_norm":
                 round_sample = [
                     self.round(sample[0][0]),  # in_channels
@@ -84,6 +88,16 @@ class main_generator:
                 ]
                 if round_sample[1] != 0:
                     return [round_sample[1]]
+
+            elif self._ops == "bmm":
+                round_sample = [
+                    self.round(sample[0][0]),  # bs
+                    self.round(sample[1][0]),  # left
+                    self.round(sample[2][0]),  # middle
+                    self.round(sample[3][0]),  # right
+                ]
+                if np.all(round_sample): # validate we have non-zeroes
+                    return round_sample
 
             elif self._ops == "linear":
                 in_features = self.round(sample[0][0])
