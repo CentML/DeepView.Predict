@@ -4,6 +4,7 @@ from scipy.stats import gaussian_kde
 import sys
 import random
 from typing import Dict, List
+import psutil
 
 
 class main_generator:
@@ -90,13 +91,21 @@ class main_generator:
                     return [round_sample[1]]
 
             elif self._ops == "bmm":
+                curr_avail_mem = psutil.virtual_memory()[1]
                 round_sample = [
                     self.round(sample[0][0]),  # bs
                     self.round(sample[1][0]),  # left
                     self.round(sample[2][0]),  # middle
                     self.round(sample[3][0]),  # right
                 ]
-                if np.all(round_sample): # validate we have non-zeroes
+                # validate non-zeros
+                # check if available memory (Can't catch RuntimeError DefaultCPUAllocator: can't allocate memory)
+                # 4 for FP32
+                if (
+                    np.all(round_sample)
+                    and 4 * round_sample[0] * round_sample[1] * round_sample[2] < curr_avail_mem
+                    and 4 * round_sample[0] * round_sample[2] * round_sample[3] < curr_avail_mem
+                ):
                     return round_sample
 
             elif self._ops == "linear":
