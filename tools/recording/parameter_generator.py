@@ -4,11 +4,11 @@ from scipy.stats import gaussian_kde
 import sys
 import random
 from typing import Dict, List
-import psutil
 
+BMM_MEM_CEIL = 16000000000
 
 class main_generator:
-    "Special distribution for conv2d and linear records"
+    "Special distribution for conv2d, bmm, batch_norm, and linear"
 
     def __init__(self, ops):
 
@@ -91,7 +91,6 @@ class main_generator:
                     return [round_sample[1]]
 
             elif self._ops == "bmm":
-                curr_avail_mem = psutil.virtual_memory()[1]
                 round_sample = [
                     self.round(sample[0][0]),  # bs
                     self.round(sample[1][0]),  # left
@@ -103,8 +102,8 @@ class main_generator:
                 # 4 for FP32
                 if (
                     np.all(round_sample)
-                    and 4 * round_sample[0] * round_sample[1] * round_sample[2] < curr_avail_mem
-                    and 4 * round_sample[0] * round_sample[2] * round_sample[3] < curr_avail_mem
+                    and 4 * round_sample[0] * round_sample[1] * round_sample[2] < BMM_MEM_CEIL
+                    and 4 * round_sample[0] * round_sample[2] * round_sample[3] < BMM_MEM_CEIL
                 ):
                     return round_sample
 
