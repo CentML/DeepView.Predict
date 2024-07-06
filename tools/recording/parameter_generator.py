@@ -5,7 +5,7 @@ import sys
 import random
 from typing import Dict, List
 
-BMM_MEM_CEIL = 16000000000
+BMM_MEM_CEIL = 14000000000
 
 class main_generator:
     "Special distribution for conv2d, bmm, batch_norm, and linear"
