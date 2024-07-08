@@ -6,8 +6,9 @@ import random
 from typing import Dict, List
 import psutil
 
-CURR_MEM = psutil.virtual_memory()
-BMM_MEM_CEIL = 0.9 * CURR_MEM
+# SET CEIL FOR AVAILABLE RAM (avoid running-out-mem for sampling bmm)
+CURR_MEM = psutil.virtual_memory()[1]
+BMM_MEM_CEIL = int(0.9 * CURR_MEM)
 
 class main_generator:
     "Special distribution for conv2d, bmm, batch_norm, and linear"
