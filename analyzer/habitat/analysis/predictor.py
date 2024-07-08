@@ -321,9 +321,6 @@ class Predictor:
             right=merged['mat2'][2],
         )
 
-        if operation.name == '__matmul__':
-            print(arguments)
-
         arguments = [arguments[x] for x in self.bmm_pred.model.features]
 
         pred_dest = self.bmm_pred.predict(arguments, dest_device.name)
