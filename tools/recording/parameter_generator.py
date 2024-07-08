@@ -4,8 +4,10 @@ from scipy.stats import gaussian_kde
 import sys
 import random
 from typing import Dict, List
+import psutil
 
-BMM_MEM_CEIL = 14000000000
+CURR_MEM = psutil.virtual_memory()
+BMM_MEM_CEIL = 0.9 * CURR_MEM
 
 class main_generator:
     "Special distribution for conv2d, bmm, batch_norm, and linear"
@@ -98,12 +100,13 @@ class main_generator:
                     self.round(sample[3][0]),  # right
                 ]
                 # validate non-zeros
-                # check if available memory (Can't catch RuntimeError DefaultCPUAllocator: can't allocate memory)
+                # check if available memory (RuntimeError DefaultCPUAllocator: can't allocate memory)
                 # 4 for FP32
+                matrix_a_size = 4 * round_sample[0] * round_sample[1] * round_sample[2]
+                matrix_b_size = 4 * round_sample[0] * round_sample[2] * round_sample[3]
                 if (
                     np.all(round_sample)
-                    and 4 * round_sample[0] * round_sample[1] * round_sample[2] < BMM_MEM_CEIL
-                    and 4 * round_sample[0] * round_sample[2] * round_sample[3] < BMM_MEM_CEIL
+                    and matrix_a_size + matrix_b_size < BMM_MEM_CEIL
                 ):
                     return round_sample
 
