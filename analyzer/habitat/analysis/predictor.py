@@ -2,6 +2,7 @@ import functools
 import logging
 import operator
 import numpy as np
+import math
 
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.analysis.operation import PredictedOperation
@@ -116,9 +117,9 @@ class Predictor:
             return self._special_scale(operation, dest_device, self._conv2d_scale, unscaled)
         elif operation.name == 'lstm':
             return self._special_scale(operation, dest_device, self._lstm_scale, unscaled)
-        elif operation.name in ['linear','__matmul__']:
+        elif operation.name == 'linear':
             return self._special_scale(operation, dest_device, self._linear_scale, unscaled)
-        elif operation.name == 'bmm':
+        elif operation.name in ['bmm', '__matmul__']:
             return self._special_scale(operation, dest_device, self._bmm_scale, unscaled)
         elif operation.name == 'conv_transpose2d':
             return self._special_scale(operation, dest_device, self._conv_transpose2d_scale, unscaled)
@@ -284,6 +285,7 @@ class Predictor:
         arguments = [arguments[x] for x in self.linear_pred.model.features]
 
         pred_dest = self.linear_pred.predict(arguments, dest_device.name)
+
         pred_orig = self.linear_pred.predict(arguments, operation.device.name)
 
         if unscaled:
@@ -295,18 +297,30 @@ class Predictor:
         return operation.run_time_ms * pred_dest / pred_orig
 
     def _bmm_scale(self, operation, dest_device, unscaled=False):
+        # nn.Linear may call __matmul__ which in turn calls bmm
+        # but the shape of the arguments may be [a,b,c,d]. 
+        # So we need to reshape them into [a*b,c,d]
+        reshape_args = []
+        for arg in operation.arguments.args:
+            if len(arg) > 3:
+                reshape_args.append([math.prod(arg[:-2]),arg[-2], arg[-1]])
+            else:
+                reshape_args.append(arg)
+        operation.arguments.args = reshape_args
+        
         merged = name_all_arguments(
             BMM_PARAMS,
             operation.arguments.args,
             operation.arguments.kwargs,
         )
-
+    
         arguments = dict(
             batch=merged['input'][0],
             left=merged['input'][1],
             middle=merged['input'][2],
             right=merged['mat2'][2],
         )
+
         arguments = [arguments[x] for x in self.bmm_pred.model.features]
 
         pred_dest = self.bmm_pred.predict(arguments, dest_device.name)

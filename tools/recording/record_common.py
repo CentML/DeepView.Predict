@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 Some operators such as conv2d and linear need to be sampled from a different distribution (gaussian + uniform)
 main_generator generates these new samples
 """
-SPECIAL_SAMPLING_OPS = ['conv2d','linear', 'batch_norm']
+SPECIAL_SAMPLING_OPS = ['conv2d','linear', 'batch_norm', 'bmm']
 
 class Measurer:
     def __init__(
