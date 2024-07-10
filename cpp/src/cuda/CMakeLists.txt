@@ -34,5 +34,5 @@ target_compile_options(
     "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_70,code=sm_70>"
     "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_75,code=sm_75>"
     "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_80,code=sm_80>"
-    # "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_90,code=sm_90>"
+    "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_90,code=sm_90>"
 )
