@@ -55,6 +55,7 @@ class Measurer:
         parser.add_argument("--rank", type=int, default=0)
         parser.add_argument("--world-size", type=int, default=1)
         parser.add_argument("--no-kernels", action="store_true")
+        parser.add_argument("--dtype", default='torch.float32')
         parser.add_argument("--skip", type=int)
 
     def measure_configurations(self, args, num_configs):
@@ -181,6 +182,7 @@ class Measurer:
             kwargs = self._config_to_profiler_args(config)
             if kwargs is None or config in config_with_problems:
                 return None, None
+            kwargs = self._cast_to_precision(kwargs, self._args)
             return self._profiler.measure_operation(
                 record_kernels=not self._args.no_kernels,
                 **kwargs,
@@ -226,3 +228,27 @@ class Measurer:
                 run_time_ms=backward_result.run_time_ms,
                 recorded_kernels=backward_result.kernels,
             )
+    
+    def _cast_to_precision(self, config, args):
+
+            precision_dict = {
+                'torch.float32': torch.float32,
+                'torch.float16': torch.float16,
+            }
+            
+            precision = precision_dict[args.dtype]
+            func = config['func'].to(precision)
+            inps = tuple(param.to(precision) for param in config['args'])
+            
+            kwargs = {}
+            for k,v in config['kwargs'].items():
+                if isinstance(v,torch.Tensor):
+                    kwargs[k] = v.to(precision)
+                else:
+                    kwargs[k] = v
+
+            return {
+                'func': func,
+                'args': inps,
+                'kwargs': kwargs
+            } 
