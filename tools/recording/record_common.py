@@ -73,7 +73,7 @@ class Measurer:
         logger.info("Total configurations: %d", num_configs)
 
         to_record = random.sample(range(num_configs), args.num_points)
-        print(f"before filter :{len(to_record)}")
+        
         if self._index_filter is not None:
             to_record = list(
                 filter(
@@ -179,10 +179,10 @@ class Measurer:
             # eg conv2d: (False, 50, 182, 1706, 205, 2, 2, 1)
         ]
         try:
-            kwargs = self._config_to_profiler_args(config)
+            kwargs = self._config_to_profiler_args(config, self._args.dtype)
             if kwargs is None or config in config_with_problems:
                 return None, None
-            kwargs = self._cast_to_precision(kwargs, self._args)
+            # kwargs = self._cast_to_precision(kwargs, self._args)
             return self._profiler.measure_operation(
                 record_kernels=not self._args.no_kernels,
                 **kwargs,
@@ -229,26 +229,26 @@ class Measurer:
                 recorded_kernels=backward_result.kernels,
             )
     
-    def _cast_to_precision(self, config, args):
+    # def _cast_to_precision(self, config, args):
 
-            precision_dict = {
-                'torch.float32': torch.float32,
-                'torch.float16': torch.float16,
-            }
+    #         precision_dict = {
+    #             'torch.float32': torch.float32,
+    #             'torch.float16': torch.float16,
+    #         }
             
-            precision = precision_dict[args.dtype]
-            func = config['func'].to(precision) if config['func'] != torch.bmm else config['func']
-            inps = tuple(param.to(precision) for param in config['args'])
+    #         precision = precision_dict[args.dtype]
+    #         func = config['func'].to(precision) if config['func'] != torch.bmm else config['func']
+    #         inps = tuple(param.to(precision) for param in config['args'])
             
-            kwargs = {}
-            for k,v in config['kwargs'].items():
-                if isinstance(v,torch.Tensor):
-                    kwargs[k] = v.to(precision)
-                else:
-                    kwargs[k] = v
+    #         kwargs = {}
+    #         for k,v in config['kwargs'].items():
+    #             if isinstance(v,torch.Tensor):
+    #                 kwargs[k] = v.to(precision)
+    #             else:
+    #                 kwargs[k] = v
 
-            return {
-                'func': func,
-                'args': inps,
-                'kwargs': kwargs
-            } 
+    #         return {
+    #             'func': func,
+    #             'args': inps,
+    #             'kwargs': kwargs
+    #         } 

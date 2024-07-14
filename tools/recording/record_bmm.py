@@ -28,10 +28,16 @@ def index_to_config(args, index):
     )
 
 
-def config_to_profiler_args(config):
+def config_to_profiler_args(config, precision):
+
+    precision_dict = {
+        'torch.float32': torch.float32,
+        'torch.float16': torch.float16,
+        }
+    
     (batch, left, middle, right) = config
-    o1 = torch.randn((batch, left, middle)).cuda()
-    o2 = torch.randn((batch, middle, right)).cuda()
+    o1 = torch.randn((batch, left, middle)).cuda().to(precision_dict[precision])
+    o2 = torch.randn((batch, middle, right)).cuda().to(precision_dict[precision])
     o1.requires_grad_()
     o2.requires_grad_()
     return {
