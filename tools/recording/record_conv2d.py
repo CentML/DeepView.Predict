@@ -66,7 +66,12 @@ def index_filter(args, index):
     return conv_size <= 35000000
 
 
-def config_to_profiler_args(config):
+def config_to_profiler_args(config, precision):
+    precision_dict = {
+        'torch.float32': torch.float32,
+        'torch.float16': torch.float16,
+        }
+    
     (bias,
      batch,
      image_size,
@@ -88,13 +93,13 @@ def config_to_profiler_args(config):
         stride=stride,
         padding=padding,
         bias=bias,
-    ).to(device)
+    ).to(device).to(precision_dict[precision])
     inp = torch.randn((
         batch,
         in_channels,
         image_size,
         image_size,
-    ), device=device)
+    ), device=device).to(precision_dict[precision])
     # NOTE: This is important: for most convolutions, we will also need the
     #       gradient with respect to the input to be able to backpropagate to
     #       earlier operations in the network.

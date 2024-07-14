@@ -41,7 +41,12 @@ def index_filter(args, index):
     # raise ValueError(f"Expected more than 1 value per channel when training, got input size {size}")
     return batchnorm_size <= 35000000 and config[0] > 1
 
-def config_to_profiler_args(config):
+def config_to_profiler_args(config, precision):
+    precision_dict = {
+        'torch.float32': torch.float32,
+        'torch.float16': torch.float16,
+        }
+    
     (
         batch,
         image_size,
@@ -49,8 +54,8 @@ def config_to_profiler_args(config):
      ) = config
     
     device = torch.device('cuda')
-    batchnorm = torch.nn.BatchNorm2d(channels).to(device)
-    inp = torch.randn((batch, channels, image_size, image_size), device=device)
+    batchnorm = torch.nn.BatchNorm2d(channels).to(device).to(precision_dict[precision])
+    inp = torch.randn((batch, channels, image_size, image_size), device=device).to(precision_dict[precision])
     inp = inp.requires_grad_()
 
     return {

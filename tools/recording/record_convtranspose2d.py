@@ -126,7 +126,12 @@ def to_cuda(item):
         print()
         return None
 
-def config_to_profiler_args(config):
+def config_to_profiler_args(config, precision):
+    precision_dict = {
+        'torch.float32': torch.float32,
+        'torch.float16': torch.float16,
+        }
+    
     (bias,
      batch,
      image_size,
@@ -151,21 +156,19 @@ def config_to_profiler_args(config):
         stride=stride,
         padding=padding,
         bias=bias,
-    ))
+    )).to(precision_dict[precision])
 
     inp = to_cuda(torch.randn((
         batch,
         in_channels,
         image_size,
         image_size,
-    )))
+    ))).to(precision_dict[precision])
 
     # NOTE: This is important: for most convolutions, we will also need the
     #       gradient with respect to the input to be able to backpropagate to
     #       earlier operations in the network.
     inp = inp.requires_grad_()
-
-    print(convtranspose2d, inp.shape)
 
     return {
         'func': convtranspose2d,
