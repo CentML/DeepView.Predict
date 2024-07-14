@@ -10,6 +10,11 @@ import psutil
 CURR_MEM = psutil.virtual_memory()[1]
 BMM_MEM_CEIL = int(0.9 * CURR_MEM)
 
+PRECISION_TO_BYTES = {
+    'torch.float32': 4,
+    'torch.float16': 2
+}
+
 class main_generator:
     "Special distribution for conv2d, bmm, batch_norm, and linear"
 
@@ -63,7 +68,7 @@ class main_generator:
             np_dist_array = np.array(dist_arr).transpose()
             self._distribution = gaussian_kde(np_dist_array)
 
-    def generate_sample(self):
+    def generate_sample(self, precision):
         if self._distribution is None:
             sys.exit("Error generating a new distribution")
 
@@ -103,8 +108,8 @@ class main_generator:
                 # validate non-zeros
                 # check if available memory (RuntimeError DefaultCPUAllocator: can't allocate memory)
                 # 4 for FP32
-                matrix_a_size = 4 * round_sample[0] * round_sample[1] * round_sample[2]
-                matrix_b_size = 4 * round_sample[0] * round_sample[2] * round_sample[3]
+                matrix_a_size = PRECISION_TO_BYTES[precision] * round_sample[0] * round_sample[1] * round_sample[2]
+                matrix_b_size = PRECISION_TO_BYTES[precision] * round_sample[0] * round_sample[2] * round_sample[3]
                 if (
                     np.all(round_sample)
                     and matrix_a_size + matrix_b_size < BMM_MEM_CEIL

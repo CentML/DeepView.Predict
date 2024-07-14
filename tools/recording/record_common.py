@@ -51,7 +51,7 @@ class Measurer:
     def add_args(self, parser):
         parser.add_argument("device", type=str)
         parser.add_argument("--seed", type=int, default=1337)
-        parser.add_argument("--num-points", type=int, default=200000)
+        parser.add_argument("--num-points", type=int, default=100000)
         parser.add_argument("--rank", type=int, default=0)
         parser.add_argument("--world-size", type=int, default=1)
         parser.add_argument("--no-kernels", action="store_true")
@@ -144,7 +144,7 @@ class Measurer:
 
                 if self._op_name in SPECIAL_SAMPLING_OPS:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
-                    sample = params_generator.generate_sample()
+                    sample = params_generator.generate_sample(args.dtype)
                     config = list(self._index_to_config(args, config_id))
                     config[len(config) - len(sample) :] = sample
                     config = tuple(config)
