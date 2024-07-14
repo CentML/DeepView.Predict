@@ -144,7 +144,7 @@ class Measurer:
 
                 if self._op_name in SPECIAL_SAMPLING_OPS:
                     # only for conv2d and linear replace the features with the ones obtained from main_generator
-                    sample = params_generator.generate_sample(args.dtype)
+                    sample = params_generator.generate_sample()
                     config = list(self._index_to_config(args, config_id))
                     config[len(config) - len(sample) :] = sample
                     config = tuple(config)
