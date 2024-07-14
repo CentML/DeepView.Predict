@@ -237,7 +237,7 @@ class Measurer:
             }
             
             precision = precision_dict[args.dtype]
-            func = config['func'].to(precision)
+            func = config['func'].to(precision) if config['func'] != torch.bmm else config['func']
             inps = tuple(param.to(precision) for param in config['args'])
             
             kwargs = {}
