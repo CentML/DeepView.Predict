@@ -4,9 +4,10 @@ from scipy.stats import gaussian_kde
 import sys
 import random
 from typing import Dict, List
+import psutil
 
 # SET CEIL FOR AVAILABLE RAM (avoid running-out-mem for sampling bmm)
-CURR_MEM = 16000000000 # cap at 16GB
+CURR_MEM = min(16000000000, psutil.virtual_memory()[1]) # cap at 16GB
 BMM_MEM_CEIL = int(0.9 * CURR_MEM)
 
 class main_generator:
