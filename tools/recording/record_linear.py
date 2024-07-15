@@ -28,11 +28,16 @@ def index_to_config(args, index):
     )
 
 
-def config_to_profiler_args(config):
+def config_to_profiler_args(config, precision):
+    precision_dict = {
+        'torch.float32': torch.float32,
+        'torch.float16': torch.float16,
+        }
+
     (bias, batch, in_features, out_features) = config
     linear = torch.nn.Linear(
-        in_features=in_features, out_features=out_features, bias=bias).cuda()
-    inp = torch.randn((batch, in_features)).cuda()
+        in_features=in_features, out_features=out_features, bias=bias).cuda().to(precision_dict[precision])
+    inp = torch.randn((batch, in_features)).cuda().to(precision_dict[precision])
     # NOTE: This is important: for most linear layers, we will also need the
     #       gradient with respect to the input to be able to backpropagate to
     #       earlier operations in the network.
