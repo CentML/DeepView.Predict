@@ -51,7 +51,7 @@ class Measurer:
     def add_args(self, parser):
         parser.add_argument("device", type=str)
         parser.add_argument("--seed", type=int, default=1337)
-        parser.add_argument("--num-points", type=int, default=50000)
+        parser.add_argument("--num-points", type=int, default=200000)
         parser.add_argument("--rank", type=int, default=0)
         parser.add_argument("--world-size", type=int, default=1)
         parser.add_argument("--no-kernels", action="store_true")
