@@ -87,6 +87,7 @@ class Measurer:
 
         logger.info("Total configurations after filtering: %d", len(to_record))
         logger.info("Slice size: %d", slice_size)
+        logger.info("precision: %s", self._args.dtype)
 
         if args.world_size != 1:
             # If we split the sample set across multiple workers, we
