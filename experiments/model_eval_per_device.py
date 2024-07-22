@@ -5,10 +5,14 @@ import os
 from pathlib import Path
 import numpy as np
 import torch
+import warnings
+warnings.filterwarnings("ignore")
+
 import habitat
 from habitat.analysis import SPECIAL_OPERATIONS
 from habitat.profiling.run_time import RunTimeProfiler
 from habitat.analysis.predictor import Predictor
+
 
 DEFAULT_PREDICTOR = Predictor()
 

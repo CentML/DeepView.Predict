@@ -27,7 +27,7 @@ def skyline_iteration_provider(netG, netD):
     optimizerD = torch.optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
     optimizerG = torch.optim.Adam(netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 
-    criterion = nn.BCELoss()
+    criterion = nn.BCEWithLogitsLoss()
 
     device = torch.device("cuda")
 
@@ -42,16 +42,18 @@ def skyline_iteration_provider(netG, netD):
         real_cpu = data.to(device)
         label = torch.full((batch_size,), real_label,
                            dtype=real_cpu.dtype, device=device)
-        output = netD(real_cpu)
-        errD_real = criterion(output, label)
+        with torch.autocast(device_type='cuda'):
+            output = netD(real_cpu)
+            errD_real = criterion(output, label)
         errD_real.backward()
 
         # train with fake
         noise = torch.randn(batch_size, dcgan.nz, 1, 1, device=device)
         fake = netG(noise)
         label.fill_(fake_label)
-        output = netD(fake.detach())
-        errD_fake = criterion(output, label)
+        with torch.autocast(device_type='cuda'):
+            output = netD(fake.detach())
+            errD_fake = criterion(output, label)
         errD_fake.backward()
         optimizerD.step()
 
@@ -60,8 +62,9 @@ def skyline_iteration_provider(netG, netD):
         ###########################
         netG.zero_grad()
         label.fill_(real_label)  # fake labels are real for generator cost
-        output = netD(fake)
-        errG = criterion(output, label)
+        with torch.autocast(device_type='cuda'):
+            output = netD(fake)
+            errG = criterion(output, label)
         errG.backward()
         optimizerG.step()
     return iteration

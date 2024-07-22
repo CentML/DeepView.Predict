@@ -19,7 +19,8 @@ def skyline_iteration_provider(model):
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
     def iteration(*inputs):
         optimizer.zero_grad()
-        out = model(*inputs)
+        with torch.autocast(device_type='cuda'):
+            out = model(*inputs)
         out.backward()
         optimizer.step()
     return iteration

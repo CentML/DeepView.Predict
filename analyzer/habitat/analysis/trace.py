@@ -1,6 +1,6 @@
 from itertools import chain
 from habitat.analysis.predictor import Predictor
-
+import warnings
 
 class Trace:
     """
@@ -39,7 +39,7 @@ class Trace:
         """Get a predicted trace for the specified device."""
         print(f"Cross-device prediction: {self.device.name} -> {dest_device.name}")
         if dest_device.name == self.device.name:
-            return self
+            warnings.warn("Predicting to the same device")
 
         actual_predictor = (
             Trace.DefaultPredictor if predictor is None else predictor

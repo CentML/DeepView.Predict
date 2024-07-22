@@ -12,3 +12,5 @@ analyzer/habitat/data/kernels.sqlite
 # Python
 *.pyc
 __pycache__
+venv/
+.vscode/*

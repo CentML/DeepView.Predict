@@ -21,8 +21,9 @@ def skyline_iteration_provider(model):
     def iteration(*inputs):
         data, labels = inputs
         optimizer.zero_grad()
-        out = model(data)
-        out = loss_fn(out, labels)
+        with torch.autocast(device_type='cuda'):
+            out = model(data)
+            out = loss_fn(out, labels)
         out.backward()
         optimizer.step()
     return iteration
