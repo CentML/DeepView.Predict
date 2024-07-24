@@ -47,6 +47,6 @@ def _debug_process_argument(argument):
         return list(map(_process_argument, argument))
 
     if isinstance(argument, torch.Tensor):
-        return argument.size(), argument.dtype
+        return argument.size(), str(argument.dtype)
     else:
         return argument
