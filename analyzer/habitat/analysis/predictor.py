@@ -589,21 +589,11 @@ class Predictor:
     def _calculate_dest_runtime(
         self, mlp_dict, kernels, operation, arguments, dest_device
     ):
+        kernel_not_in_common = [k for k in kernels if k.name not in mlp_dict["knames_fp32"] and k.name not in mlp_dict["knames_fp16"]]
+        #logger.warning(f"{len(kernels)}, {len(kernel_not_in_common)}")
         run_time_acc = 0
-        # if kernel is not found in list kernel names, we wave scale
-        for kernel in kernels:
-            if kernel.name in mlp_dict["knames_fp32"]:
-                run_time_acc += mlp_dict["fp32"].predict(arguments, dest_device.name)
-            elif kernel.name in mlp_dict["knames_fp16"]:
-                run_time_acc += mlp_dict["fp16"].predict(arguments, dest_device.name)
-            else:
-                run_time_acc += ns_to_ms(
-                    self._wave_scaling_strategy(
-                        kernel, operation.device, dest_device, self._kernel_metadata
-                    ).run_time_ns
-                )
-
-        if run_time_acc == 0:
+        
+        if len(kernel_not_in_common) == len(kernels):
             ## EXTREME CASE: none of the kernels was found in list of recorded kernels
             ## we use MLP-FP32 to scale the longest running kernel and wave scale the rest
             logger.warning("unknown kernels found, using wave scaling.\n")
@@ -621,7 +611,28 @@ class Predictor:
             run_time_acc = mlp_dict["fp32"].predict(
                 arguments, dest_device.name
             ) + ns_to_ms(time_ns)
+            
+            return run_time_acc
 
+        for kernel in kernel_not_in_common:
+            run_time_acc += ns_to_ms(
+                self._wave_scaling_strategy(
+                    kernel, operation.device, dest_device, self._kernel_metadata
+                ).run_time_ns
+            )
+
+        # choose which mlp to use, obtaine dtype of arguments
+        dtypes = []
+        for arg in operation.arguments.debug_args:
+            if isinstance(arg, tuple) and isinstance(arg[1], str):
+                dtypes.append(arg[1])
+        
+        if "torch.float16" in dtypes:
+            #logger.warning(f"found fp16 op, {dtypes}")
+            run_time_acc += mlp_dict["fp16"].predict(arguments, dest_device.name)
+        else:
+            run_time_acc += mlp_dict["fp32"].predict(arguments, dest_device.name) 
+        
         return run_time_acc
 
     def _load_kernel_names(self, path):
