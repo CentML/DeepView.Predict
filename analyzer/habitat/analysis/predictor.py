@@ -570,11 +570,6 @@ class Predictor:
 
         arguments = [arguments[x] for x in self.batch_norm_pred["fp32"].model.features]
 
-        self.batch_norm_pred["knames_fp16"].update({
-            '_ZN5cudnn29bn_fw_tr_1C11_singleread_specI7__half2Li512ELi1ELi2ELi0EEEvNS_18bn_fw_tr_1C11_argsIT_EE',
-            '_ZN5cudnn26bn_bw_1C11_singleread_specI7__half2Li512ELi1ELi2ELi0EEEvNS_15bn_bw_1C11_argsIT_EE'
-        })
-
         # 3. Call model to make prediction
         pred_dest = self._calculate_dest_runtime(
             self.batch_norm_pred, kernels, operation, arguments, dest_device
@@ -598,7 +593,7 @@ class Predictor:
         #logger.warning(f"{len(kernels)}, {len(kernel_not_in_common)}")
         run_time_acc = 0
         
-        if len(kernels_not_in_common) == len(kernels):
+        if len(kernels_not_in_common) == len(kernels) and operation.name != "batch_norm":
             ## EXTREME CASE: none of the kernels was found in list of recorded kernels
             ## we use MLP-FP32 to scale the longest running kernel and wave scale the rest
             logger.warning("not kernels in common exists.\n")
@@ -621,12 +616,13 @@ class Predictor:
             
             return run_time_acc
 
-        for kernel in kernels_not_in_common:
-            run_time_acc += ns_to_ms(
-                self._wave_scaling_strategy(
-                    kernel, operation.device, dest_device, self._kernel_metadata
-                ).run_time_ns
-            )
+        if operation.name != "batch_norm":
+            for kernel in kernels_not_in_common:
+                run_time_acc += ns_to_ms(
+                    self._wave_scaling_strategy(
+                        kernel, operation.device, dest_device, self._kernel_metadata
+                    ).run_time_ns
+                )
 
         # choose which mlp to use, obtaine dtype of arguments
         dtypes = []
