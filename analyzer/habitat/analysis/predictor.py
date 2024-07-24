@@ -570,6 +570,11 @@ class Predictor:
 
         arguments = [arguments[x] for x in self.batch_norm_pred["fp32"].model.features]
 
+        self.batch_norm_pred["knames_fp16"].update({
+            '_ZN5cudnn29bn_fw_tr_1C11_singleread_specI7__half2Li512ELi1ELi2ELi0EEEvNS_18bn_fw_tr_1C11_argsIT_EE',
+            '_ZN5cudnn26bn_bw_1C11_singleread_specI7__half2Li512ELi1ELi2ELi0EEEvNS_15bn_bw_1C11_argsIT_EE'
+        })
+
         # 3. Call model to make prediction
         pred_dest = self._calculate_dest_runtime(
             self.batch_norm_pred, kernels, operation, arguments, dest_device
@@ -589,14 +594,16 @@ class Predictor:
     def _calculate_dest_runtime(
         self, mlp_dict, kernels, operation, arguments, dest_device
     ):
-        kernel_not_in_common = [k for k in kernels if k.name not in mlp_dict["knames_fp32"] and k.name not in mlp_dict["knames_fp16"]]
+        kernels_not_in_common = [k for k in kernels if k.name not in mlp_dict["knames_fp32"] and k.name not in mlp_dict["knames_fp16"]]
         #logger.warning(f"{len(kernels)}, {len(kernel_not_in_common)}")
         run_time_acc = 0
         
-        if len(kernel_not_in_common) == len(kernels):
+        if len(kernels_not_in_common) == len(kernels):
             ## EXTREME CASE: none of the kernels was found in list of recorded kernels
             ## we use MLP-FP32 to scale the longest running kernel and wave scale the rest
-            logger.warning("unknown kernels found, using wave scaling.\n")
+            logger.warning("not kernels in common exists.\n")
+            logger.warning(f"{operation.name}")
+            for k in kernels_not_in_common: logger.warning(k.name)
             time_ns = 0
             longest_kernel = sorted(kernels, key=lambda x: x.run_time_ns, reverse=True)[0]
             to_wave_scale = list(
@@ -614,7 +621,7 @@ class Predictor:
             
             return run_time_acc
 
-        for kernel in kernel_not_in_common:
+        for kernel in kernels_not_in_common:
             run_time_acc += ns_to_ms(
                 self._wave_scaling_strategy(
                     kernel, operation.device, dest_device, self._kernel_metadata
