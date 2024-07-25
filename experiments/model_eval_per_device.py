@@ -22,7 +22,7 @@ DEFAULT_PREDICTOR = Predictor()
 
 RESNET50_BATCHES = [16, 32, 64]
 GNMT_BATCHES = [16, 32, 48]
-NANOGPT_BATCHES = [32, 48, 64]
+NANOGPT_BATCHES = [32, 48, 64, 96]
 DCGAN_BATCHES = [64, 96, 128]
 
 ###############################################################################
@@ -285,9 +285,9 @@ def main():
         storage_folder=storage_folder,
     )
 
-    run_dcgan_experiments(context)
-    run_inception_experiments(context)
-    run_resnet50_experiments(context)
+    # run_dcgan_experiments(context)
+    # run_inception_experiments(context)
+    # run_resnet50_experiments(context)
     run_nanogpt_experiments(context)
 
 
