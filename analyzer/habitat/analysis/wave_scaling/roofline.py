@@ -11,9 +11,10 @@ def roofline_wave_scaling(
     dest_device,
     metadata_manager,
 ):
+    print("INFO:\n",f"kernel name: {kernel.name}")
     gamma = _roofline_gamma(kernel, origin_device, dest_device)
     gamma_compl = 1.0 - gamma
-
+     
     origin_wave_size, dest_wave_size, origin_occupancy, dest_occupancy = (
         calculate_wave_info(
             kernel,
@@ -100,6 +101,7 @@ def _roofline_gamma(kernel, origin_device, dest_device):
         else:
             gamma = -0.5 / dest_ridge_point * intensity_gflops_per_gb + 1.
 
+        print(f"intensity_gflops_per_gb: {intensity_gflops_per_gb}, dest_ridge_point: {dest_ridge_point} , gamma: {gamma}")
     assert gamma >= 0 and gamma <= 1
     return gamma
 
