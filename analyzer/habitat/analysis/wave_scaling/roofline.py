@@ -11,7 +11,6 @@ def roofline_wave_scaling(
     dest_device,
     metadata_manager,
 ):
-    print("INFO:\n",f"kernel name: {kernel.name}")
     gamma = _roofline_gamma(kernel, origin_device, dest_device)
     gamma_compl = 1.0 - gamma
      
