@@ -82,7 +82,7 @@ def _roofline_gamma(kernel, origin_device, dest_device):
     #  gamma = -0.5/R * intensity + 1  if 0 <= intensity <= R
     #          0.5R / intensity        otherwise
 
-    if num_gflops < 1e-9:
+    if num_gflops < 1e-9 or total_gb < 1e-4:
         # We treat these cases as fully memory bandwidth bound, even though
         # total_gb could also be 0
         gamma = 1.
@@ -101,7 +101,6 @@ def _roofline_gamma(kernel, origin_device, dest_device):
         else:
             gamma = -0.5 / dest_ridge_point * intensity_gflops_per_gb + 1.
 
-        print(f"intensity_gflops_per_gb: {intensity_gflops_per_gb}, dest_ridge_point: {dest_ridge_point} , gamma: {gamma}")
     assert gamma >= 0 and gamma <= 1
     return gamma
 
