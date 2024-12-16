@@ -36,7 +36,6 @@ namespace {
 class ProfilingSession {
  public:
   ProfilingSession(
-      NVPA_MetricsContext* metrics_context,
       const std::string& chip_name,
       const std::string& metric,
       int num_kernels,
@@ -54,7 +53,6 @@ class ProfilingSession {
   CUpti_ProfilerReplayMode profiler_replay_mode_;
   CUpti_ProfilerRange profiler_range_;
   const std::string& metric_;
-  NVPA_MetricsContext* metrics_context_;
   const std::string& chip_name_;
   int num_kernels_;
 
@@ -67,7 +65,6 @@ class ProfilingSession {
 };
 
 ProfilingSession::ProfilingSession(
-    NVPA_MetricsContext* metrics_context,
     const std::string& chip_name,
     const std::string& metric,
     int num_kernels,
@@ -76,7 +73,6 @@ ProfilingSession::ProfilingSession(
   : profiler_replay_mode_(CUPTI_KernelReplay),
     profiler_range_(CUPTI_AutoRange),
     metric_(metric),
-    metrics_context_(metrics_context),
     chip_name_(chip_name),
     num_kernels_(num_kernels),
     image_prefix_(image_prefix),
@@ -169,13 +165,8 @@ void ProfilingSession::stopProfiling() {
 
 std::vector<habitat::cuda::KernelMetric> ProfilingSession::getMeasuredMetrics() {
   std::vector<NV::Metric::Eval::MetricNameValue> metric_name_value_map;
-#if (CUDA_VERSION == 10010)
-  bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
-      metrics_context_, chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
-#elif (CUDA_VERSION >= 10020)
   bool succeeded = NV::Metric::Eval::GetMetricGpuValue(
       chip_name_, counter_data_image_, {metric_}, metric_name_value_map);
-#endif
   if (!succeeded) {
     return {};
   }
@@ -212,7 +203,7 @@ namespace cuda {
 
 class NewCuptiProfiler::State {
  public:
-  State() : metrics_context_(nullptr) {
+  State() {
     CUpti_Profiler_Initialize_Params initialize_params = {CUpti_Profiler_Initialize_Params_STRUCT_SIZE};
     CUPTI_CALL(cuptiProfilerInitialize(&initialize_params));
 
@@ -224,21 +215,9 @@ class NewCuptiProfiler::State {
 
     NVPW_InitializeHost_Params initialize_host_params = {NVPW_InitializeHost_Params_STRUCT_SIZE};
     NVPW_API_CALL(NVPW_InitializeHost(&initialize_host_params));
-
-    NVPW_CUDA_MetricsContext_Create_Params metrics_context_create_params =
-        {NVPW_CUDA_MetricsContext_Create_Params_STRUCT_SIZE};
-    metrics_context_create_params.pChipName = chip_name_.c_str();
-    NVPW_API_CALL(NVPW_CUDA_MetricsContext_Create(&metrics_context_create_params));
-    metrics_context_ = metrics_context_create_params.pMetricsContext;
   }
 
   ~State() {
-    NVPW_MetricsContext_Destroy_Params metrics_context_destroy_params =
-        {NVPW_MetricsContext_Destroy_Params_STRUCT_SIZE};
-    metrics_context_destroy_params.pMetricsContext = metrics_context_;
-    NVPW_MetricsContext_Destroy((NVPW_MetricsContext_Destroy_Params *)&metrics_context_destroy_params);
-    metrics_context_ = nullptr;
-
     CUpti_Profiler_DeInitialize_Params deinitialize_params = {CUpti_Profiler_DeInitialize_Params_STRUCT_SIZE};
     // NOTE: We don't error check because this is the destructor and so
     //       throwing an exception on an error here won't really help
@@ -252,15 +231,9 @@ class NewCuptiProfiler::State {
     }
 
     auto inserted = config_images_.emplace(std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
-#if (CUDA_VERSION == 10010)
-    if (!NV::Metric::Config::GetConfigImage(metrics_context_, chip_name_, {metric}, inserted.first->second)) {
-      throw std::runtime_error("Failed to create config_image!");
-    }
-#elif (CUDA_VERSION >= 10020) 
     if (!NV::Metric::Config::GetConfigImage(chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create config_image!");
     }
-#endif
     return inserted.first->second;
   }
 
@@ -272,17 +245,10 @@ class NewCuptiProfiler::State {
 
     auto inserted = image_prefixes_.emplace(
         std::make_pair<std::string, std::vector<uint8_t>>(std::string(metric), {}));
-#if (CUDA_VERSION == 10010)
-    if (!NV::Metric::Config::GetCounterDataPrefixImage(
-          metrics_context_, chip_name_, {metric}, inserted.first->second)) {
-      throw std::runtime_error("Failed to create counter_data_image_prefix!");
-    }
-#elif (CUDA_VERSION >= 10020)
     if (!NV::Metric::Config::GetCounterDataPrefixImage(
           chip_name_, {metric}, inserted.first->second)) {
       throw std::runtime_error("Failed to create counter_data_image_prefix!");
     }
-#endif
     return inserted.first->second;
   }
 
@@ -290,15 +256,10 @@ class NewCuptiProfiler::State {
     return chip_name_;
   }
 
-  NVPA_MetricsContext* metricsContext() const {
-    return metrics_context_;
-  }
-
  private:
   std::string chip_name_;
   mutable std::unordered_map<std::string, std::vector<uint8_t>> config_images_;
   mutable std::unordered_map<std::string, std::vector<uint8_t>> image_prefixes_;
-  NVPA_MetricsContext* metrics_context_;
 };
 
 NewCuptiProfiler::NewCuptiProfiler() {}
@@ -317,7 +278,6 @@ void NewCuptiProfiler::profile(
   }
 
   ProfilingSession session(
-      state_->metricsContext(),
       state_->chipName(),
       metric_name,
       kernels.size(),
