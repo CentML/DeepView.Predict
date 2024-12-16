@@ -17,7 +17,7 @@ jobs:
 
       - name: Create index.html
         run: |
-          python3 /home/builduser/create_index.py habitat -f wheels-cu113 wheels-cu116 wheels-cu117 wheels-cu118 wheels-cu121
+          python3 /home/builduser/create_index.py habitat -f wheels-cu118 wheels-cu121 wheels-cu124
       - name: Upload to S3
         run: |
           aws s3 cp index.html s3://centml-releases/habitat/
